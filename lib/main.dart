@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MainApp());
+void main() async {
+  runApp(const AtlantidaApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class AtlantidaApp extends StatelessWidget {
+  const AtlantidaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
