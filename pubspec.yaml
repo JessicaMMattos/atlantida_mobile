@@ -21,6 +21,15 @@ dependencies:
   flutter_dotenv: ^5.1.0
   flutter_localization: ^0.2.0
   shared_preferences: ^2.2.3
+  weather_icons: ^3.0.0
+  tabler_icons: ^2.5.0+1
+  flutter_rating_bar: ^4.0.1
+  image_picker: ^1.1.2
+  flutter_image_compress: ^2.3.0
+  permission_handler: ^11.3.1
+  file_picker: ^8.0.5
+  syncfusion_flutter_charts: ^26.2.5+1
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:

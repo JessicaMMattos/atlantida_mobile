@@ -36,18 +36,24 @@ class CustomTextField extends StatelessWidget {
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderSide: BorderSide(
-                color: isRequired && errorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                color: isRequired && errorMessage.isNotEmpty
+                    ? Colors.red
+                    : Colors.grey,
               ),
             ),
             hintText: description,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: isRequired && errorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                color: isRequired && errorMessage.isNotEmpty
+                    ? Colors.red
+                    : Colors.grey,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: isRequired && errorMessage.isNotEmpty ? Colors.red : Color(0xFF263238),
+                color: isRequired && errorMessage.isNotEmpty
+                    ? Colors.red
+                    : Color(0xFF263238),
               ),
             ),
           ),
@@ -64,6 +70,50 @@ class CustomTextField extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class Title1 extends StatelessWidget {
+  final String title;
+
+  const Title1({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.bold,
+        fontSize: 14,
+        color: Color(0xFF263238),
+      ),
+    );
+  }
+}
+
+class Title2 extends StatelessWidget {
+  final String title;
+
+  const Title2({
+    Key? key,
+    required this.title,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      title,
+      style: const TextStyle(
+        fontFamily: 'Inter',
+        fontWeight: FontWeight.normal,
+        fontSize: 14,
+        color: Color(0xFF263238),
+      ),
     );
   }
 }

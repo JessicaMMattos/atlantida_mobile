@@ -1,10 +1,12 @@
+import 'dart:convert';
+
 class DiveLog {
   late String title;
   late String divingSpotId;
-  late DateTime date;
+  late String date;
   late String type;
-  late double depth;
-  late int bottomTimeInMinutes;
+  double? depth;
+  int? bottomTimeInMinutes;
   String? waterType;
   String? waterBody;
   String? weatherConditions;
@@ -27,8 +29,8 @@ class DiveLog {
     required this.divingSpotId,
     required this.date,
     required this.type,
-    required this.depth,
-    required this.bottomTimeInMinutes,
+    this.depth,
+    this.bottomTimeInMinutes,
     this.waterType,
     this.waterBody,
     this.weatherConditions,
@@ -48,130 +50,136 @@ class DiveLog {
   });
 
   DiveLog.fromJson(Map<String, dynamic> json) {
-    title = json['title'];
-    divingSpotId = json['divingSpotId'];
-    date = DateTime.parse(json['date']);
-    type = json['type'];
-    depth = json['depth'];
-    bottomTimeInMinutes = json['bottomTimeInMinutes'];
-    waterType = json['waterType'];
-    waterBody = json['waterBody'];
-    weatherConditions = json['weatherConditions'];
-    temperature = json['temperature'] != null ? Temperature.fromJson(json['temperature']) : null;
-    visibility = json['visibility'];
-    waves = json['waves'];
-    current = json['current'];
-    surge = json['surge'];
-    suit = json['suit'];
-    weight = json['weight'];
-    additionalEquipment = json['additionalEquipment']?.cast<String>();
-    cylinder = json['cylinder'] != null ? Cylinder.fromJson(json['cylinder']) : null;
-    rating = json['rating'];
-    difficulty = json['difficulty'];
-    notes = json['notes'];
-    photos = json['photos']?.map((item) => Photo.fromJson(item)).toList().cast<Photo>();
+    title = json['title'] as String;
+    divingSpotId = json['divingSpotId'] as String;
+    date = json['date'] as String;
+    type = json['type'] as String;
+    depth = (json['depth'] as num?)?.toDouble();
+    bottomTimeInMinutes = json['bottomTimeInMinutes'] as int?;
+    waterType = json['waterType'] as String?;
+    waterBody = json['waterBody'] as String?;
+    weatherConditions = json['weatherConditions'] as String?;
+    temperature = json['temperature'] != null 
+        ? Temperature.fromJson(json['temperature'] as Map<String, dynamic>) 
+        : null;
+    visibility = json['visibility'] as String?;
+    waves = json['waves'] as String?;
+    current = json['current'] as String?;
+    surge = json['surge'] as String?;
+    suit = json['suit'] as String?;
+    weight = json['weight'] as String?;
+    additionalEquipment = (json['additionalEquipment'] as List<dynamic>?)
+        ?.map((e) => e as String)
+        .toList();
+    cylinder = json['cylinder'] != null 
+        ? Cylinder.fromJson(json['cylinder'] as Map<String, dynamic>) 
+        : null;
+    rating = json['rating'] != null ? (json['rating'] as num).toInt() : null;
+    difficulty = json['difficulty'] != null ? (json['difficulty'] as num).toInt() : null;
+    notes = json['notes'] as String?;
+    photos = (json['photos'] as List<dynamic>?)
+        ?.map((item) => Photo.fromJson(item as Map<String, dynamic>))
+        .toList();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    
     data['title'] = title;
     data['divingSpotId'] = divingSpotId;
-    data['date'] = date.toIso8601String();
+    data['date'] = date;
     data['type'] = type;
-    data['depth'] = depth;
-    data['bottomTimeInMinutes'] = bottomTimeInMinutes;
-    data['waterType'] = waterType;
-    data['waterBody'] = waterBody;
-    data['weatherConditions'] = weatherConditions;
-    if (temperature != null) {
-      data['temperature'] = temperature!.toJson();
-    }
-    data['visibility'] = visibility;
-    data['waves'] = waves;
-    data['current'] = current;
-    data['surge'] = surge;
-    data['suit'] = suit;
-    data['weight'] = weight;
-    data['additionalEquipment'] = additionalEquipment;
-    if (cylinder != null) {
-      data['cylinder'] = cylinder!.toJson();
-    }
-    data['rating'] = rating;
-    data['difficulty'] = difficulty;
-    data['notes'] = notes;
-    if (photos != null) {
+    if (depth != null) data['depth'] = depth;
+    if (bottomTimeInMinutes != null) data['bottomTimeInMinutes'] = bottomTimeInMinutes;
+    if (waterType != null) data['waterType'] = waterType;
+    if (waterBody != null) data['waterBody'] = waterBody;
+    if (weatherConditions != null) data['weatherConditions'] = weatherConditions;
+    if (temperature != null) data['temperature'] = temperature!.toJson();
+    if (visibility != null) data['visibility'] = visibility;
+    if (waves != null) data['waves'] = waves;
+    if (current != null) data['current'] = current;
+    if (surge != null) data['surge'] = surge;
+    if (suit != null) data['suit'] = suit;
+    if (weight != null) data['weight'] = weight;
+    if (additionalEquipment != null) data['additionalEquipment'] = additionalEquipment;
+    if (cylinder != null) data['cylinder'] = cylinder!.toJson();
+    if (rating != null) data['rating'] = rating;
+    if (difficulty != null) data['difficulty'] = difficulty;
+    if (notes != null) data['notes'] = notes;
+    if (photos != null && photos!.isNotEmpty) {
       data['photos'] = photos!.map((item) => item.toJson()).toList();
     }
+    
     return data;
   }
 }
 
 class Temperature {
-  late double air;
-  late double surface;
-  late double bottom;
+  double? air;
+  double? surface;
+  double? bottom;
 
   Temperature({
-    required this.air,
-    required this.surface,
-    required this.bottom,
+    this.air,
+    this.surface,
+    this.bottom,
   });
 
   Temperature.fromJson(Map<String, dynamic> json) {
-    air = json['air'];
-    surface = json['surface'];
-    bottom = json['bottom'];
+    air = (json['air'] as num?)?.toDouble();
+    surface = (json['surface'] as num?)?.toDouble();
+    bottom = (json['bottom'] as num?)?.toDouble();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['air'] = air;
-    data['surface'] = surface;
-    data['bottom'] = bottom;
+    if (air != null) data['air'] = air;
+    if (surface != null) data['surface'] = surface;
+    if (bottom != null) data['bottom'] = bottom;
     return data;
   }
 }
 
 class Cylinder {
-  late String type;
-  late double size;
-  late String gasMixture;
-  late double initialPressure;
-  late double finalPressure;
-  late double usedAmount;
+  String? type;
+  double? size;
+  String? gasMixture;
+  double? initialPressure;
+  double? finalPressure;
+  double? usedAmount;
 
   Cylinder({
-    required this.type,
-    required this.size,
-    required this.gasMixture,
-    required this.initialPressure,
-    required this.finalPressure,
-    required this.usedAmount,
+    this.type,
+    this.size,
+    this.gasMixture,
+    this.initialPressure,
+    this.finalPressure,
+    this.usedAmount,
   });
 
   Cylinder.fromJson(Map<String, dynamic> json) {
-    type = json['type'];
-    size = json['size'];
-    gasMixture = json['gasMixture'];
-    initialPressure = json['initialPressure'];
-    finalPressure = json['finalPressure'];
-    usedAmount = json['usedAmount'];
+    type = json['type'] as String?;
+    size = (json['size'] as num?)?.toDouble();
+    gasMixture = json['gasMixture'] as String?;
+    initialPressure = (json['initialPressure'] as num?)?.toDouble();
+    finalPressure = (json['finalPressure'] as num?)?.toDouble();
+    usedAmount = (json['usedAmount'] as num?)?.toDouble();
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['type'] = type;
-    data['size'] = size;
-    data['gasMixture'] = gasMixture;
-    data['initialPressure'] = initialPressure;
-    data['finalPressure'] = finalPressure;
-    data['usedAmount'] = usedAmount;
+    if (type != null) data['type'] = type;
+    if (size != null) data['size'] = size;
+    if (gasMixture != null) data['gasMixture'] = gasMixture;
+    if (initialPressure != null) data['initialPressure'] = initialPressure;
+    if (finalPressure != null) data['finalPressure'] = finalPressure;
+    if (usedAmount != null) data['usedAmount'] = usedAmount;
     return data;
   }
 }
 
 class Photo {
-  late String data;
+  late String data; // Base64 encoded string
   late String contentType;
 
   Photo({
@@ -180,8 +188,20 @@ class Photo {
   });
 
   Photo.fromJson(Map<String, dynamic> json) {
-    data = json['data'];
-    contentType = json['contentType'];
+    contentType = json['contentType'] as String;
+
+    if (json['data'] is Map<String, dynamic>) {
+      var dataBuffer = json['data'] as Map<String, dynamic>;
+      if (dataBuffer['type'] == 'Buffer') {
+
+        List<int> byteData = List<int>.from(dataBuffer['data']);
+        data = base64Encode(byteData);
+      } else {
+        throw FormatException('Unexpected data type for photo');
+      }
+    } else {
+      data = json['data'] as String;
+    }
   }
 
   Map<String, dynamic> toJson() {

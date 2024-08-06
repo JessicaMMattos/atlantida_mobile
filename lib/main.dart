@@ -1,4 +1,5 @@
 import 'package:atlantida_mobile/controllers/user_controller.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:atlantida_mobile/screens/first_screen.dart';
 import 'package:atlantida_mobile/screens/home_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -9,6 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR');
   await dotenv.load(fileName: "../.env");
+
   runApp(const AtlantidaApp());
 }
 
@@ -18,12 +20,25 @@ class AtlantidaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt'),
+      ],
       home: FutureBuilder<bool>(
         future: checkToken(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError || !snapshot.hasData || !snapshot.data!) {
+            return const Center(child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+              )
+            );
+          } else if (snapshot.hasError ||
+              !snapshot.hasData ||
+              !snapshot.data!) {
             return const FirstScreen();
           } else {
             return const HomeScreen();

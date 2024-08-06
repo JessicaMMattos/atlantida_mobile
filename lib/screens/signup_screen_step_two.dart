@@ -89,20 +89,20 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
             builder: (BuildContext context) {
               return AlertDialog(
                 backgroundColor: Colors.white,
-                title: Row(
+                title: const Row(
                   children: [
                     Icon(Icons.check_circle, color: Color(0xFF007FFF)),
                     SizedBox(width: 10),
                     Text('Cadastro Realizado!'),
                   ],
                 ),
-                content: Text(
+                content: const Text(
                   'Seu cadastro foi realizado com sucesso. Por favor, faça o login para acessar o sistema.',
                   style: TextStyle(color: Color(0xFF263238)),
                 ),
                 actions: <Widget>[
                   TextButton(
-                    child: Text(
+                    child: const Text(
                       'OK',
                       style: TextStyle(color: Color(0xFF007FFF)),
                     ),
