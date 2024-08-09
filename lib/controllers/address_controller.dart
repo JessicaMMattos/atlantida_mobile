@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/models/address_update.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/address_service.dart';
@@ -7,7 +8,7 @@ import '../models/address.dart';
 class AddressController {
   final AddressService _addressService = AddressService();
 
-  Future<http.Response> createAddress(BuildContext context, Address address) async {
+  Future<http.Response> createAddress(Address address) async {
     try {
       var response = await _addressService.createAddress(address);
 
@@ -35,7 +36,7 @@ class AddressController {
     }
   }
 
-  Future<http.Response> updateAddress(BuildContext context, String id, Address address) async {
+  Future<http.Response> updateAddress(String id, AddressUpdate address) async {
     try {
       var response = await _addressService.updateAddress(id, address);
 
@@ -63,12 +64,13 @@ class AddressController {
     }
   }
 
-  Future<Address?> getAddressByUserId(BuildContext context, String userId) async {
+  Future<Address?> getAddressByUserId(String userId) async {
     try {
       var response = await _addressService.getAddressByUserId(userId);
 
+      List<dynamic> jsonResponse = jsonDecode(response.body);
       if (response.statusCode == 200) {
-        return Address.fromJson(jsonDecode(response.body));
+        return Address.fromJson(jsonResponse[0]);
       } else {
         throw Exception('Failed to fetch address by user ID: ${response.body}');
       }

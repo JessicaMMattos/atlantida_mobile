@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'package:atlantida_mobile/screens/dive_log_details_screen.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
@@ -24,6 +22,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -71,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
       var location = await GoogleMapsService()
           .getCityAndState(position.latitude, position.longitude);
 
+      // ignore: use_build_context_synchronously
       var logs = await DiveLogController().getDiveLogsByToken(context);
 
       setState(() {
@@ -82,11 +82,104 @@ class _HomeScreenState extends State<HomeScreen> {
         isLoading = false;
       });
     } catch (e) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      );
+      if (e.toString().contains('O serviço de localização está desativado') ||
+          e.toString().contains('As permissões de localização foram negadas') ||
+          e.toString().contains(
+              'As permissões de localização foram permanentemente negadas')) {
+      } else {
+        Navigator.push(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
     }
+  }
+
+  Future<Position> _determinePosition() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    try {
+      serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        throw Exception('O serviço de localização está desativado.');
+      }
+
+      permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('As permissões de localização foram negadas.');
+        }
+      }
+
+      while (permission == LocationPermission.deniedForever) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          throw Exception('As permissões de localização foram negadas.');
+        }
+        if (permission == LocationPermission.deniedForever) {
+          _showGpsInactiveAlert(
+              'As permissões de localização foram permanentemente negadas. Por favor, conceda a permissão nas configurações do aplicativo.');
+          return Future.error(
+              'As permissões de localização foram permanentemente negadas.');
+        }
+      }
+
+      return await Geolocator.getCurrentPosition();
+    } catch (e) {
+      _showGpsInactiveAlert(
+          'A localização é necessária. Por favor, ative a localização e reinicie o aplicativo.');
+      return Future.error(e);
+    }
+  }
+
+  void _showGpsInactiveAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: const Row(
+            children: [
+              Icon(Icons.location_off, color: Color(0xFF007FFF)),
+              SizedBox(width: 10),
+              Text(
+                'ATENÇÃO!',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF007FFF),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.black,
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text(
+                'OK',
+                style: TextStyle(color: Color(0xFF007FFF)),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future<void> _filterDiveLogs(String query) async {
@@ -114,42 +207,17 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  Future<Position> _determinePosition() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('O serviço de localização está desativado.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('As permissões de localização foram negadas.');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'As permissões de localização foram permanentemente negadas.');
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-
   void _showFilterOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
         return Container(
-          padding: EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text('Título'),
+                title: const Text('Título'),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -158,7 +226,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               ListTile(
-                title: Text('Data'),
+                title: const Text('Data'),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -167,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
               ListTile(
-                title: Text('Local'),
+                title: const Text('Local'),
                 onTap: () {
                   Navigator.pop(context);
                   setState(() {
@@ -222,18 +290,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: LateralMenu(),
-      drawer: LateralMenuDrawer(),
+      appBar: const LateralMenu(),
+      drawer: const LateralMenuDrawer(),
       bottomNavigationBar: const NavBar(
         index: 2,
       ),
       backgroundColor: Colors.white,
       body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-              ),
-            )
+          ? const Center(child: CircularProgressIndicator(color: Colors.blue))
           : SingleChildScrollView(
               child: Padding(
                 padding:
@@ -241,18 +305,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'Olá, ${user?.firstName} ${user?.lastName}!',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.bold,
                         fontSize: 24,
                         color: Color(0xFF263238),
                       ),
                     ),
-                    SizedBox(height: 10),
-                    Text(
+                    const SizedBox(height: 10),
+                    const Text(
                       'Seja bem-vindo!',
                       style: TextStyle(
                         fontFamily: 'Inter',
@@ -263,8 +327,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
 
                     // Previsão do tempo da semana
-                    SizedBox(height: 25),
-                    Container(
+                    const SizedBox(height: 25),
+                    const SizedBox(
                       width: double.infinity,
                       child: Text(
                         'Previsão do tempo da semana',
@@ -276,7 +340,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Container(
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
@@ -291,7 +355,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.grey.withOpacity(0.2),
                             spreadRadius: 1,
                             blurRadius: 8,
-                            offset: Offset(0, 4),
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
@@ -303,7 +367,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Text(
                                 '${weatherForecast['current']['temp'].toInt()}°C',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 32,
                                   color: Colors.black,
@@ -316,96 +380,106 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ],
                           ),
-                          SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(Icons.location_on,
-                                      size: 20, color: Colors.blue),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '${locationData['name']}, ${locationData['state']}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Icon(Icons.calendar_month,
-                                      size: 20, color: Colors.blue),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    '${DateFormat('EEEE', 'pt_BR').format(DateTime.now()).capitalize()}, ${_capitalizeFirstLetter(weatherForecast['current']['weather'][0]['description'])}',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.grey[700],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: List.generate(7, (index) {
-                              final dayData = weatherForecast['daily'][index];
-                              return Expanded(
-                                child: Column(
+                          const SizedBox(height: 10),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
                                   children: [
+                                    const Icon(Icons.location_on,
+                                        size: 20, color: Colors.blue),
+                                    const SizedBox(width: 5),
                                     Text(
-                                      _getDayOfWeek(dayData['dt']),
+                                      '${locationData['name']}, ${locationData['state']}',
                                       style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    SizedBox(height: 5),
-                                    Image.network(
-                                      'http://openweathermap.org/img/wn/${dayData['weather'][0]['icon']}@2x.png',
-                                      width: 30,
-                                      height: 30,
-                                    ),
-                                    SizedBox(height: 5),
-                                    RichText(
-                                      text: TextSpan(
-                                        children: [
-                                          TextSpan(
-                                            text:
-                                                '${dayData['temp']['max'].toInt()}° ',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                          TextSpan(
-                                            text:
-                                                '${dayData['temp']['min'].toInt()}°',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.grey.shade400,
-                                            ),
-                                          ),
-                                        ],
+                                        fontSize: 16,
+                                        color: Colors.grey[700],
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            }),
+                                const SizedBox(width: 10),
+                                Row(
+                                  children: [
+                                    const Icon(Icons.calendar_month,
+                                        size: 20, color: Colors.blue),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      '${DateFormat('EEEE', 'pt_BR').format(DateTime.now()).capitalize()}, ${_capitalizeFirstLetter(weatherForecast['current']['weather'][0]['description'])}',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey[700],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 20),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: List.generate(7, (index) {
+                                final dayData = weatherForecast['daily'][index];
+                                return Container(
+                                  width:
+                                      80, // Ajuste a largura conforme necessário
+                                  margin: const EdgeInsets.only(
+                                      right: 10), // Espaço entre os itens
+                                  child: Column(
+                                    children: [
+                                      Text(
+                                        _getDayOfWeek(dayData['dt']),
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 5),
+                                      Image.network(
+                                        'http://openweathermap.org/img/wn/${dayData['weather'][0]['icon']}@2x.png',
+                                        width: 30,
+                                        height: 30,
+                                      ),
+                                      const SizedBox(height: 5),
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                              text:
+                                                  '${dayData['temp']['max'].toInt()}° ',
+                                              style: const TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  '${dayData['temp']['min'].toInt()}°',
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.grey.shade400,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }),
+                            ),
                           ),
                         ],
                       ),
                     ),
 
                     // Últimos mergulhos
-                    SizedBox(height: 25),
-                    Container(
+                    const SizedBox(height: 25),
+                    const SizedBox(
                       width: double.infinity,
                       child: Text(
                         'Seus últimos mergulhos',
@@ -417,7 +491,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     Container(
                       padding: const EdgeInsets.all(15.0),
                       decoration: BoxDecoration(
@@ -432,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.grey.withOpacity(0.3),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: Offset(0, 3),
+                            offset: const Offset(0, 3),
                           ),
                         ],
                       ),
@@ -457,8 +531,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     onChanged: (value) =>
                                         _filterDiveLogs(value),
                                     decoration: InputDecoration(
-                                      hintText:
-                                          'Pesquise por ${filterCriterion}',
+                                      hintText: 'Pesquise por $filterCriterion',
                                       border: InputBorder.none,
                                     ),
                                     keyboardType: filterCriterion == 'Data'
@@ -476,9 +549,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                         : [],
                                   ),
                                 ),
-                                SizedBox(height: 15),
+                                const SizedBox(height: 15),
                                 IconButton(
-                                  icon: Icon(Icons.filter_list,
+                                  icon: const Icon(Icons.filter_list,
                                       color: Colors.blue),
                                   onPressed: () {
                                     _showFilterOptions(context);
@@ -487,7 +560,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 15),
+                          const SizedBox(height: 15),
                           filteredDiveLogs.isEmpty
                               ? Center(
                                   child: Column(
@@ -498,8 +571,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                         width: 200,
                                         height: 200,
                                       ),
-                                      SizedBox(height: 10),
-                                      Text(
+                                      const SizedBox(height: 10),
+                                      const Text(
                                         'Nenhum mergulho registrado.',
                                         style: TextStyle(
                                           fontFamily: 'Inter',
@@ -515,7 +588,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                   children: [
                                     ListView.separated(
                                       shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
                                       itemCount:
                                           _getCurrentPageDiveLogs().length,
                                       separatorBuilder: (context, index) =>
@@ -525,17 +599,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                             _getCurrentPageDiveLogs()[index];
                                         return GestureDetector(
                                           onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DiveLogDetailsScreen(
-                                                        diveLog: diveLog),
-                                              ),
-                                            );
+                                            // Navigator.push(
+                                            //   context,
+                                            //   MaterialPageRoute(
+                                            //     builder: (context) =>
+                                            //         DiveLogDetailsScreen(
+                                            //             diveLog: diveLog),
+                                            //   ),
+                                            // );
                                           },
                                           child: Container(
-                                            padding: EdgeInsets.all(10),
+                                            padding: const EdgeInsets.all(10),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -545,7 +619,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     Expanded(
                                                       child: Text(
                                                         diveLog.title,
-                                                        style: TextStyle(
+                                                        style: const TextStyle(
                                                           fontFamily: 'Inter',
                                                           fontWeight:
                                                               FontWeight.normal,
@@ -557,7 +631,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     ),
                                                     Text(
                                                       '${DateFormat('dd/MM/yyyy').format(DateTime.parse(diveLog.date as String) ?? DateTime.now())}',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontFamily: 'Inter',
                                                         fontSize: 16,
                                                         color:
@@ -572,14 +646,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                         );
                                       },
                                     ),
-                                    SizedBox(height: 10),
+                                    const SizedBox(height: 10),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         Text(
                                           '${currentPage + 1} de ${(filteredDiveLogs.length / itemsPerPage).ceil()}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontFamily: 'Inter',
                                             fontWeight: FontWeight.bold,
                                             fontSize: 16,
@@ -589,14 +663,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Row(
                                           children: [
                                             IconButton(
-                                              icon: Icon(Icons.chevron_left),
+                                              icon: const Icon(
+                                                  Icons.chevron_left),
                                               onPressed: _previousPage,
                                               color: currentPage > 0
                                                   ? Colors.blue
                                                   : Colors.grey,
                                             ),
                                             IconButton(
-                                              icon: Icon(Icons.chevron_right),
+                                              icon: const Icon(
+                                                  Icons.chevron_right),
                                               onPressed: _nextPage,
                                               color: (currentPage + 1) *
                                                           itemsPerPage <
@@ -613,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

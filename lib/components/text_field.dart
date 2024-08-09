@@ -8,13 +8,13 @@ class CustomTextField extends StatelessWidget {
   final bool isRequired;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.description,
     required this.controller,
     this.errorMessage = '',
     this.isRequired = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +23,14 @@ class CustomTextField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Inter',
             fontWeight: FontWeight.bold,
             fontSize: 14,
             color: Color(0xFF263238),
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         TextField(
           controller: controller,
           decoration: InputDecoration(
@@ -53,7 +53,7 @@ class CustomTextField extends StatelessWidget {
               borderSide: BorderSide(
                 color: isRequired && errorMessage.isNotEmpty
                     ? Colors.red
-                    : Color(0xFF263238),
+                    : const Color(0xFF263238),
               ),
             ),
           ),
@@ -63,7 +63,7 @@ class CustomTextField extends StatelessWidget {
             padding: const EdgeInsets.only(top: 5.0),
             child: Text(
               errorMessage,
-              style: TextStyle(
+              style: const TextStyle(
                 color: Colors.red,
                 fontSize: 12,
               ),
@@ -78,9 +78,9 @@ class Title1 extends StatelessWidget {
   final String title;
 
   const Title1({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +100,9 @@ class Title2 extends StatelessWidget {
   final String title;
 
   const Title2({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

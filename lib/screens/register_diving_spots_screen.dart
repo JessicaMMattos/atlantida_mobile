@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:atlantida_mobile/components/button.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
@@ -16,9 +15,10 @@ import 'package:image_picker/image_picker.dart';
 class DivingSpotRegistrationScreen extends StatefulWidget {
   final String? previousRoute;
 
-  DivingSpotRegistrationScreen({this.previousRoute});
+  const DivingSpotRegistrationScreen({super.key, this.previousRoute});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DivingSpotRegistrationScreenState createState() =>
       _DivingSpotRegistrationScreenState();
 }
@@ -37,8 +37,8 @@ class _DivingSpotRegistrationScreenState
   String _nameErrorMessage = '';
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
       final Uint8List imageData = await image.readAsBytes();
@@ -103,6 +103,7 @@ class _DivingSpotRegistrationScreenState
 
       // Exibe o diálogo de sucesso
       showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -128,7 +129,7 @@ class _DivingSpotRegistrationScreenState
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => HomeScreen(),
+                      builder: (context) => const HomeScreen(),
                     ),
                   );
                 },
@@ -139,6 +140,7 @@ class _DivingSpotRegistrationScreenState
       );
     }
   } catch (error) {
+    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Erro ao cadastrar Ponto de Mergulho, tente novamente.'),
@@ -168,7 +170,7 @@ class _DivingSpotRegistrationScreenState
           key: _formKey,
           child: ListView(
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Cadastro do Ponto de Mergulho',
                 style: TextStyle(
@@ -178,7 +180,7 @@ class _DivingSpotRegistrationScreenState
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Complete as informações abaixo para registrar um novo ponto de mergulho.',
                 style: TextStyle(
@@ -188,7 +190,7 @@ class _DivingSpotRegistrationScreenState
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               // Campo de Nome
               CustomTextField(
@@ -198,13 +200,13 @@ class _DivingSpotRegistrationScreenState
                 isRequired: true,
                 errorMessage: _nameErrorMessage,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Descrição
               const Title1(
                 title: 'Descrição',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextFormField(
                 controller: _descriptionController,
                 decoration: const InputDecoration(
@@ -237,30 +239,30 @@ class _DivingSpotRegistrationScreenState
                 ),
                 maxLines: 4,
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               // Campo de Localização
               const Title1(
                 title: 'Localização',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Insira a Latitude e Longitude do local',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 children: [
                   Expanded(
                     child: TextFormField(
                       controller: _latitudeController,
-                      keyboardType: TextInputType.numberWithOptions(
+                      keyboardType: const TextInputType.numberWithOptions(
                           decimal: true, signed: true),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                             RegExp(r'^-?\d*\.?\d{0,14}$')),
                         LengthLimitingTextInputFormatter(22),
                       ],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Latitude',
                         border: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -298,18 +300,18 @@ class _DivingSpotRegistrationScreenState
                       },
                     ),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
                       controller: _longitudeController,
-                      keyboardType: TextInputType.numberWithOptions(
+                      keyboardType: const TextInputType.numberWithOptions(
                           decimal: true, signed: true),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
                             RegExp(r'^-?\d*\.?\d{0,14}$')),
                         LengthLimitingTextInputFormatter(22),
                       ],
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Longitude',
                         border: OutlineInputBorder(
                           borderSide: BorderSide(
@@ -350,10 +352,10 @@ class _DivingSpotRegistrationScreenState
                 ],
               ),
               if (_cityState != null) ...[
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 Text(
                   'Localização: $_cityState',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.normal,
                     fontSize: 14,
@@ -362,29 +364,29 @@ class _DivingSpotRegistrationScreenState
                 ),
               ],
 
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               // Campo para adicionar imagem
               const Title1(
                 title: 'Adicionar Imagem',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Insira uma imagem do local',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               ElevatedButton(
                 onPressed: _pickImage,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
-                  side: BorderSide(
+                  side: const BorderSide(
                     color: Colors.blue,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
@@ -404,7 +406,7 @@ class _DivingSpotRegistrationScreenState
               if (_imageData != null)
                 Column(
                   children: [
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Image.memory(
                       _imageData!,
                       height: 200,
@@ -414,7 +416,7 @@ class _DivingSpotRegistrationScreenState
                 ),
 
               //Botão
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -426,7 +428,7 @@ class _DivingSpotRegistrationScreenState
                   ),
                 ],
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
             ],
           ),
         ),

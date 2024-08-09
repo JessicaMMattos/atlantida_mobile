@@ -10,9 +10,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class StatisticsScreen extends StatefulWidget {
-  StatisticsScreen();
+  const StatisticsScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _StatisticsScreenState createState() => _StatisticsScreenState();
 }
 
@@ -35,29 +36,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   void initState() {
     super.initState();
-    _startDate = DateTime.now().subtract(Duration(days: 90));
+    _startDate = DateTime.now().subtract(const Duration(days: 90));
     _endDate = DateTime.now();
     _diveStatistics = Future.value(null);
     _diveLogs = _fetchDiveLogs();
     _fetchStatistics();
-  }
-
-  void _nextPage() {
-    if (_pageController.hasClients) {
-      _pageController.nextPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _previousPage() {
-    if (_pageController.hasClients) {
-      _pageController.previousPage(
-        duration: Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
   }
 
   Future<void> _fetchStatistics() async {
@@ -87,8 +70,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             'Erro ao carregar estatísticas. Por favor, tente novamente mais tarde.';
         _diveStatistics = Future.value(null);
       });
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text(
                 'Erro ao carregar estatísticas. Por favor, tente novamente mais tarde.')),
       );
@@ -174,8 +158,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final screenSize = MediaQuery.of(context).size;
 
     return Scaffold(
-      appBar: LateralMenu(),
-      drawer: LateralMenuDrawer(),
+      appBar: const LateralMenu(),
+      drawer: const LateralMenuDrawer(),
       bottomNavigationBar: const NavBar(
         index: 0,
       ),
@@ -186,7 +170,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Estatísticas',
                 style: TextStyle(
@@ -196,8 +180,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Suas estatísticas de mergulho, desde a profundidade até as condições submarinas, tudo em um só lugar.',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -206,11 +190,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               const Title1(
                 title: 'Filtre por período',
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
@@ -221,7 +205,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                           controller: TextEditingController(
                               text:
                                   DateFormat('dd/MM/yyyy').format(_startDate)),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Data Inicial',
                             border: OutlineInputBorder(),
                           ),
@@ -229,7 +213,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: GestureDetector(
                       onTap: () => _selectEndDate(context),
@@ -237,7 +221,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         child: TextField(
                           controller: TextEditingController(
                               text: DateFormat('dd/MM/yyyy').format(_endDate)),
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             labelText: 'Data Final',
                             border: OutlineInputBorder(),
                           ),
@@ -247,11 +231,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   ),
                 ],
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               _buildStatistics(),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               _dropdownButtonFormField(),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               _grafico(),
             ],
           ),
@@ -265,7 +249,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       future: _diveStatistics,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Colors.blue));
         } else if (snapshot.hasError || _errorMessage != null) {
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -275,11 +259,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 width: 200,
                 height: 200,
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 _errorMessage ??
                     'Erro ao carregar estatísticas. Por favor, tente novamente mais tarde.',
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -297,8 +281,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 width: 200,
                 height: 200,
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Nenhum mergulho registrado.',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -320,12 +304,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   title: 'Total de mergulhos',
                   value: '${stats.totalDives}',
                   icon: Icons.format_list_numbered,
-                ),
-                buildStatisticCard(
-                  context,
-                  title: 'Profundidade Total',
-                  value: '${stats.totalDepth} metros',
-                  icon: Icons.straighten,
                 ),
                 buildStatisticCard(
                   context,
@@ -366,39 +344,37 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget buildStatisticCard(BuildContext context,
       {required String title, required String value, required IconData icon}) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       child: Container(
-        width: MediaQuery.of(context).size.width *
-            0.8, // Ajuste a largura conforme necessário
+        width: MediaQuery.of(context).size.width * 0.8,
         color: Colors.white,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Row(
-          crossAxisAlignment:
-              CrossAxisAlignment.center, // Alinhamento centralizado
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
               width: 4,
-              height: 60, // Ajuste a altura se necessário
-              color: Color(0xFF007FFF),
+              height: 60,
+              color: const Color(0xFF007FFF),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.normal,
                       fontSize: 16,
                       color: Color(0xFF263238),
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     value,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontFamily: 'Inter',
                       fontWeight: FontWeight.bold,
                       fontSize: 24,
@@ -408,8 +384,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ],
               ),
             ),
-            SizedBox(width: 12),
-            Icon(icon, color: Color(0xFF007FFF), size: 30),
+            const SizedBox(width: 12),
+            Icon(icon, color: const Color(0xFF007FFF), size: 30),
           ],
         ),
       ),
@@ -419,11 +395,39 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget _dropdownButtonFormField() {
     return DropdownButtonFormField<String>(
       value: _selectedFilter,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Colors.white,
+        labelText: 'Filtrar por',
+        border: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Colors.grey,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Colors.grey,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            color: Color(0xFF263238),
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+      ),
+      icon: const Icon(
+        Icons.arrow_drop_down,
+        color: Colors.grey,
+      ),
+      elevation: 16,
+      style: const TextStyle(color: Colors.black),
       onChanged: (String? newValue) {
         setState(() {
           _selectedFilter = newValue!;
         });
-
         _updateData();
       },
       items: <String>[
@@ -436,26 +440,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           child: Text(value),
         );
       }).toList(),
-      decoration: InputDecoration(
-        labelText: 'Filtrar por',
-        border: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.grey,
-          ),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.grey,
-          ),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            color: Colors.grey,
-          ),
-          borderRadius: BorderRadius.circular(4),
-        ),
-      ),
+      dropdownColor: Colors.white,
     );
   }
 
@@ -464,12 +449,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       future: _diveLogs,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator(color: Colors.blue));
         }
         if (snapshot.hasError ||
             snapshot.data == null ||
             snapshot.data!.isEmpty) {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         }
 
         final diveLogs = snapshot.data!;

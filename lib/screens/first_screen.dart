@@ -7,6 +7,7 @@ class FirstScreen extends StatefulWidget {
   const FirstScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _FirstScreenState createState() => _FirstScreenState();
 }
 
@@ -101,7 +102,7 @@ class _FirstScreenState extends State<FirstScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
             ),

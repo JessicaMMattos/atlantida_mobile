@@ -1,5 +1,4 @@
 import 'package:atlantida_mobile/models/diving_spot_return.dart';
-import 'package:flutter/material.dart';
 // ignore: implementation_imports
 import 'package:http/src/response.dart';
 import '../services/diving_spot_service.dart';

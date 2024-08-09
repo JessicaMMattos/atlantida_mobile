@@ -197,7 +197,7 @@ class Photo {
         List<int> byteData = List<int>.from(dataBuffer['data']);
         data = base64Encode(byteData);
       } else {
-        throw FormatException('Unexpected data type for photo');
+        throw const FormatException('Unexpected data type for photo');
       }
     } else {
       data = json['data'] as String;

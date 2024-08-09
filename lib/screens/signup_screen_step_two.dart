@@ -16,9 +16,10 @@ import 'dart:convert';
 class SignupScreenStepTwo extends StatefulWidget {
   final User newUser;
 
-  SignupScreenStepTwo({required this.newUser});
+  const SignupScreenStepTwo({super.key, required this.newUser});
 
   @override
+  // ignore: library_private_types_in_public_api
   _SignupScreenStepTwoState createState() => _SignupScreenStepTwoState();
 }
 
@@ -83,8 +84,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
             userId: userId,
           );
 
-          await AddressController().createAddress(context, newAddress);
+          // ignore: use_build_context_synchronously
+          await AddressController().createAddress(newAddress);
           showDialog(
+            // ignore: use_build_context_synchronously
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
@@ -109,7 +112,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
                       );
                     },
                   ),
@@ -119,8 +122,9 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
           );
         }
       } catch (error) {
+        // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erro no cadastro, tente novamente.')),
+          const SnackBar(content: Text('Erro no cadastro, tente novamente.')),
         );
       }
     });
@@ -171,8 +175,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Crie sua conta',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -181,8 +185,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'O cadastro será realizado em duas etapas, preencha todos os campos atentamente.',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -191,17 +195,17 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 children: [
                   Container(
                     width: 25,
                     height: 25,
                     decoration: BoxDecoration(
-                      color: Color(0xFF007FFF),
+                      color: const Color(0xFF007FFF),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         '2',
                         style: TextStyle(
@@ -213,8 +217,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'Endereço',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -225,32 +229,32 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Etapa 2 de 2',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -259,10 +263,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   color: Color(0xFF777777),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Campo de CEP
-              Text(
+              const Text(
                 'CEP',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -271,7 +275,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _cepController,
                 inputFormatters: [
@@ -292,7 +296,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _cepErrorMessage.isNotEmpty ? Colors.red : Color(0xFF263238),
+                      color: _cepErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -307,10 +311,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     _cepErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de País
               CustomTextField(
@@ -320,7 +324,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 isRequired: true,
                 errorMessage: _countryErrorMessage,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Estado
               CustomTextField(
@@ -330,7 +334,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 isRequired: true,
                 errorMessage: _stateErrorMessage,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Cidade
               CustomTextField(
@@ -340,7 +344,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 isRequired: true,
                 errorMessage: _cityErrorMessage,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Bairro
               CustomTextField(
@@ -350,7 +354,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 isRequired: true,
                 errorMessage: _districtErrorMessage,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Rua
               CustomTextField(
@@ -360,7 +364,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 isRequired: true,
                 errorMessage: _streetErrorMessage,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Complemento
               CustomTextField(
@@ -368,10 +372,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 controller: _complementController,
                 description: 'Apartamento, sala, conjunto, andar',
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Número
-              Text(
+              const Text(
                 'Número',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -380,7 +384,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _numberController,
                 keyboardType: TextInputType.number,
@@ -399,7 +403,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _numberErrorMessage.isNotEmpty ? Colors.red : Color(0xFF263238),
+                      color: _numberErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -409,12 +413,12 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     _numberErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
-              Container(
+              SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Button(
                   titleButton: 'CONTINUAR',

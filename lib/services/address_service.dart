@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:atlantida_mobile/models/address_update.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/address.dart';
 
@@ -32,7 +33,7 @@ class AddressService {
     return response;
   }
 
-  Future<http.Response> updateAddress(String id, Address address) async {
+  Future<http.Response> updateAddress(String id, AddressUpdate address) async {
     final response = await http.put(
       Uri.parse('$baseUrl/$id'),
       headers: {
@@ -43,6 +44,7 @@ class AddressService {
     );
 
     return response;
+    
   }
 
   Future<http.Response> deleteAddress(String id) async {
@@ -58,7 +60,7 @@ class AddressService {
 
   Future<http.Response> getAddressByUserId(String userId) async {
     final response = await http.get(
-      Uri.parse('http://localhost:3000/addresses/user/$userId'),
+      Uri.parse('${dotenv.env['BASE_URL'] ?? 'http://localhost:3000'}/addresses/user/$userId'),
       headers: {
         'Authorization': 'Bearer ${await _secureStorage.read(key: 'authToken')}',
       },

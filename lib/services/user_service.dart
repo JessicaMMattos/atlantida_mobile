@@ -1,6 +1,6 @@
 import 'dart:convert';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../models/user.dart';
 
@@ -93,5 +93,61 @@ class UserService {
 
   Future<void> logout() async {
     await _secureStorage.delete(key: 'authToken');
+  }
+
+  Future<http.Response> updateUser(User user) async {
+    String? token = await _secureStorage.read(key: 'authToken');
+    
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado no armazenamento seguro');
+    }
+
+    final response = await http.put(
+      Uri.parse(baseUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode(user.toJson()),
+    );
+
+    return response;
+  }
+
+  Future<http.Response> deleteUser() async {
+    String? token = await _secureStorage.read(key: 'authToken');
+    
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado no armazenamento seguro');
+    }
+
+    final response = await http.delete(
+      Uri.parse(baseUrl),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    return response;
+  }
+
+  Future<http.Response> updatePassword(String password, String newPassword) async {
+    String? token = await _secureStorage.read(key: 'authToken');
+    
+    if (token == null) {
+      throw Exception('Token de autenticação não encontrado no armazenamento seguro');
+    }
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/updatePassword'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'password': password, 'newPassword': newPassword}),
+    );
+
+    return response;
   }
 }

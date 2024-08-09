@@ -5,7 +5,10 @@ import 'package:atlantida_mobile/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class RedefinePasswordScreen extends StatefulWidget {
+  const RedefinePasswordScreen({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _RedefinePasswordScreenState createState() => _RedefinePasswordScreenState();
 }
 
@@ -35,8 +38,9 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
       }
 
     } catch (error) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao enviar email de recuperação.')),
+        const SnackBar(content: Text('Erro ao enviar email de recuperação.')),
       );
     }
   }
@@ -47,18 +51,18 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
-          title: Text('Senha redefinida com sucesso'),
-          content: Text('Por favor, verifique sua caixa de entrada e spam para encontrar a nova senha.'),
+          title: const Text('Senha redefinida com sucesso'),
+          content: const Text('Por favor, verifique sua caixa de entrada e spam para encontrar a nova senha.'),
           actions: <Widget>[
             TextButton(
-              child: Text(
+              child: const Text(
                 'OK',
                 style: TextStyle(color: Color(0xFF007FFF)),
               ),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LoginScreen()),
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
               },
             ),
@@ -80,7 +84,7 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => LoginScreen()),
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
             );
           },
         ),
@@ -114,32 +118,32 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Redefinição de senha',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.bold,
-                          fontSize: screenHeight * 0.03,
+                          fontSize: 24,
                           color: Color(0xFF263238),
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      Text(
+                      const Text(
                         'Digite seu e-mail para receber sua nova senha diretamente na sua caixa de entrada ou na pasta de spam.',
                         style: TextStyle(
                           fontFamily: 'Inter',
                           fontWeight: FontWeight.w400,
-                          fontSize: 14,
+                          fontSize: 16,
                           color: Color(0xFF263238),
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      Container(
+                      SizedBox(
                         width: screenWidth - 2 * (screenWidth * 0.05),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'E-mail',
                               style: TextStyle(
                                 fontFamily: 'Inter',
@@ -152,19 +156,19 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
                             TextField(
                               controller: _emailController,
                               decoration: InputDecoration(
-                                border: OutlineInputBorder(),
+                                border: const OutlineInputBorder(),
                                 hintText: 'Digite seu e-mail',
-                                focusedBorder: OutlineInputBorder(
+                                focusedBorder: const OutlineInputBorder(
                                   borderSide: BorderSide(
                                     color: Colors.black,
                                   ),
                                 ),
                                 errorText: _message == 'Usuário não encontrado.' || _message == "Campo obrigatório." ? _message : null,
                                 errorBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(color: Colors.red),
+                                  borderSide: const BorderSide(color: Colors.red),
                                   borderRadius: BorderRadius.circular(4.0),
                                 ),
-                                errorStyle: TextStyle(color: Colors.red),
+                                errorStyle: const TextStyle(color: Colors.red),
                                 errorMaxLines: 2,
                               ),
                             ),
@@ -172,7 +176,7 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.02),
-                      Container(
+                      SizedBox(
                         width: screenWidth - 2 * (screenWidth * 0.05),
                         child: Button(
                           titleButton: 'REDEFINIR SENHA',

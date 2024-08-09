@@ -14,11 +14,11 @@ class Button extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         fixedSize: Size(buttonWidth, 50),
-        backgroundColor: Color(0xFF007FFF)
+        backgroundColor: const Color(0xFF007FFF)
       ),
       child: Text(
         titleButton,
-        style: TextStyle(
+        style: const TextStyle(
           fontFamily: 'Inter',
           fontSize: 15.0,
           fontWeight: FontWeight.bold,

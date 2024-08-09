@@ -1,25 +1,27 @@
 import 'dart:convert';
 
-import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
-import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
-import 'package:atlantida_mobile/models/diving_spot_return.dart';
-import 'package:atlantida_mobile/screens/oioi/EXEMPL.dart';
+import 'package:atlantida_mobile/components/dropdown_button.dart';
+import 'package:atlantida_mobile/screens/home_screen.dart';
 import 'package:atlantida_mobile/screens/register_diving_spots_screen.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
+import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
+import 'package:atlantida_mobile/models/diving_spot_return.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:atlantida_mobile/models/dive_log.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class DiveRegistrationScreen extends StatefulWidget {
-  const DiveRegistrationScreen();
+  const DiveRegistrationScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DiveRegistrationScreenState createState() => _DiveRegistrationScreenState();
 }
 
@@ -127,6 +129,7 @@ double? _rating;
 int? _difficulty;
 List<Photo> _media = [];
 
+// ignore: prefer_typing_uninitialized_variables
 var newDiveLog;
 
 class DecimalTextInputFormatter extends TextInputFormatter {
@@ -156,7 +159,59 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
     filter: {'#': RegExp(r'[0-9]')},
   );
 
-  void _cancel() {}
+  void _resetForm() {
+    setState(() {
+      _titleController.clear();
+      _locationController.clear();
+      _dateController.clear();
+      _depthController.clear();
+      _bottomTimeInMinutesController.clear();
+      _temperatureAirController.clear();
+      _temperatureSurfaceController.clear();
+      _temperatureBottomController.clear();
+      _weightController.clear();
+      _cylinderSizeController.clear();
+      _cylinderInitialPressureController.clear();
+      _cylinderFinalPressureController.clear();
+      _usedAmountController.clear();
+      _notesController.clear();
+
+      _locationDivingSpotId = '';
+      _selectedDiveType = '';
+      _date = '';
+      _locationSuggestions.clear();
+      _locationDetails = {};
+      _bottomTimeInMinutesErrorMessage = '';
+      _selectedWeatherConditions = '';
+      _selectedWaterType = '';
+      _selectedWaterBody = '';
+      _selectedVisibility = '';
+      _selectedWaves = '';
+      _selectedCurrent = '';
+      _selectedSurge = '';
+
+      _selectedSuit = '';
+      _selectedCylinderType = '';
+      _selectedCylinderGasMixture = '';
+      _selectedAdditionalEquipment = [];
+
+      _rating = null;
+      _difficulty = null;
+      _media.clear();
+      newDiveLog = null;
+    });
+  }
+
+  void _cancel() {
+    _resetForm();
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const HomeScreen(),
+      ),
+    );
+  }
 
   void _nextStep() {
     final dateValidation = _validateDate(_dateController.text);
@@ -190,7 +245,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => DiveRegistrationScreen2(),
+            builder: (context) => const DiveRegistrationScreen2(),
           ),
         );
       } catch (error) {
@@ -315,19 +370,19 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final screenSize = MediaQuery.of(context).size;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: LateralMenu(),
-      drawer: LateralMenuDrawer(),
+      appBar: const LateralMenu(),
+      drawer: const LateralMenuDrawer(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding:
-                    EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+          padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Registro de Mergulho',
                 style: TextStyle(
@@ -337,7 +392,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Complete as informações abaixo para registrar seu mergulho.',
                 style: TextStyle(
@@ -347,14 +402,14 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 children: [
                   Container(
                     width: 25,
                     height: 25,
                     decoration: BoxDecoration(
-                      color: Color(0xFF007FFF),
+                      color: const Color(0xFF007FFF),
                       borderRadius: BorderRadius.circular(5),
                     ),
                     child: const Center(
@@ -369,8 +424,8 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'Informações Gerais',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -379,7 +434,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                       color: Color(0xFF263238),
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' (Obrigatório)',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -391,54 +446,54 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                 ],
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -446,8 +501,8 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                 ],
               ),
 
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Etapa 1 de 5',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -456,7 +511,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF777777),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Campo de título
               CustomTextField(
@@ -466,10 +521,10 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                 errorMessage: _titleErrorMessage,
                 isRequired: true,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de local
-              Text(
+              const Text(
                 'Local',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -478,7 +533,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Campo de local
               TextField(
                 controller: _locationController,
@@ -486,13 +541,16 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   hintText: 'Digite o nome do local',
                   suffixIcon: _isLocationNotFound
                       ? IconButton(
-                          icon: Icon(Icons.add),
+                          icon: const Icon(Icons.add),
                           onPressed: () {
-                            final currentRoute = ModalRoute.of(context)?.settings.name;
+                            final currentRoute =
+                                ModalRoute.of(context)?.settings.name;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => DivingSpotRegistrationScreen(previousRoute: currentRoute),
+                                builder: (context) =>
+                                    DivingSpotRegistrationScreen(
+                                        previousRoute: currentRoute),
                               ),
                             );
                           },
@@ -519,26 +577,26 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                       color:
                           _isFormSubmitted && _locationErrorMessage.isNotEmpty
                               ? Colors.red
-                              : Color(0xFF263238),
+                              : const Color(0xFF263238),
                     ),
                   ),
                 ),
                 onChanged: _handleSearchChange,
               ),
-              if (!_locationErrorMessage.isEmpty)
+              if (_locationErrorMessage.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8.0),
                   child: Text(
                     _locationErrorMessage,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.red,
                       fontSize: 12,
                     ),
                   ),
                 ),
               if (_isLocationNotFound && _locationController.text.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
                   child: Text(
                     'Não encontrado, por favor cadastre.',
                     style: TextStyle(
@@ -548,8 +606,8 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   ),
                 ),
               if (_locationSuggestions.isNotEmpty) ...[
-                SizedBox(height: 10),
-                Container(
+                const SizedBox(height: 10),
+                SizedBox(
                   height: 80,
                   child: Stack(
                     children: [
@@ -564,16 +622,16 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                           );
                         },
                         scrollDirection: Axis.vertical,
-                        physics: BouncingScrollPhysics(),
+                        physics: const BouncingScrollPhysics(),
                       ),
                     ],
                   ),
                 ),
               ],
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de data
-              Text(
+              const Text(
                 'Data',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -582,7 +640,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _dateController,
                 keyboardType: TextInputType.number,
@@ -610,7 +668,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                     borderSide: BorderSide(
                       color: _dateErrorMessage.isNotEmpty
                           ? Colors.red
-                          : Color(0xFF263238),
+                          : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -620,12 +678,12 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     _dateErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              Text(
+              const Text(
                 'Tipo de Mergulho',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -634,8 +692,8 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 2),
-              Text(
+              const SizedBox(height: 2),
+              const Text(
                 'Como você entrou na água?',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -644,7 +702,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: _diveTypes.map((type) {
@@ -689,64 +747,70 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     _typeErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Botões
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: _cancel,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: Color(0xFF007FFF)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _cancel,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'CANCELAR',
-                      style: TextStyle(
-                        color: Color(0xFF007FFF),
+                      child: const Text(
+                        'CANCELAR',
+                        style: TextStyle(
+                          color: Color(0xFF007FFF),
+                        ),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF007FFF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007FFF),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'PRÓXIMA ETAPA',
-                      style: TextStyle(
-                        color: Colors.white,
+                      child: const Text(
+                        'PRÓXIMA',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -756,9 +820,10 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
 }
 
 class DiveRegistrationScreen2 extends StatefulWidget {
-  DiveRegistrationScreen2();
+  const DiveRegistrationScreen2({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DiveRegistrationScreen2State createState() =>
       _DiveRegistrationScreen2State();
 }
@@ -767,7 +832,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
   void _toGoBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DiveRegistrationScreen()),
+      MaterialPageRoute(builder: (context) => const DiveRegistrationScreen()),
     );
   }
 
@@ -792,7 +857,8 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => DiveRegistrationScreen3()),
+          MaterialPageRoute(
+              builder: (context) => const DiveRegistrationScreen3()),
         );
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -838,6 +904,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final screenSize = MediaQuery.of(context).size;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const LateralMenu(),
@@ -845,13 +912,12 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding:
-                    EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+          padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Registro de Mergulho',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -860,8 +926,8 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Complete as informações abaixo para registrar seu mergulho.',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -870,17 +936,17 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 children: [
                   Container(
                     width: 25,
                     height: 25,
                     decoration: BoxDecoration(
-                      color: Color(0xFF007FFF),
+                      color: const Color(0xFF007FFF),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         '2',
                         style: TextStyle(
@@ -892,8 +958,8 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'Profundidade e Tempo',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -902,7 +968,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                       color: Color(0xFF263238),
                     ),
                   ),
-                  Text(
+                  const Text(
                     ' (Obrigatório)',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -913,62 +979,62 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Etapa 2 de 5',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -977,10 +1043,10 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF777777),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Campo de Profundidade
-              Text(
+              const Text(
                 'Profundidade máxima',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -989,8 +1055,8 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 2),
-              Text(
+              const SizedBox(height: 2),
+              const Text(
                 'A que profundidade você chegou? (Em metros)',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -999,7 +1065,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _depthController,
                 keyboardType: TextInputType.number,
@@ -1037,7 +1103,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                     borderSide: BorderSide(
                       color: _depthErrorMessage.isNotEmpty
                           ? Colors.red
-                          : Color(0xFF263238),
+                          : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -1047,13 +1113,13 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     _depthErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Tempo no fundo
-              Text(
+              const Text(
                 'Tempo no fundo',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -1062,8 +1128,8 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 2),
-              Text(
+              const SizedBox(height: 2),
+              const Text(
                 'Quanto tempo levou o seu mergulho? (Em horas e minutos)',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -1072,7 +1138,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _bottomTimeInMinutesController,
                 keyboardType: TextInputType.number,
@@ -1111,7 +1177,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                     borderSide: BorderSide(
                       color: _bottomTimeInMinutesErrorMessage.isNotEmpty
                           ? Colors.red
-                          : Color(0xFF263238),
+                          : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -1121,64 +1187,70 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                   padding: const EdgeInsets.only(top: 5.0),
                   child: Text(
                     _bottomTimeInMinutesErrorMessage,
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Botões
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: _toGoBack,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: Color(0xFF007FFF)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _toGoBack,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'ETAPA ANTERIOR',
-                      style: TextStyle(
-                        color: Color(0xFF007FFF),
+                      child: const Text(
+                        'VOLTAR',
+                        style: TextStyle(
+                          color: Color(0xFF007FFF),
+                        ),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF007FFF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007FFF),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'PRÓXIMA ETAPA',
-                      style: TextStyle(
-                        color: Colors.white,
+                      child: const Text(
+                        'PRÓXIMA',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -1188,9 +1260,10 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
 }
 
 class DiveRegistrationScreen3 extends StatefulWidget {
-  DiveRegistrationScreen3();
+  const DiveRegistrationScreen3({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DiveRegistrationScreen3State createState() =>
       _DiveRegistrationScreen3State();
 }
@@ -1199,7 +1272,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
   void _toGoBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DiveRegistrationScreen2()),
+      MaterialPageRoute(builder: (context) => const DiveRegistrationScreen2()),
     );
   }
 
@@ -1250,7 +1323,8 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DiveRegistrationScreen4()),
+        MaterialPageRoute(
+            builder: (context) => const DiveRegistrationScreen4()),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -1265,6 +1339,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final screenSize = MediaQuery.of(context).size;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const LateralMenu(),
@@ -1272,12 +1347,11 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding:
-                    EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+          padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Registro de Mergulho',
                 style: TextStyle(
@@ -1287,7 +1361,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Complete as informações abaixo para registrar seu mergulho.',
                 style: TextStyle(
@@ -1297,17 +1371,17 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 children: [
                   Container(
                     width: 25,
                     height: 25,
                     decoration: BoxDecoration(
-                      color: Color(0xFF007FFF),
+                      color: const Color(0xFF007FFF),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         '3',
                         style: TextStyle(
@@ -1319,8 +1393,8 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'Condições Ambientais',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -1332,54 +1406,54 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                 ],
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -1387,8 +1461,8 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                 ],
               ),
 
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Etapa 3 de 5',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -1397,77 +1471,42 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   color: Color(0xFF777777),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Campos de Condições Climáticas
               const Title1(
                 title: 'Condições Climáticas',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Como estavam as condições climáticas?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedWeatherConditions,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _weatherConditions,
+                selected: _selectedWeatherConditions,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedWeatherConditions = newValue!;
                   });
                 },
-                items: _weatherConditions
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campos de Temperatura
               const Title1(
                 title: 'Temperatura',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Como estava a temperatura? (Em Celsius)',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Do Ar
               TextField(
                 controller: _temperatureAirController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -1493,12 +1532,12 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Na Superfície
               TextField(
                 controller: _temperatureSurfaceController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -1524,12 +1563,12 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // No Fundo
               TextField(
                 controller: _temperatureBottomController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -1555,17 +1594,17 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Campo Tipo de Água
               const Title1(
                 title: 'Tipo de Água',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Qual era o tipo de água?',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: _waterType.map((type) {
@@ -1606,71 +1645,37 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Corpo de Água
               const Title1(
                 title: 'Corpo de Água',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Em que corpo de água você mergulhou?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedWaterBody,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _waterBody,
+                selected: _selectedWaterBody,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedWaterBody = newValue!;
                   });
                 },
-                items: _waterBody.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Visibilidade
               const Title1(
                 title: 'Visibilidade',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Como estava a visibilidade?',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: _visibility.map((type) {
@@ -1711,223 +1716,127 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Ondas
               const Title1(
                 title: 'Ondas',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Como estavam as ondas?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedWaves,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _waves,
+                selected: _selectedWaves,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedWaves = newValue!;
                   });
                 },
-                items: _waves.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Correnteza
               const Title1(
                 title: 'Correnteza',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Como estava a correnteza?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedCurrent,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _current,
+                selected: _selectedCurrent,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedCurrent = newValue!;
                   });
                 },
-                items: _current.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Correnteza
               const Title1(
                 title: 'Ondulação',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Como estava a ondulação?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedSurge,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _surge,
+                selected: _selectedSurge,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedSurge = newValue!;
                   });
                 },
-                items: _surge.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Botões
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: _toGoBack,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: Color(0xFF007FFF)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _toGoBack,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'ETAPA ANTERIOR',
-                      style: TextStyle(
-                        color: Color(0xFF007FFF),
+                      child: const Text(
+                        'VOLTAR',
+                        style: TextStyle(
+                          color: Color(0xFF007FFF),
+                        ),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF007FFF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007FFF),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'PRÓXIMA ETAPA',
-                      style: TextStyle(
-                        color: Colors.white,
+                      child: const Text(
+                        'PRÓXIMA',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -1937,9 +1846,10 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
 }
 
 class DiveRegistrationScreen4 extends StatefulWidget {
-  DiveRegistrationScreen4();
+  const DiveRegistrationScreen4({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DiveRegistrationScreen4State createState() =>
       _DiveRegistrationScreen4State();
 }
@@ -1956,7 +1866,7 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
   void _toGoBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DiveRegistrationScreen3()),
+      MaterialPageRoute(builder: (context) => const DiveRegistrationScreen3()),
     );
   }
 
@@ -1998,7 +1908,8 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DiveRegistrationScreen5()),
+        MaterialPageRoute(
+            builder: (context) => const DiveRegistrationScreen5()),
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2032,6 +1943,7 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final screenSize = MediaQuery.of(context).size;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const LateralMenu(),
@@ -2039,13 +1951,12 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding:
-                    EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+          padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Registro de Mergulho',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -2054,8 +1965,8 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Complete as informações abaixo para registrar seu mergulho.',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -2064,17 +1975,17 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 children: [
                   Container(
                     width: 25,
                     height: 25,
                     decoration: BoxDecoration(
-                      color: Color(0xFF007FFF),
+                      color: const Color(0xFF007FFF),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         '4',
                         style: TextStyle(
@@ -2086,8 +1997,8 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'Equipamentos',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -2099,62 +2010,62 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                 ],
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFFF2F2F2),
+                        color: const Color(0xFFF2F2F2),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Etapa 4 de 5',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -2163,74 +2074,40 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   color: Color(0xFF777777),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               // Campo de Roupa
               const Title1(
                 title: 'Roupa',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Que roupa você vestiu?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedSuit,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _suit,
+                selected: _selectedSuit,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedSuit = newValue!;
                   });
                 },
-                items: _suit.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Lastro
               const Title1(
                 title: 'Lastro',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Qual foi o peso do lastro que você usou? (Em Kg)',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _weightController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   DecimalTextInputFormatter(),
@@ -2255,17 +2132,17 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo Tipo de Cilindro
               const Title1(
                 title: 'Cilindro',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Qual tipo de cilindro você usou?',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: _cylinderType.map((type) {
@@ -2307,10 +2184,10 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                 }).toList(),
               ),
               // Tamanho do cilindro
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               TextField(
                 controller: _cylinderSizeController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   DecimalTextInputFormatter(),
@@ -2335,73 +2212,38 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campo de Mistura Gasosa
               const Title1(
                 title: 'Mistura Gasosa',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Que tipo de gás você usou?',
               ),
-              SizedBox(height: 10),
-              DropdownButtonFormField<String>(
-                value: _selectedCylinderGasMixture,
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Colors.grey,
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(
-                      color: Color(0xFF263238),
-                    ),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                icon: const Icon(
-                  Icons.arrow_drop_down,
-                  color: Colors.grey,
-                ),
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
+              const SizedBox(height: 10),
+              CustomDropdownField(
+                list: _cylinderGasMixture,
+                selected: _selectedCylinderGasMixture,
+                onChanged: (newValue) {
                   setState(() {
                     _selectedCylinderGasMixture = newValue!;
                   });
                 },
-                items: _cylinderGasMixture
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-                dropdownColor: Colors.white,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Campos de Pressão do Cilindro
               const Title1(
                 title: 'Pressão do Cilindro',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Inicial
               TextField(
                 controller: _cylinderInitialPressureController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   DecimalTextInputFormatter(),
@@ -2426,12 +2268,12 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Final
               TextField(
                 controller: _cylinderFinalPressureController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   DecimalTextInputFormatter(),
@@ -2456,12 +2298,12 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Quantidade Usada
               TextField(
                 controller: _usedAmountController,
-                keyboardType: TextInputType.numberWithOptions(
+                keyboardType: const TextInputType.numberWithOptions(
                     decimal: true, signed: true),
                 inputFormatters: [
                   DecimalTextInputFormatter(),
@@ -2486,17 +2328,17 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Campo Equipamentos Adicionais
               const Title1(
                 title: 'Equipamentos Adicionais',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Que outros equipamentos você usou?',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: _additionalEquipment.map((type) {
@@ -2537,61 +2379,68 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
                   );
                 }).toList(),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Botões
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: _toGoBack,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: Color(0xFF007FFF)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _toGoBack,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'ETAPA ANTERIOR',
-                      style: TextStyle(
-                        color: Color(0xFF007FFF),
+                      child: const Text(
+                        'VOLTAR',
+                        style: TextStyle(
+                          color: Color(0xFF007FFF),
+                        ),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF007FFF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007FFF),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'PRÓXIMA ETAPA',
-                      style: TextStyle(
-                        color: Colors.white,
+                      child: const Text(
+                        'PRÓXIMA',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(width: 10),
+
+              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -2601,9 +2450,10 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
 }
 
 class DiveRegistrationScreen5 extends StatefulWidget {
-  DiveRegistrationScreen5();
+  const DiveRegistrationScreen5({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _DiveRegistrationScreen5State createState() =>
       _DiveRegistrationScreen5State();
 }
@@ -2612,7 +2462,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
   void _toGoBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => DiveRegistrationScreen4()),
+      MaterialPageRoute(builder: (context) => const DiveRegistrationScreen4()),
     );
   }
 
@@ -2634,10 +2484,63 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
         newDiveLog.photos = _media;
       }
 
-      var response =
-          await DiveLogController().createDiveLog(context, newDiveLog);
-      print(response.body);
+      await DiveLogController().createDiveLog(context, newDiveLog);
+
+      _resetForm();
+
+      showDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: const Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Color(0xFF007FFF)),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        'Mergulho registrado com sucesso!',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text(
+                  'OK',
+                  style: TextStyle(color: Color(0xFF007FFF)),
+                ),
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const HomeScreen(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        },
+      );
+
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(
+          builder: (context) => const HomeScreen(),
+        ),
+      );
     } catch (error) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content:
@@ -2646,12 +2549,61 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
     }
   }
 
+  void _resetForm() {
+    setState(() {
+      _titleController.clear();
+      _locationController.clear();
+      _dateController.clear();
+      _depthController.clear();
+      _bottomTimeInMinutesController.clear();
+      _temperatureAirController.clear();
+      _temperatureSurfaceController.clear();
+      _temperatureBottomController.clear();
+      _weightController.clear();
+      _cylinderSizeController.clear();
+      _cylinderInitialPressureController.clear();
+      _cylinderFinalPressureController.clear();
+      _usedAmountController.clear();
+      _notesController.clear();
+
+      _locationDivingSpotId = '';
+      _selectedDiveType = '';
+      _date = '';
+      _locationSuggestions.clear();
+      _locationDetails = {};
+      _bottomTimeInMinutesErrorMessage = '';
+      _selectedWeatherConditions = '';
+      _selectedWaterType = '';
+      _selectedWaterBody = '';
+      _selectedVisibility = '';
+      _selectedWaves = '';
+      _selectedCurrent = '';
+      _selectedSurge = '';
+
+      _selectedSuit = '';
+      _selectedCylinderType = '';
+      _selectedCylinderGasMixture = '';
+      _selectedAdditionalEquipment = [];
+
+      _rating = null;
+      _difficulty = null;
+      _media.clear();
+      newDiveLog = null;
+    });
+  }
+
+  void _removeMedia(int index) {
+    setState(() {
+      _media.removeAt(index);
+    });
+  }
+
   Future<void> _pickMedia() async {
-    final ImagePicker _picker = ImagePicker();
-    final List<XFile>? files = await _picker.pickMultiImage();
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> files = await picker.pickMultiImage();
     List<Photo> tempMedia = [];
 
-    if (files != null && files.isNotEmpty) {
+    if (files.isNotEmpty) {
       for (var file in files) {
         final Uint8List fileData = await file.readAsBytes();
         final String contentType = file.mimeType ?? 'image/jpeg';
@@ -2665,28 +2617,28 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
     });
   }
 
-Future<void> _pickVideo() async {
-  final ImagePicker _picker = ImagePicker();
-  final XFile? video = await _picker.pickVideo(source: ImageSource.gallery);
-  List<Photo> tempMedia = [];
+  Future<void> _pickVideo() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
+    List<Photo> tempMedia = [];
 
-  if (video != null) {
-    final Uint8List videoData = await video.readAsBytes();
-    final String contentType = video.mimeType ?? 'video/mp4';
-    final String base64Data = base64Encode(videoData); // Codifique os dados como uma string base64
-    tempMedia.add(Photo(data: base64Data, contentType: contentType));
+    if (video != null) {
+      final Uint8List videoData = await video.readAsBytes();
+      final String contentType = video.mimeType ?? 'video/mp4';
+      final String base64Data = base64Encode(videoData);
+      tempMedia.add(Photo(data: base64Data, contentType: contentType));
+    }
+
+    setState(() {
+      _media.addAll(tempMedia);
+    });
   }
-
-  setState(() {
-    _media.addAll(tempMedia);
-  });
-}
-
 
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
     final screenSize = MediaQuery.of(context).size;
+    double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: const LateralMenu(),
@@ -2694,13 +2646,12 @@ Future<void> _pickVideo() async {
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
-          padding:
-                    EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
+          padding: EdgeInsets.symmetric(horizontal: screenSize.width * 0.05),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Registro de Mergulho',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -2709,8 +2660,8 @@ Future<void> _pickVideo() async {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Complete as informações abaixo para registrar seu mergulho.',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -2719,17 +2670,17 @@ Future<void> _pickVideo() async {
                   color: Color(0xFF263238),
                 ),
               ),
-              SizedBox(height: 25),
+              const SizedBox(height: 25),
               Row(
                 children: [
                   Container(
                     width: 25,
                     height: 25,
                     decoration: BoxDecoration(
-                      color: Color(0xFF007FFF),
+                      color: const Color(0xFF007FFF),
                       borderRadius: BorderRadius.circular(5),
                     ),
-                    child: Center(
+                    child: const Center(
                       child: Text(
                         '5',
                         style: TextStyle(
@@ -2741,8 +2692,8 @@ Future<void> _pickVideo() async {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
-                  Text(
+                  const SizedBox(width: 10),
+                  const Text(
                     'Experiência e Observações',
                     style: TextStyle(
                       fontFamily: 'Inter',
@@ -2753,55 +2704,54 @@ Future<void> _pickVideo() async {
                   ),
                 ],
               ),
-
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 children: [
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: Container(
                       height: screenHeight * 0.007,
                       decoration: BoxDecoration(
-                        color: Color(0xFF007FFF),
+                        color: const Color(0xFF007FFF),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
@@ -2809,8 +2759,8 @@ Future<void> _pickVideo() async {
                 ],
               ),
 
-              SizedBox(height: 10),
-              Text(
+              const SizedBox(height: 10),
+              const Text(
                 'Etapa 5 de 5',
                 style: TextStyle(
                   fontFamily: 'Inter',
@@ -2819,24 +2769,24 @@ Future<void> _pickVideo() async {
                   color: Color(0xFF777777),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
 
               const Title1(
                 title: 'Opinião',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Dê uma nota para este local',
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               RatingBar.builder(
                 initialRating: 0,
                 minRating: 1,
                 direction: Axis.horizontal,
                 allowHalfRating: false,
                 itemCount: 5,
-                itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) => Icon(
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) => const Icon(
                   Icons.star,
                   color: Color(0xFF007FFF),
                 ),
@@ -2846,17 +2796,16 @@ Future<void> _pickVideo() async {
                   });
                 },
               ),
-              SizedBox(height: 20),
-
+              const SizedBox(height: 20),
               const Title1(
                 title: 'Dificuldade',
               ),
-              SizedBox(height: 2),
+              const SizedBox(height: 2),
               const Title2(
                 title: 'Qual foi o nível de dificuldade neste local?',
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 10.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -2883,16 +2832,18 @@ Future<void> _pickVideo() async {
               ),
               SliderTheme(
                 data: SliderTheme.of(context).copyWith(
-                  activeTrackColor: Color(0xFF007FFF),
+                  activeTrackColor: const Color(0xFF007FFF),
                   inactiveTrackColor: Colors.lightBlue[100],
-                  thumbColor: Color(0xFF007FFF),
-                  overlayColor: Color(0xFF007FFF).withOpacity(0.2),
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 12.0),
-                  overlayShape: RoundSliderOverlayShape(overlayRadius: 28.0),
-                  valueIndicatorTextStyle: TextStyle(
+                  thumbColor: const Color(0xFF007FFF),
+                  overlayColor: const Color(0xFF007FFF).withOpacity(0.2),
+                  thumbShape:
+                      const RoundSliderThumbShape(enabledThumbRadius: 12.0),
+                  overlayShape:
+                      const RoundSliderOverlayShape(overlayRadius: 28.0),
+                  valueIndicatorTextStyle: const TextStyle(
                     color: Colors.white,
                   ),
-                  valueIndicatorColor: Color(0xFF007FFF),
+                  valueIndicatorColor: const Color(0xFF007FFF),
                 ),
                 child: Slider(
                   value: _difficulty?.toDouble() ?? 1,
@@ -2907,25 +2858,21 @@ Future<void> _pickVideo() async {
                   label: '${_difficulty ?? 1}',
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               const Title1(
-                title: 'Comentário',
+                title: 'Notas Adicionais',
               ),
-              SizedBox(height: 2),
-              const Title2(
-                title: 'Anote as memórias do seu mergulho',
-              ),
+              const SizedBox(height: 10),
               TextField(
                 controller: _notesController,
-                maxLines: 6,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.grey,
                     ),
                   ),
-                  hintText: 'Insira sua avaliação aqui',
+                  hintText: 'Escreva sobre suas experiências e observações',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.grey,
@@ -2937,121 +2884,155 @@ Future<void> _pickVideo() async {
                     ),
                   ),
                 ),
+                maxLines: 6,
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
-              const Title1(
-                title: 'Fotos',
-              ),
-              SizedBox(height: 2),
-              const Title2(
-                title: 'O que você viu durante seu mergulho?',
-              ),
-              SizedBox(height: 10),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: _pickVideo,
-                child: Text('Vídeos'),
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-_media.isNotEmpty
-    ? GridView.builder(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 3,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-        ),
-        itemCount: _media.length,
-        itemBuilder: (context, index) {
-  final media = _media[index];
-  final isImage = media.contentType?.startsWith('image') ?? false;
-  final imageData = media.data != null ? base64Decode(media.data!) : Uint8List(0);
-
-  return Container(
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(8),
-      color: Colors.grey[200],
-    ),
-    child: isImage
-        ? Image.memory(imageData, fit: BoxFit.cover)
-        : Center(
-            child: Icon(
-              Icons.video_library,
-              color: Colors.grey,
-              size: 50,
-            ),
-          ),
-  );
-}
-      )
-    : Center(
-        child: Text('Nenhuma mídia selecionada'),
-      ),
-SizedBox(height: 20),
-
-
-              SizedBox(height: 20),
-
-              // Botões
-              SizedBox(height: 20),
+              const Title1(title: 'Adicionar Fotos/Vídeos'),
+              const SizedBox(height: 2),
+              const Title2(title: 'Anexe fotos e vídeos da sua experiência'),
+              const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton(
-                    onPressed: _toGoBack,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: BorderSide(color: Color(0xFF007FFF)),
-                      padding:
-                          EdgeInsets.symmetric(vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
+                  ElevatedButton.icon(
+                    onPressed: _pickMedia,
+                    icon: const Icon(Icons.camera_alt),
+                    label: const Text('Selecionar Fotos'),
+                  ),
+                  ElevatedButton.icon(
+                    onPressed: _pickVideo,
+                    icon: const Icon(Icons.videocam),
+                    label: const Text('Selecionar Vídeos'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              if (_media.isNotEmpty)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Midia Adicionada:',
+                      style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
+                        fontSize: 12,
+                        color: Colors.black,
                       ),
                     ),
-                    child: const Text(
-                      'ETAPA ANTERIOR',
-                      style: TextStyle(
-                        color: Color(0xFF007FFF),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: List.generate(_media.length, (index) {
+                        final mediaItem = _media[index];
+                        return Stack(
+                          children: [
+                            if (mediaItem.contentType.startsWith('image'))
+                              Image.memory(
+                                base64Decode(mediaItem.data),
+                                width: 100,
+                                height: 100,
+                                fit: BoxFit.cover,
+                              ),
+                            if (mediaItem.contentType.startsWith('video'))
+                              Container(
+                                width: 100,
+                                height: 100,
+                                color: Colors.black12,
+                                child: const Icon(
+                                  Icons.videocam,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: GestureDetector(
+                                onTap: () => _removeMedia(index),
+                                child: Container(
+                                  padding: const EdgeInsets.all(2),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.red,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    size: 16,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              const SizedBox(height: 20),
+
+              // Botões
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _toGoBack,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      child: const Text(
+                        'VOLTAR',
+                        style: TextStyle(
+                          color: Color(0xFF007FFF),
+                        ),
                       ),
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: _nextStep,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF007FFF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _nextStep,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007FFF),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'REGISTRAR',
-                      style: TextStyle(
-                        color: Colors.white,
+                      child: const Text(
+                        'REGISTRAR',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(width: 10),
+              const SizedBox(width: 10),
             ],
           ),
         ),

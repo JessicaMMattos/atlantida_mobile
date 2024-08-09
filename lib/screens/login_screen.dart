@@ -10,6 +10,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginScreenState createState() => _LoginScreenState();
 }
 
@@ -51,8 +52,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (response.statusCode == 200) {
         Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()), 
+          MaterialPageRoute(builder: (context) => const HomeScreen()), 
         );
       } else {
         setState(() {
@@ -60,8 +62,9 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     } catch (error) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro no login, tente novamente.')),
+        const SnackBar(content: Text('Erro no login, tente novamente.')),
       );
     }
   }
@@ -112,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Faça seu login',
                         style: TextStyle(
                           fontFamily: 'Inter',
@@ -121,13 +124,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Color(0xFF263238),
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Container(
+                      const SizedBox(height: 20),
+                      SizedBox(
                         width: MediaQuery.of(context).size.width - 40,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'E-mail',
                               style: TextStyle(
                                 fontFamily: 'Inter',
@@ -136,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xFF263238),
                               ),
                             ),
-                            SizedBox(height: 10), 
+                            const SizedBox(height: 10), 
                             TextField(
                               controller: _emailController,
                               decoration: InputDecoration(
@@ -153,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : Color(0xFF263238),
+                                    color: _emailErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
                                   ),
                                 ),
                               ),
@@ -163,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding: const EdgeInsets.only(top: 5),
                                 child: Text(
                                   _emailErrorMessage,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.red,
                                     fontSize: 12,
                                   ),
@@ -172,8 +175,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Container(
+                      const SizedBox(height: 20),
+                      SizedBox(
                         width: MediaQuery.of(context).size.width - 40,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -181,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
+                                const Text(
                                   'Senha',
                                   style: TextStyle(
                                     fontFamily: 'Inter',
@@ -194,10 +197,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => RedefinePasswordScreen()),
+                                      MaterialPageRoute(builder: (context) => const RedefinePasswordScreen()),
                                     );
                                   },
-                                  child: Text(
+                                  child: const Text(
                                     'esqueceu a senha?',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
@@ -209,7 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               ],
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             Stack(
                               alignment: Alignment.centerRight,
                               children: [
@@ -230,7 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: _passwordErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : Color(0xFF263238),
+                                        color: _passwordErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
                                       ),
                                     ),
                                   ),
@@ -254,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding: const EdgeInsets.only(top: 5),
                                 child: Text(
                                   _passwordErrorMessage,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.red,
                                     fontSize: 12,
                                   ),
@@ -263,29 +266,29 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       if (_loginErrorMessage.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(bottom: 10),
                           child: Text(
                             _loginErrorMessage,
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.red,
                               fontSize: 14,
                             ),
                           ),
                         ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       
                       // Botão de login
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width - 40,
                         child: Button(
                           titleButton: 'LOGIN',
                           onPressed: _login,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      const SizedBox(height: 20),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -298,12 +301,12 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: Colors.black,
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => SignupScreenStepOne()),
+                                MaterialPageRoute(builder: (context) => const SignupScreenStepOne()),
                               );
                             },
                             child: const Text(

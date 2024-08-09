@@ -1,15 +1,15 @@
 import 'package:atlantida_mobile/controllers/user_controller.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:atlantida_mobile/screens/first_screen.dart';
 import 'package:atlantida_mobile/screens/home_screen.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('pt_BR');
-  await dotenv.load(fileName: "../.env");
+  await dotenv.load(fileName: ".env");
 
   runApp(const AtlantidaApp());
 }

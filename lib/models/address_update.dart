@@ -1,5 +1,4 @@
-class Address {
-String? id;
+class AddressUpdate {
   late String country;
   late String state;
   late String city;
@@ -8,10 +7,8 @@ String? id;
   late int number;
   String? complement;
   late String postalCode;
-  late String userId;
 
-  Address({
-    this.id,
+  AddressUpdate({
     required this.country,
     required this.state,
     required this.city,
@@ -20,12 +17,10 @@ String? id;
     required this.number,
     this.complement,
     required this.postalCode,
-    required this.userId,
   });
 
-  factory Address.fromJson(Map<String, dynamic> json) {
-    return Address(
-      id: json['_id'],
+  factory AddressUpdate.fromJson(Map<String, dynamic> json) {
+    return AddressUpdate(
       country: json['country'],
       state: json['state'],
       city: json['city'],
@@ -34,13 +29,11 @@ String? id;
       number: json['number'],
       complement: json['complement'],
       postalCode: json['postalCode'],
-      userId: json['userId'],
     );
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = {
-      '_id': id,
       'country': country,
       'state': state,
       'city': city,
@@ -48,7 +41,6 @@ String? id;
       'street': street,
       'number': number,
       'postalCode': postalCode,
-      'userId': userId,
     };
 
     if (complement != null) {

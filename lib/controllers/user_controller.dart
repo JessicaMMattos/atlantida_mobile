@@ -83,8 +83,58 @@ class UserController {
   Future<void> logout(BuildContext context) async {
     await _userService.logout();
     Navigator.pushReplacement(
+      // ignore: use_build_context_synchronously
       context,
       MaterialPageRoute(builder: (context) => const FirstScreen()), 
     );
+  }
+
+  Future<Response> updateUser(User user) async {
+    try {
+      var response = await _userService.updateUser(user);
+
+      if (response.statusCode == 200) {
+        return response;
+      } else {
+        throw Exception(response);
+      }
+    } catch (error) {
+      throw Exception(error);
+    }
+  }
+
+  Future<void> deleteUser(BuildContext context) async {
+    try {
+      var response = await _userService.deleteUser();
+
+      if (response.statusCode == 204) {
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (context) => const FirstScreen()), 
+        );
+      } else {
+        throw Exception(response);
+      }
+    } catch (error) {
+      throw Exception(error);
+    }
+  }
+
+  Future<String> updatePassword(String password, String newPassword) async {
+    try {
+      var response = await _userService.updatePassword(password, newPassword);
+      final responseBody = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        return "ok";
+      } else if (responseBody['message'] == 'Senha atual incorreta') {
+          return responseBody['message'];
+        } else {
+          throw Exception(response);
+        }
+    } catch (error) {
+      throw Exception(error);
+    }
   }
 }

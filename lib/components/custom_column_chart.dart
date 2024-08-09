@@ -7,7 +7,8 @@ class CustomColumnChart extends StatelessWidget {
   final String unit;
   final double maxValue;
 
-  CustomColumnChart({
+  const CustomColumnChart({
+    super.key, 
     required this.values,
     required this.labels,
     required this.unit,
@@ -42,7 +43,7 @@ class CustomColumnChart extends StatelessWidget {
               ),
             ),
           ),
-          Container(
+          SizedBox(
             height: 50,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -90,7 +91,7 @@ class ColumnChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Paint barPaint = Paint()
-      ..color = Color(0xFF0077F0)
+      ..color = const Color(0xFF0077F0)
       ..style = PaintingStyle.fill;
 
     final Paint gridPaint = Paint()
@@ -98,16 +99,16 @@ class ColumnChartPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
 
-    final textStyle = TextStyle(
+    const textStyle = TextStyle(
       color: Colors.black,
       fontSize: 12,
       fontWeight: FontWeight.bold,
     );
 
-    final double barWidth = 50.0;
-    final double padding = 50.0;
+    const double barWidth = 50.0;
+    const double padding = 50.0;
     final double maxBarHeight = size.height - 60.0;
-    final double spaceFromStart = 20.0;
+    const double spaceFromStart = 20.0;
 
     // Desenha as colunas com os textos acima
     for (int i = 0; i < values.length; i++) {
@@ -120,7 +121,7 @@ class ColumnChartPainter extends CustomPainter {
         top,
         left + barWidth,
         size.height - 40,
-        Radius.circular(8),
+        const Radius.circular(8),
       );
       canvas.drawRRect(barRect, barPaint);
 
@@ -161,14 +162,14 @@ class ColumnChartPainter extends CustomPainter {
     }
 
     // Desenha linhas de grade pontilhadas manualmente
-    final double dashWidth = 4;
-    final double dashSpace = 4;
+    const double dashWidth = 4;
+    const double dashSpace = 4;
 
-    final int numberOfTicks = 5;
+    const int numberOfTicks = 5;
     final double tickSpacing = maxBarHeight / (numberOfTicks - 1);
 
     for (int i = 0; i <= numberOfTicks; i++) {
-      final double x =
+      const double x =
           spaceFromStart - dashSpace; // Posição X ajustada para o lado esquerdo
       final double y = size.height - 40 - (i * tickSpacing);
       _drawDashedLine(canvas, Offset(x, y), Offset(size.width, y), dashWidth,
@@ -178,7 +179,7 @@ class ColumnChartPainter extends CustomPainter {
     // Adiciona o tipo de dado ao lado esquerdo do gráfico
     final unitPainter = TextPainter(
       text: TextSpan(
-        text: "$unit",
+        text: unit,
         style: textStyle.copyWith(color: Colors.black),
       ),
       textDirection: TextDirection.ltr,

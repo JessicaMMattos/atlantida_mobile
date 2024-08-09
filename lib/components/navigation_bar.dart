@@ -1,4 +1,5 @@
 import 'package:atlantida_mobile/screens/home_screen.dart';
+import 'package:atlantida_mobile/screens/profile_screen.dart';
 import 'package:atlantida_mobile/screens/statistics_screen.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +12,7 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFF0077F0),
+      color: const Color(0xFF0077F0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -27,63 +28,65 @@ class NavBar extends StatelessWidget implements PreferredSizeWidget {
 
   Widget _buildNavItem(BuildContext context, String iconPath, String label, int itemIndex) {
     bool isSelected = index == itemIndex;
-    return GestureDetector(
-      onTap: () {
-        if (itemIndex == 2) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else if (itemIndex == 0) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => StatisticsScreen()),
-          );
-        } else if (itemIndex == 1) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else if (itemIndex == 3) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        } else if (itemIndex == 4) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
-          );
-        }
-      },
-      child: Container(
-        color: isSelected ? Color(0xFF0066CC) : Colors.transparent,
-        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SvgPicture.asset(
-              iconPath,
-              color: Colors.white,
-              width: 24,
-              height: 24,
-            ),
-            SizedBox(height: 5),
-            Text(
-              label,
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontSize: 10,
-                fontWeight: FontWeight.normal,
+    return Flexible(
+      child: GestureDetector(
+        onTap: () {
+          if (itemIndex == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          } else if (itemIndex == 0) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const StatisticsScreen()),
+            );
+          } else if (itemIndex == 1) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+            );
+          } else if (itemIndex == 3) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          } else if (itemIndex == 4) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            );
+          }
+        },
+        child: Container(
+          color: isSelected ? const Color(0xFF0066CC) : Colors.transparent,
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                iconPath,
                 color: Colors.white,
+                width: 22,
+                height: 22,
               ),
-            ),
-          ],
+              const SizedBox(height: 5),
+              Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'Inter',
+                  fontSize: 10,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }

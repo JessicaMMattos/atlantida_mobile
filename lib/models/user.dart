@@ -1,4 +1,5 @@
 class User {
+  String? id;
   late String firstName;
   late String lastName;
   late String email;
@@ -6,6 +7,7 @@ class User {
   late String birthDate;
 
   User({
+    this.id,
     required this.firstName,
     required this.lastName,
     required this.email,
@@ -15,6 +17,7 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
+      id: json['_id'],
       firstName: json['firstName'] ?? '',
       lastName: json['lastName'] ?? '',
       email: json['email'] ?? '',

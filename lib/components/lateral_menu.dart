@@ -17,7 +17,7 @@ class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
             color: Colors.grey.withOpacity(0.5),
             spreadRadius: 1,
             blurRadius: 10,
-            offset: Offset(0, 3),
+            offset: const Offset(0, 3),
           ),
         ],
       ),
@@ -51,8 +51,8 @@ class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         centerTitle: true,
-        actions: [
-          const SizedBox(width: 48),
+        actions: const [
+          SizedBox(width: 48),
         ],
       ),
     );
@@ -71,7 +71,6 @@ class LateralMenuDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    final double screenWidth = MediaQuery.of(context).size.width;
 
     return Drawer(
       child: Container(
@@ -96,7 +95,7 @@ class LateralMenuDrawer extends StatelessWidget {
                 onTap: () {
                   Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(builder: (context) => DiveRegistrationScreen()),
+                    MaterialPageRoute(builder: (context) => const DiveRegistrationScreen()),
                   );
                 },
                 child: Container(
@@ -142,9 +141,9 @@ class LateralMenuDrawer extends StatelessWidget {
                                   bottomRight: Radius.circular(10),
                                 ),
                               ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Icon(Icons.add, color: Colors.black, size: 16),
                                   SizedBox(width: 5),
                                   Text(
