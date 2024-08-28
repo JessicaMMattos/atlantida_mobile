@@ -1,3 +1,4 @@
+import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
 import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/components/senha_field.dart';
@@ -7,7 +8,7 @@ import 'package:atlantida_mobile/controllers/address_controller.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/models/address_update.dart';
 import 'package:atlantida_mobile/models/user.dart';
-import 'package:atlantida_mobile/screens/first_screen.dart';
+import 'package:atlantida_mobile/models/user_return.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -24,7 +25,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  User? user;
+  UserReturn? user;
 
   @override
   void initState() {
@@ -62,6 +63,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 10),
                   Text(
                     '${user?.firstName} ${user?.lastName}',
                     style: const TextStyle(
@@ -71,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   const Text(
                     'Gerencie suas informações pessoais, preferências e configurações da conta.',
                     style: TextStyle(
@@ -131,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 }
 
 class AccountScreen extends StatefulWidget {
-  final User user;
+  final UserReturn user;
 
   const AccountScreen({super.key, required this.user});
 
@@ -176,11 +178,6 @@ class _AccountScreenState extends State<AccountScreen> {
     return RegExp(r'^\d{5}-\d{3}$').hasMatch(cep);
   }
 
-  final birthdateMaskFormatter = MaskTextInputFormatter(
-    mask: '##/##/####',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
-
   @override
   void initState() {
     super.initState();
@@ -190,7 +187,7 @@ class _AccountScreenState extends State<AccountScreen> {
         formatDate(widget.user.birthDate); // Formatar data
     _emailController.text = widget.user.email;
     if (widget.user.id != null) {
-      _loadAddress(widget.user.id!);
+      _loadAddress(widget.user.id);
     }
   }
 
@@ -258,30 +255,16 @@ class _AccountScreenState extends State<AccountScreen> {
           // ignore: use_build_context_synchronously
           context: context,
           builder: (BuildContext context) {
-            return AlertDialog(
-              backgroundColor: Colors.white,
-              title: const Row(
-                children: [
-                  Icon(Icons.check_circle, color: Color(0xFF007FFF)),
-                  SizedBox(width: 10),
-                  Text('Perfil atualizado com sucesso!'),
-                ],
-              ),
-              actions: <Widget>[
-                TextButton(
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(color: Color(0xFF007FFF)),
+            return CustomAlertDialog(
+              text: 'Perfil atualizado com sucesso!',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfileScreen(),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const ProfileScreen()),
-                    );
-                  },
-                ),
-              ],
+                );
+              },
             );
           },
         );
@@ -456,7 +439,7 @@ class _AccountScreenState extends State<AccountScreen> {
               controller: _birthdateController,
               keyboardType: TextInputType.number,
               inputFormatters: [
-                birthdateMaskFormatter,
+                createDateMaskFormatter(),
                 LengthLimitingTextInputFormatter(10),
               ],
               decoration: InputDecoration(
@@ -793,7 +776,7 @@ class _AccountScreenState extends State<AccountScreen> {
 }
 
 class SecurityScreen extends StatefulWidget {
-  final User user;
+  final UserReturn user;
 
   const SecurityScreen({super.key, required this.user});
 
@@ -832,56 +815,38 @@ class _SecurityScreenState extends State<SecurityScreen> {
         var responseBody = await UserController().updatePassword(
             _oldPasswordController.text, _newPasswordController.text);
 
-        if(responseBody == "Senha atual incorreta"){
+        if (responseBody == "Senha atual incorreta") {
           _oldPasswordError = 'Senha Incorreta.';
-        }
-        else if(responseBody == "ok"){
+        } else if (responseBody == "ok") {
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,
             builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Colors.white,
-                title: const Row(
-                  children: [
-                    Icon(Icons.check_circle, color: Color(0xFF007FFF)),
-                    SizedBox(width: 10),
-                    Text('Senha atualizada com sucesso!'),
-                  ],
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(color: Color(0xFF007FFF)),
+              return CustomAlertDialog(
+                text: 'Senha atualizada com sucesso!',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfileScreen(),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfileScreen()),
-                      );
-                    },
-                  ),
-                ],
+                  );
+                },
               );
             },
           );
-        }
-        else {
+        } else {
           // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-                content:
-                    Text('Erro ao atualizar senha, tente novamente.')),
+                content: Text('Erro ao atualizar senha, tente novamente.')),
           );
         }
       } catch (error) {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-                  Text('Erro ao atualizar senha, tente novamente.')),
+              content: Text('Erro ao atualizar senha, tente novamente.')),
         );
       }
     }
@@ -1055,157 +1020,153 @@ class _SecurityScreenState extends State<SecurityScreen> {
   }
 
   @override
-Widget build(BuildContext context) {
-  final double screenWidth = MediaQuery.of(context).size.width;
+  Widget build(BuildContext context) {
+    final double screenWidth = MediaQuery.of(context).size.width;
 
-  return Scaffold(
-    backgroundColor: Colors.white,
-    appBar: TopBar(
-      haveReturn: true,
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const ProfileScreen()),
-        );
-      },
-    ),
-    body: SingleChildScrollView( // Adiciona rolagem para evitar overflow
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Alterar senha',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.bold,
-                fontSize: 24,
-                color: Color(0xFF263238),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: TopBar(
+        haveReturn: true,
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+          );
+        },
+      ),
+      body: SingleChildScrollView(
+        // Adiciona rolagem para evitar overflow
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Alterar senha',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 24,
+                  color: Color(0xFF263238),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            
-            SenhaTextField(
-              label: 'Senha Atual',
-              controller: _oldPasswordController,
-              description: 'Digite sua senha',
-              errorMessage: _oldPasswordError,
-            ),
-            const SizedBox(height: 20),
-
-            SenhaTextField(
-              label: 'Nova Senha',
-              controller: _newPasswordController,
-              description: 'Informe sua nova senha',
-              errorMessage: _newPasswordError,
-            ),
-            const SizedBox(height: 20),
-
-            SenhaTextField(
-              label: 'Confirmar Senha',
-              controller: _confirmPasswordController,
-              description: 'Repita a nova senha',
-              errorMessage: _confirmPasswordError,
-            ),
-            const SizedBox(height: 20),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: screenWidth * 0.4,
-                  child: ElevatedButton(
-                    onPressed: _toGoBack,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      side: const BorderSide(color: Color(0xFF007FFF)),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+              const SizedBox(height: 20),
+              SenhaTextField(
+                label: 'Senha Atual',
+                controller: _oldPasswordController,
+                description: 'Digite sua senha',
+                errorMessage: _oldPasswordError,
+              ),
+              const SizedBox(height: 20),
+              SenhaTextField(
+                label: 'Nova Senha',
+                controller: _newPasswordController,
+                description: 'Informe sua nova senha',
+                errorMessage: _newPasswordError,
+              ),
+              const SizedBox(height: 20),
+              SenhaTextField(
+                label: 'Confirmar Senha',
+                controller: _confirmPasswordController,
+                description: 'Repita a nova senha',
+                errorMessage: _confirmPasswordError,
+              ),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _toGoBack,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'CANCELAR',
-                      style: TextStyle(
-                        color: Color(0xFF007FFF),
+                      child: const Text(
+                        'CANCELAR',
+                        style: TextStyle(
+                          color: Color(0xFF007FFF),
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: screenWidth * 0.4,
-                  child: ElevatedButton(
-                    onPressed: _passwordUpdate,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF007FFF),
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 22, horizontal: 30),
-                      textStyle: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                  SizedBox(
+                    width: screenWidth * 0.4,
+                    child: ElevatedButton(
+                      onPressed: _passwordUpdate,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF007FFF),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 22, horizontal: 30),
+                        textStyle: const TextStyle(
+                          fontFamily: 'Inter',
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0),
-                      ),
-                    ),
-                    child: const Text(
-                      'SALVAR',
-                      style: TextStyle(
-                        color: Colors.white,
+                      child: const Text(
+                        'SALVAR',
+                        style: TextStyle(
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            const Text(
-              'Encerrar minha conta',
-              style: TextStyle(
-                fontFamily: 'Inter',
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Color(0xFF263238),
+                ],
               ),
-            ),
-            const SizedBox(height: 10),
-            FractionallySizedBox(
-              widthFactor: 0.8,
-              child: ElevatedButton.icon(
-                onPressed: _deleteAccount,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red.shade100,
-                  padding: const EdgeInsets.symmetric(vertical: 15),
+              const SizedBox(height: 20),
+              const Text(
+                'Encerrar minha conta',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Color(0xFF263238),
                 ),
-                icon: const Icon(
-                  Icons.delete,
-                  color: Colors.red,
-                ),
-                label: const Text(
-                  'Deletar conta',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 15,
-                    fontWeight: FontWeight.normal,
+              ),
+              const SizedBox(height: 10),
+              FractionallySizedBox(
+                widthFactor: 0.8,
+                child: ElevatedButton.icon(
+                  onPressed: _deleteAccount,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red.shade100,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                  ),
+                  icon: const Icon(
+                    Icons.delete,
                     color: Colors.red,
                   ),
+                  label: const Text(
+                    'Deletar conta',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 15,
+                      fontWeight: FontWeight.normal,
+                      color: Colors.red,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-          ],
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }

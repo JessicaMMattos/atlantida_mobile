@@ -1,16 +1,18 @@
 import 'dart:convert';
-import 'dart:math';
 
-import 'package:atlantida_mobile/components/button.dart';
+import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
+import 'package:atlantida_mobile/components/dropdown_button.dart';
+import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:atlantida_mobile/models/diving_spot_create.dart';
+import 'package:atlantida_mobile/services/maps_service.dart';
+import 'package:atlantida_mobile/screens/home_screen.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
-import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
-import 'package:atlantida_mobile/models/diving_spot_create.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
-import 'package:atlantida_mobile/services/maps_service.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:atlantida_mobile/components/button.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/material.dart';
 
 class DivingSpotRegistrationScreen extends StatefulWidget {
   final String? previousRoute;
@@ -30,22 +32,35 @@ class _DivingSpotRegistrationScreenState
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _latitudeController = TextEditingController();
   final TextEditingController _longitudeController = TextEditingController();
+  final List<String> _waterType = ['SALGADA', 'DOCE'];
   String? _cityState;
   Uint8List? _imageData;
   String? _imageContentType;
 
+  String _selectedWaterType = '';
+
   String _nameErrorMessage = '';
+  String _waterTypeErrorMessage = '';
+  String _latitudeErrorMessage = '';
+  String _longitudeErrorMessage = '';
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      final Uint8List imageData = await image.readAsBytes();
-      setState(() {
-        _imageData = imageData;
-        _imageContentType = image.mimeType;
-      });
+      final Uint8List? compressedImageData =
+          await FlutterImageCompress.compressWithFile(
+        image.path,
+        quality: 70,
+      );
+
+      if (compressedImageData != null) {
+        setState(() {
+          _imageData = compressedImageData;
+          _imageContentType = image.mimeType;
+        });
+      }
     }
   }
 
@@ -58,96 +73,83 @@ class _DivingSpotRegistrationScreenState
   }
 
   Future<void> _submitForm() async {
-  try {
-    _nameErrorMessage =
-        _nameController.text.isEmpty ? 'Campo obrigatório.' : '';
+    try {
+      setState(() {
+        _nameErrorMessage =
+            _nameController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _waterTypeErrorMessage =
+            _selectedWaterType.isEmpty ? 'Campo obrigatório.' : '';
+        _latitudeErrorMessage =
+            _latitudeController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _longitudeErrorMessage =
+            _longitudeController.text.isEmpty ? 'Campo obrigatório.' : '';
+      });
 
-    if (_formKey.currentState!.validate() &&
-        _longitudeController.text.isNotEmpty &&
-        _latitudeController.text.isNotEmpty &&
-        _nameController.text.isNotEmpty) {
-
-      // Cria o objeto Location com coordenadas válidas
-      Location location = Location(
-        type: 'Point',
-        coordinates: [
-          double.parse(_latitudeController.text),
-          double.parse(_longitudeController.text)
-        ],
-      );
-
-      // Cria o objeto DivingSpotCreate com o nome e localização
-      DivingSpotCreate divingSpot = DivingSpotCreate(
-        name: _nameController.text,
-        location: location,
-      );
-
-      // Adiciona a descrição se fornecida
-      if (_descriptionController.text.isNotEmpty) {
-        divingSpot.description = _descriptionController.text;
-      }
-
-      // Adiciona a imagem se fornecida
-      if (_imageData != null && _imageContentType != null) {
-        String imageData = base64Encode(_imageData!);
-
-        ImageData image = ImageData(
-          data: imageData,
-          contentType: _imageContentType ?? 'image/jpeg',
+      if (_formKey.currentState!.validate() &&
+          _nameErrorMessage.isEmpty &&
+          _waterTypeErrorMessage.isEmpty &&
+          _latitudeErrorMessage.isEmpty &&
+          _longitudeErrorMessage.isEmpty) {
+        Location location = Location(
+          type: 'Point',
+          coordinates: [
+            double.parse(_latitudeController.text),
+            double.parse(_longitudeController.text)
+          ],
         );
-        divingSpot.image = image;
-      }
 
-      // Envia o objeto para o controlador
-      var response = await DivingSpotController().createDivingSpot(divingSpot);
+        DivingSpotCreate divingSpot = DivingSpotCreate(
+          name: _nameController.text,
+          location: location,
+          waterBody: _selectedWaterType,
+        );
 
-      // Exibe o diálogo de sucesso
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Row(
-              children: [
-                Icon(Icons.check_circle, color: Color(0xFF007FFF)),
-                SizedBox(width: 10),
-                Text('Local de mergulho Cadastrado!'),
-              ],
-            ),
-            content: const Text(
-              'Muito obrigado(a) por contribuir com a plataforma cadastrando um novo local.',
-              style: TextStyle(color: Color(0xFF263238)),
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text(
-                  'OK',
-                  style: TextStyle(color: Color(0xFF007FFF)),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
+        if (_descriptionController.text.isNotEmpty) {
+          divingSpot.description = _descriptionController.text;
+        }
+
+        if (_imageData != null) {
+          String imageData = base64Encode(_imageData!);
+
+          ImageData image = ImageData(
+            data: imageData,
+            contentType: _imageContentType ?? 'image/jpeg',
           );
-        },
+          divingSpot.image = image;
+        }
+
+        await DivingSpotController().createDivingSpot(divingSpot);
+
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlertWithDescriptionDialog(
+              title: 'Local de mergulho Cadastrado!',
+              description:
+                  'Muito obrigado(a) por contribuir com a plataforma cadastrando um novo local.',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      }
+    } catch (error) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content:
+              Text('Erro ao cadastrar Ponto de Mergulho, tente novamente.'),
+        ),
       );
     }
-  } catch (error) {
-    // ignore: use_build_context_synchronously
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Erro ao cadastrar Ponto de Mergulho, tente novamente.'),
-      ),
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -202,9 +204,69 @@ class _DivingSpotRegistrationScreenState
               ),
               const SizedBox(height: 20),
 
+              // Campo Tipo da Água
+              const Text(
+                'Tipo da Água',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Color(0xFF263238),
+                ),
+              ),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: _waterType.map((type) {
+                  return Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedWaterType = type;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 5),
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          color: _selectedWaterType == type
+                              ? Colors.grey
+                              : Colors.white,
+                          border: Border.all(
+                            color: Colors.grey,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Center(
+                          child: Text(
+                            type,
+                            style: TextStyle(
+                              color: _selectedWaterType == type
+                                  ? Colors.white
+                                  : Colors.black,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+              if (_waterTypeErrorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    _waterTypeErrorMessage,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+              const SizedBox(height: 20),
+
               // Campo de Descrição
               const Title1(
-                title: 'Descrição',
+                title: 'Descrição (opcional)',
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -256,45 +318,51 @@ class _DivingSpotRegistrationScreenState
                     child: TextFormField(
                       controller: _latitudeController,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true, signed: true),
+                        decimal: true,
+                        signed: true,
+                      ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'^-?\d*\.?\d{0,14}$')),
+                          RegExp(r'^-?\d*\.?\d{0,14}$'),
+                        ),
                         LengthLimitingTextInputFormatter(22),
                       ],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Latitude',
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.grey,
                           ),
                         ),
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.grey,
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xFF263238),
                           ),
                         ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
+                        errorBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.red,
                           ),
                         ),
+                        focusedErrorBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                          ),
+                        ),
+                        errorText: _latitudeErrorMessage.isNotEmpty
+                            ? _latitudeErrorMessage
+                            : null,
                       ),
                       onChanged: (value) {
                         if (_latitudeController.text.isNotEmpty) {
                           _getCityAndState(
                             double.parse(value),
-                            double.parse(_latitudeController.text),
+                            double.parse(_longitudeController.text),
                           );
                         }
                       },
@@ -305,44 +373,50 @@ class _DivingSpotRegistrationScreenState
                     child: TextFormField(
                       controller: _longitudeController,
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true, signed: true),
+                        decimal: true,
+                        signed: true,
+                      ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'^-?\d*\.?\d{0,14}$')),
+                          RegExp(r'^-?\d*\.?\d{0,14}$'),
+                        ),
                         LengthLimitingTextInputFormatter(22),
                       ],
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         labelText: 'Longitude',
-                        border: OutlineInputBorder(
+                        border: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.grey,
                           ),
                         ),
-                        enabledBorder: OutlineInputBorder(
+                        enabledBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.grey,
                           ),
                         ),
-                        focusedBorder: OutlineInputBorder(
+                        focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Color(0xFF263238),
                           ),
                         ),
-                        focusedErrorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.black,
-                          ),
-                        ),
-                        errorBorder: OutlineInputBorder(
+                        errorBorder: const OutlineInputBorder(
                           borderSide: BorderSide(
                             color: Colors.red,
                           ),
                         ),
+                        focusedErrorBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.red,
+                          ),
+                        ),
+                        errorText: _longitudeErrorMessage.isNotEmpty
+                            ? _longitudeErrorMessage
+                            : null,
                       ),
                       onChanged: (value) {
                         if (_longitudeController.text.isNotEmpty) {
                           _getCityAndState(
-                            double.parse(_longitudeController.text),
+                            double.parse(_latitudeController.text),
                             double.parse(value),
                           );
                         }
@@ -368,7 +442,7 @@ class _DivingSpotRegistrationScreenState
 
               // Campo para adicionar imagem
               const Title1(
-                title: 'Adicionar Imagem',
+                title: 'Adicionar Imagem (opcional)',
               ),
               const SizedBox(height: 2),
               const Title2(
@@ -407,10 +481,36 @@ class _DivingSpotRegistrationScreenState
                 Column(
                   children: [
                     const SizedBox(height: 10),
-                    Image.memory(
-                      _imageData!,
-                      height: 200,
-                      fit: BoxFit.cover,
+                    Stack(
+                      children: [
+                        Image.memory(
+                          _imageData!,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _imageData = null;
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.black54,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

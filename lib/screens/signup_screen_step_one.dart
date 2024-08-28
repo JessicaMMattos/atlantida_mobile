@@ -1,4 +1,3 @@
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/screens/signup_screen_step_two.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
@@ -37,11 +36,6 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
   String _confirmPasswordErrorMessage = '';
   bool _isObscure1 = true;
   bool _isObscure2 = true;
-
-  final birthdateMaskFormatter = MaskTextInputFormatter(
-    mask: '##/##/####',
-    filter: {'#': RegExp(r'[0-9]')},
-  );
 
   @override
   void initState() {
@@ -323,7 +317,7 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                 controller: _birthdateController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
-                  birthdateMaskFormatter,
+                  createDateMaskFormatter(),
                   LengthLimitingTextInputFormatter(10),
                 ],
                 decoration: InputDecoration(

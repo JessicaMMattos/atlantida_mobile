@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/models/user_return.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -69,7 +70,7 @@ class UserService {
     }
   }
 
-  Future<User> findUserByToken() async {
+  Future<UserReturn> findUserByToken() async {
     String? token = await _secureStorage.read(key: 'authToken');
 
     if (token == null) {
@@ -85,7 +86,7 @@ class UserService {
     );
 
     if (response.statusCode == 200) {
-      return User.fromJson(jsonDecode(response.body));
+      return UserReturn.fromJson(jsonDecode(response.body));
     } else {
       throw Exception(response);
     }
@@ -146,6 +147,17 @@ class UserService {
         'Authorization': 'Bearer $token',
       },
       body: jsonEncode({'password': password, 'newPassword': newPassword}),
+    );
+
+    return response;
+  }
+
+  Future<http.Response> getUserById(String userId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/$userId'),
+      headers: {
+        'Authorization': 'Bearer ${await _secureStorage.read(key: 'authToken')}',
+      },
     );
 
     return response;

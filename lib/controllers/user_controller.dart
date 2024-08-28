@@ -1,3 +1,4 @@
+import 'package:atlantida_mobile/models/user_return.dart';
 import 'package:atlantida_mobile/screens/first_screen.dart';
 // ignore: implementation_imports
 import 'package:http/src/response.dart';
@@ -58,6 +59,20 @@ class UserController {
     }
   }
 
+  Future<User> getUserById(String id) async {
+    try {
+      var response = await _userService.getUserById(id);
+
+      if (response.statusCode == 200) {
+        return User.fromJson(jsonDecode(response.body));
+      } else {
+        throw Exception('Failed to fetch address: ${response.body}');
+      }
+    } catch (error) {
+      throw Exception(error);
+    }
+  }
+
   Future<bool> findUserByEmail(BuildContext context, String email) async {
     try {
       User? user = await _userService.findUserByEmail(email);
@@ -72,7 +87,7 @@ class UserController {
     }
   }
 
-  Future<User> findUserByToken() async {
+  Future<UserReturn> findUserByToken() async {
     try {
       return await _userService.findUserByToken();
     } catch (error) {

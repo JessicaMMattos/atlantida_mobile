@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/models/dive_log_return.dart';
+import 'package:atlantida_mobile/models/user_return.dart';
 import 'package:atlantida_mobile/screens/dive_log_details_screen.dart';
 
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -11,8 +13,6 @@ import 'package:atlantida_mobile/components/lateral_menu.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:atlantida_mobile/screens/login_screen.dart';
-import 'package:atlantida_mobile/models/dive_log.dart';
-import 'package:atlantida_mobile/models/user.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -28,11 +28,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
-  User? user;
+  UserReturn? user;
   Map<String, dynamic> weatherForecast = {};
   Map<String, dynamic> locationData = {};
-  List<DiveLog> diveLogs = [];
-  List<DiveLog> filteredDiveLogs = [];
+  List<DiveLogReturn> diveLogs = [];
+  List<DiveLogReturn> filteredDiveLogs = [];
   String searchQuery = '';
   DateTime? _lastCacheDate;
   int currentPage = 0;
@@ -141,31 +141,46 @@ class _HomeScreenState extends State<HomeScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
+          titlePadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
           title: const Row(
             children: [
-              Icon(Icons.location_off, color: Color(0xFF007FFF)),
+              Icon(Icons.location_off, color: Color(0xFF007FFF), size: 24),
               SizedBox(width: 10),
-              Text(
-                'ATENÇÃO!',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF007FFF),
+              Expanded(
+                child: Text(
+                  'ATENÇÃO!',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF007FFF),
+                    fontSize: 18,
+                  ),
                 ),
               ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                message,
-                style: const TextStyle(
-                  color: Colors.black,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.8,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  message,
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
+          actionsPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           actions: <Widget>[
             TextButton(
               child: const Text(
@@ -187,19 +202,19 @@ class _HomeScreenState extends State<HomeScreen> {
       DateTime? date = DateFormat('dd/MM/yyyy').parseStrict(query);
       if (date != null) {
         String formattedDate = DateFormat('yyyy-MM-dd').format(date);
-        List<DiveLog> results =
+        List<DiveLogReturn> results =
             await DiveLogService().getDiveLogsByDate(formattedDate);
         setState(() {
           filteredDiveLogs = results;
         });
       }
     } else if (filterCriterion == 'Título') {
-      List<DiveLog> results = await DiveLogService().getDiveLogsByTitle(query);
+      List<DiveLogReturn> results = await DiveLogService().getDiveLogsByTitle(query);
       setState(() {
         filteredDiveLogs = results;
       });
     } else if (filterCriterion == 'Localização') {
-      List<DiveLog> results =
+      List<DiveLogReturn> results =
           await DiveLogController().getDiveLogsByLocation(query);
       setState(() {
         filteredDiveLogs = results;
@@ -252,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getDayOfWeek(int timestamp) {
     final date = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
-    final daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+    final daysOfWeek = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
     return daysOfWeek[date.weekday - 1];
   }
 
@@ -261,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 
-  List<DiveLog> _getCurrentPageDiveLogs() {
+  List<DiveLogReturn> _getCurrentPageDiveLogs() {
     int startIndex = currentPage * itemsPerPage;
     int endIndex = (startIndex + itemsPerPage) < filteredDiveLogs.length
         ? startIndex + itemsPerPage
@@ -382,42 +397,41 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           const SizedBox(height: 10),
                           SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    const Icon(Icons.location_on,
-                                        size: 20, color: Colors.blue),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      '${locationData['name']}, ${locationData['state']}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey[700],
+                              scrollDirection: Axis.horizontal,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.location_on,
+                                          size: 20, color: Colors.blue),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        '${locationData['name']}, ${locationData['state']}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey[700],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(width: 10),
-                                Row(
-                                  children: [
-                                    const Icon(Icons.calendar_month,
-                                        size: 20, color: Colors.blue),
-                                    const SizedBox(width: 5),
-                                    Text(
-                                      '${DateFormat('EEEE', 'pt_BR').format(DateTime.now()).capitalize()}, ${_capitalizeFirstLetter(weatherForecast['current']['weather'][0]['description'])}',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.grey[700],
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.calendar_month,
+                                          size: 20, color: Colors.blue),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        '${DateFormat('EEEE', 'pt_BR').format(DateTime.now()).capitalize()}, ${_capitalizeFirstLetter(weatherForecast['current']['weather'][0]['description'])}',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey[700],
+                                        ),
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
+                                    ],
+                                  ),
+                                ],
+                              )),
                           const SizedBox(height: 20),
                           SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
@@ -599,14 +613,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             _getCurrentPageDiveLogs()[index];
                                         return GestureDetector(
                                           onTap: () {
-                                            // Navigator.push(
-                                            //   context,
-                                            //   MaterialPageRoute(
-                                            //     builder: (context) =>
-                                            //         DiveLogDetailsScreen(
-                                            //             diveLog: diveLog),
-                                            //   ),
-                                            // );
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DiveLogDetailScreen(
+                                                        diveLog: diveLog),
+                                              ),
+                                            );
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(10),

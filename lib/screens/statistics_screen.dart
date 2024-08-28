@@ -3,7 +3,7 @@ import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
 import 'package:atlantida_mobile/controllers/diving_statistics_controller.dart';
-import 'package:atlantida_mobile/models/dive_log.dart';
+import 'package:atlantida_mobile/models/dive_log_return.dart';
 import 'package:atlantida_mobile/models/dive_statistics.dart';
 import 'package:atlantida_mobile/components/custom_column_chart.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +23,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   late DateTime _endDate;
   String? _errorMessage;
   String _selectedFilter = 'Tempo total de fundo';
-  late Future<List<DiveLog>> _diveLogs;
+  late Future<List<DiveLogReturn>> _diveLogs;
 
   final PageController _pageController = PageController();
 
@@ -116,12 +116,12 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     }
   }
 
-  Future<List<DiveLog>> _fetchDiveLogs() async {
+  Future<List<DiveLogReturn>> _fetchDiveLogs() async {
     final String startDateStr = DateFormat('yyyy-MM-dd').format(_startDate);
     final String endDateStr = DateFormat('yyyy-MM-dd').format(_endDate);
 
     try {
-      List<DiveLog> responseDive = await DiveLogController()
+      List<DiveLogReturn> responseDive = await DiveLogController()
           .getDiveLogsByDateRange(startDateStr, endDateStr);
 
       if (responseDive.isEmpty) {
@@ -190,7 +190,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   color: Color(0xFF263238),
                 ),
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 24),
               const Title1(
                 title: 'Filtre por período',
               ),
@@ -432,8 +432,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       },
       items: <String>[
         'Tempo total de fundo',
-        'Profundidade Atingida',
-        'Quantidade de Gás Utilizada'
+        'Profundidade Atingida'
       ].map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -445,7 +444,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Widget _grafico() {
-    return FutureBuilder<List<DiveLog>>(
+    return FutureBuilder<List<DiveLogReturn>>(
       future: _diveLogs,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -468,9 +467,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               break;
             case 'Profundidade Atingida':
               values.add((log.depth ?? 0).toDouble());
-              break;
-            case 'Quantidade de Gás Utilizada':
-              values.add((log.cylinder?.usedAmount ?? 0).toDouble());
               break;
           }
           labels.add(DateFormat('dd/MM/yyyy').format(DateTime.parse(log.date)));

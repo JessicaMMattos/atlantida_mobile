@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/models/dive_log_return.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -20,7 +21,7 @@ class DiveLogService {
     return response;
   }
 
-  Future<List<DiveLog>> getDiveLogsByToken() async {
+  Future<List<DiveLogReturn>> getDiveLogsByToken() async {
     final response = await http.get(
       Uri.parse(baseUrl),
       headers: {
@@ -31,13 +32,13 @@ class DiveLogService {
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
 
-      return jsonResponse.map((data) => DiveLog.fromJson(data)).toList();
+      return jsonResponse.map((data) => DiveLogReturn.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load dive logs');
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByDateRange(String startDate, String endDate) async {
+  Future<List<DiveLogReturn>> getDiveLogsByDateRange(String startDate, String endDate) async {
     final response = await http.post(
       Uri.parse('$baseUrl/dateRange'),
       headers: {
@@ -52,13 +53,13 @@ class DiveLogService {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((data) => DiveLog.fromJson(data)).toList();
+      return jsonResponse.map((data) => DiveLogReturn.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load dive logs');
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByTitle(String title) async {
+  Future<List<DiveLogReturn>> getDiveLogsByTitle(String title) async {
     final response = await http.get(
       Uri.parse('$baseUrl/title/$title'),
       headers: {
@@ -68,13 +69,13 @@ class DiveLogService {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((data) => DiveLog.fromJson(data)).toList();
+      return jsonResponse.map((data) => DiveLogReturn.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load dive logs');
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByDate(String date) async {
+  Future<List<DiveLogReturn>> getDiveLogsByDate(String date) async {
     final response = await http.post(
       Uri.parse('$baseUrl/date'),
       headers: {
@@ -86,13 +87,13 @@ class DiveLogService {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((data) => DiveLog.fromJson(data)).toList();
+      return jsonResponse.map((data) => DiveLogReturn.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load dive logs');
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByLocation(String locationName) async {
+  Future<List<DiveLogReturn>> getDiveLogsByLocation(String locationName) async {
     final response = await http.get(
       Uri.parse('$baseUrl/location/$locationName'),
       headers: {
@@ -102,13 +103,13 @@ class DiveLogService {
 
     if (response.statusCode == 200) {
       List<dynamic> jsonResponse = jsonDecode(response.body);
-      return jsonResponse.map((data) => DiveLog.fromJson(data)).toList();
+      return jsonResponse.map((data) => DiveLogReturn.fromJson(data)).toList();
     } else {
       throw Exception('Failed to load dive logs');
     }
   }
 
-  Future<DiveLog> getDiveLogById(String id) async {
+  Future<DiveLogReturn> getDiveLogById(String id) async {
     final response = await http.get(
       Uri.parse('$baseUrl/$id'),
       headers: {
@@ -117,7 +118,7 @@ class DiveLogService {
     );
 
     if (response.statusCode == 200) {
-      return DiveLog.fromJson(jsonDecode(response.body));
+      return DiveLogReturn.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Failed to load dive log');
     }

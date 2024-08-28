@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:atlantida_mobile/models/dive_log_return.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../services/dive_log_service.dart';
@@ -19,7 +22,7 @@ class DiveLogController {
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByToken(BuildContext context) async {
+  Future<List<DiveLogReturn>> getDiveLogsByToken(BuildContext context) async {
     try {
       return await _diveLogService.getDiveLogsByToken();
     } catch (error) {
@@ -27,7 +30,7 @@ class DiveLogController {
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByDateRange(String startDate, String endDate) async {
+  Future<List<DiveLogReturn>> getDiveLogsByDateRange(String startDate, String endDate) async {
     try {
       return await _diveLogService.getDiveLogsByDateRange(startDate, endDate);
     } catch (error) {
@@ -35,7 +38,7 @@ class DiveLogController {
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByTitle(BuildContext context, String title) async {
+  Future<List<DiveLogReturn>> getDiveLogsByTitle(BuildContext context, String title) async {
     try {
       return await _diveLogService.getDiveLogsByTitle(title);
     } catch (error) {
@@ -43,7 +46,7 @@ class DiveLogController {
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByDate(BuildContext context, String date) async {
+  Future<List<DiveLogReturn>> getDiveLogsByDate(BuildContext context, String date) async {
     try {
       return await _diveLogService.getDiveLogsByDate(date);
     } catch (error) {
@@ -51,7 +54,7 @@ class DiveLogController {
     }
   }
 
-  Future<List<DiveLog>> getDiveLogsByLocation(String locationName) async {
+  Future<List<DiveLogReturn>> getDiveLogsByLocation(String locationName) async {
     try {
       return await _diveLogService.getDiveLogsByLocation(locationName);
     } catch (error) {
@@ -59,7 +62,7 @@ class DiveLogController {
     }
   }
 
-  Future<DiveLog> getDiveLogById(BuildContext context, String id) async {
+  Future<DiveLogReturn> getDiveLogById(BuildContext context, String id) async {
     try {
       return await _diveLogService.getDiveLogById(id);
     } catch (error) {
@@ -67,32 +70,26 @@ class DiveLogController {
     }
   }
 
-  Future<void> updateDiveLog(BuildContext context, String id, DiveLog diveLog) async {
+  Future<DiveLogReturn> updateDiveLog(String id, DiveLog diveLog) async {
     try {
       var response = await _diveLogService.updateDiveLog(id, diveLog);
       if (response.statusCode == 200) {
-        // Mergulho atualizado com sucesso
-        // Handle success
+        return DiveLogReturn.fromJson(jsonDecode(response.body));
       } else {
         throw Exception('Failed to update dive log');
       }
     } catch (error) {
-      // Handle error
       throw Exception(error);
     }
   }
 
-  Future<void> deleteDiveLog(BuildContext context, String id) async {
+  Future<void> deleteDiveLog(String id) async {
     try {
       var response = await _diveLogService.deleteDiveLog(id);
-      if (response.statusCode == 204) {
-        // Mergulho deletado com sucesso
-        // Handle success
-      } else {
+      if (response.statusCode != 204) {
         throw Exception('Failed to delete dive log');
       }
     } catch (error) {
-      // Handle error
       throw Exception(error);
     }
   }

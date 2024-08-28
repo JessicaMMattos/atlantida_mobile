@@ -1,6 +1,10 @@
 import 'dart:convert';
 
+import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/components/dropdown_button.dart';
+import 'package:atlantida_mobile/components/update_registerHeader.dart';
+import 'package:atlantida_mobile/models/dive_log_return.dart';
+import 'package:atlantida_mobile/screens/dive_log_details_screen.dart';
 import 'package:atlantida_mobile/screens/home_screen.dart';
 import 'package:atlantida_mobile/screens/register_diving_spots_screen.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
@@ -18,7 +22,10 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class DiveRegistrationScreen extends StatefulWidget {
-  const DiveRegistrationScreen({super.key});
+  final DiveLogReturn? diveLog;
+  final DivingSpotReturn? divingSpot;
+
+  const DiveRegistrationScreen({super.key, this.diveLog, this.divingSpot});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -131,6 +138,9 @@ List<Photo> _media = [];
 
 // ignore: prefer_typing_uninitialized_variables
 var newDiveLog;
+var hasUpdate = false;
+// ignore: prefer_typing_uninitialized_variables
+var updateDiveLog;
 
 class DecimalTextInputFormatter extends TextInputFormatter {
   @override
@@ -158,6 +168,82 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
     mask: '##/##/####',
     filter: {'#': RegExp(r'[0-9]')},
   );
+
+  @override
+  void initState() {
+    super.initState();
+    _resetForm();
+    _initializeForm();
+  }
+
+  String _formatDate(String dateUtc) {
+    final utcDate = DateTime.parse(dateUtc);
+    final localDate = utcDate.toLocal();
+    return DateFormat('dd/MM/yyyy').format(localDate);
+  }
+
+  void _initializeForm() {
+    if (widget.diveLog != null) {
+      updateDiveLog = widget.diveLog;
+      hasUpdate = true;
+      _titleController.text = widget.diveLog!.title;
+      _locationDivingSpotId = widget.divingSpot!.id;
+      _locationController.text = widget.divingSpot!.name;
+      _dateController.text = _formatDate(widget.diveLog!.date);
+      _selectedDiveType = widget.diveLog!.type;
+
+      _depthController.text = widget.diveLog!.depth?.toString() ?? '';
+      
+      int totalMinutes = widget.diveLog!.bottomTimeInMinutes ?? 0;
+      int hours = totalMinutes ~/ 60;
+      int minutes = totalMinutes % 60;
+
+      _bottomTimeInMinutesController.text = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
+
+
+      _selectedWaterType = widget.diveLog!.waterType ?? '';
+      _selectedWaterBody = widget.diveLog!.waterBody ?? '';
+      _selectedWeatherConditions = widget.diveLog!.weatherConditions ?? '';
+
+      if (widget.diveLog!.temperature != null) {
+        _temperatureAirController.text =
+            widget.diveLog!.temperature!.air?.toString() ?? '';
+        _temperatureSurfaceController.text =
+            widget.diveLog!.temperature!.surface?.toString() ?? '';
+        _temperatureBottomController.text =
+            widget.diveLog!.temperature!.bottom?.toString() ?? '';
+      }
+
+      _selectedVisibility = widget.diveLog!.visibility ?? '';
+      _selectedWaves = widget.diveLog!.waves ?? '';
+      _selectedCurrent = widget.diveLog!.current ?? '';
+      _selectedSurge = widget.diveLog!.surge ?? '';
+
+      _weightController.text = widget.diveLog!.weight ?? '';
+
+      if (widget.diveLog!.cylinder != null) {
+        _cylinderSizeController.text =
+            widget.diveLog!.cylinder!.size?.toString() ?? '';
+        _cylinderInitialPressureController.text =
+            widget.diveLog!.cylinder!.initialPressure?.toString() ?? '';
+        _cylinderFinalPressureController.text =
+            widget.diveLog!.cylinder!.finalPressure?.toString() ?? '';
+        _usedAmountController.text =
+            widget.diveLog!.cylinder!.usedAmount?.toString() ?? '';
+        _selectedCylinderType = widget.diveLog!.cylinder!.type ?? '';
+        _selectedCylinderGasMixture =
+            widget.diveLog!.cylinder!.gasMixture ?? '';
+      }
+
+      _selectedSuit = widget.diveLog!.suit ?? '';
+      _selectedAdditionalEquipment = widget.diveLog!.additionalEquipment ?? [];
+
+      _notesController.text = widget.diveLog!.notes ?? '';
+      _rating = widget.diveLog!.rating as double?;
+      _difficulty = widget.diveLog!.difficulty;
+      _media = widget.diveLog!.photos ?? [];
+    }
+  }
 
   void _resetForm() {
     setState(() {
@@ -194,11 +280,13 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
       _selectedCylinderType = '';
       _selectedCylinderGasMixture = '';
       _selectedAdditionalEquipment = [];
+      hasUpdate = false;
 
       _rating = null;
       _difficulty = null;
       _media.clear();
       newDiveLog = null;
+      updateDiveLog = null;
     });
   }
 
@@ -251,8 +339,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-                  Text('Erro na primeira etapa do registro, tente novamente.')),
+              content: Text('Erro na primeira etapa, tente novamente.')),
         );
       }
     }
@@ -382,27 +469,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              const Text(
-                'Registro de Mergulho',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Complete as informações abaixo para registrar seu mergulho.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 25),
+              UpdateOrRegisterHeader(hasUpdate: hasUpdate),
               Row(
                 children: [
                   Container(
@@ -863,8 +930,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
       } catch (error) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-              content:
-                  Text('Erro na segunda etapa do registro, tente novamente.')),
+              content: Text('Erro na segunda etapa, tente novamente.')),
         );
       }
     }
@@ -916,27 +982,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              const Text(
-                'Registro de Mergulho',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Complete as informações abaixo para registrar seu mergulho.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 25),
+              UpdateOrRegisterHeader(hasUpdate: hasUpdate),
               Row(
                 children: [
                   Container(
@@ -1329,8 +1375,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content:
-                Text('Erro na terceira etapa do registro, tente novamente.')),
+            content: Text('Erro na terceira etapa, tente novamente.')),
       );
     }
   }
@@ -1351,27 +1396,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              const Text(
-                'Registro de Mergulho',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Complete as informações abaixo para registrar seu mergulho.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 25),
+              UpdateOrRegisterHeader(hasUpdate: hasUpdate),
               Row(
                 children: [
                   Container(
@@ -1913,9 +1938,7 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Erro na quarta etapa do registro, tente novamente.')),
+        const SnackBar(content: Text('Erro na quarta etapa, tente novamente.')),
       );
     }
   }
@@ -1955,27 +1978,7 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              const Text(
-                'Registro de Mergulho',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Complete as informações abaixo para registrar seu mergulho.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 25),
+              UpdateOrRegisterHeader(hasUpdate: hasUpdate),
               Row(
                 children: [
                   Container(
@@ -2484,67 +2487,54 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
         newDiveLog.photos = _media;
       }
 
-      await DiveLogController().createDiveLog(context, newDiveLog);
+      if (hasUpdate) {
+        var newDive = await DiveLogController()
+            .updateDiveLog(updateDiveLog.id, newDiveLog);
+
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlertDialog(
+              text: 'Mergulho atualizado com sucesso!',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DiveLogDetailScreen(diveLog: newDive),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      } else {
+        await DiveLogController().createDiveLog(context, newDiveLog);
+
+        showDialog(
+          // ignore: use_build_context_synchronously
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlertDialog(
+              text: 'Mergulho registrado com sucesso!',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      }
 
       _resetForm();
-
-      showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            backgroundColor: Colors.white,
-            title: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.check_circle, color: Color(0xFF007FFF)),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Mergulho registrado com sucesso!',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text(
-                  'OK',
-                  style: TextStyle(color: Color(0xFF007FFF)),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const HomeScreen(),
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        },
-      );
-
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(
-          builder: (context) => const HomeScreen(),
-        ),
-      );
     } catch (error) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content:
-                Text('Erro na ultima etapa do registro, tente novamente.')),
+        const SnackBar(content: Text('Erro na ultima etapa, tente novamente.')),
       );
     }
   }
@@ -2584,6 +2574,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
       _selectedCylinderType = '';
       _selectedCylinderGasMixture = '';
       _selectedAdditionalEquipment = [];
+      hasUpdate = false;
 
       _rating = null;
       _difficulty = null;
@@ -2650,27 +2641,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 10),
-              const Text(
-                'Registro de Mergulho',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const Text(
-                'Complete as informações abaixo para registrar seu mergulho.',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.w400,
-                  fontSize: 16,
-                  color: Color(0xFF263238),
-                ),
-              ),
-              const SizedBox(height: 25),
+              UpdateOrRegisterHeader(hasUpdate: hasUpdate),
               Row(
                 children: [
                   Container(
@@ -2895,15 +2866,36 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ElevatedButton.icon(
-                    onPressed: _pickMedia,
-                    icon: const Icon(Icons.camera_alt),
-                    label: const Text('Selecionar Fotos'),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _pickMedia,
+                      icon: const Icon(Icons.camera_alt,
+                          color: Color(0xFF007FFF)),
+                      label: const Text(
+                        'Selecionar Fotos',
+                        style: TextStyle(color: Color(0xFF007FFF)),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: _pickVideo,
-                    icon: const Icon(Icons.videocam),
-                    label: const Text('Selecionar Vídeos'),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _pickVideo,
+                      icon:
+                          const Icon(Icons.videocam, color: Color(0xFF007FFF)),
+                      label: const Text(
+                        'Selecionar Vídeos',
+                        style: TextStyle(color: Color(0xFF007FFF)),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Color(0xFF007FFF)),
+                        backgroundColor: Colors.white,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -2913,7 +2905,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Midia Adicionada:',
+                      'Mídia Adicionada:',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.bold,
@@ -2954,13 +2946,13 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                                 child: Container(
                                   padding: const EdgeInsets.all(2),
                                   decoration: const BoxDecoration(
-                                    color: Colors.red,
+                                    color: Colors.white,
                                     shape: BoxShape.circle,
                                   ),
                                   child: const Icon(
                                     Icons.close,
-                                    size: 16,
-                                    color: Colors.white,
+                                    size: 18,
+                                    color: Colors.black,
                                   ),
                                 ),
                               ),
@@ -3022,9 +3014,9 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: const Text(
-                        'REGISTRAR',
-                        style: TextStyle(
+                      child: Text(
+                        hasUpdate ? 'EDITAR' : 'REGISTRAR',
+                        style: const TextStyle(
                           color: Colors.white,
                         ),
                       ),

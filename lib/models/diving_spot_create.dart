@@ -5,6 +5,8 @@ class DivingSpotCreate {
   late String name;
   late Location location;
   late String? description;
+  late String waterBody;
+  late String? visibility;
   late double? averageRating;
   late double? averageDifficulty;
   ImageData? image;
@@ -14,6 +16,8 @@ class DivingSpotCreate {
     required this.location,
     this.description,
     this.averageRating,
+    required this.waterBody,
+    this.visibility,
     this.averageDifficulty,
     this.image,
   });
@@ -22,6 +26,8 @@ class DivingSpotCreate {
     return DivingSpotCreate(
       name: json['name'] ?? '',
       location: Location.fromJson(json['location'] ?? {}),
+      waterBody: json['waterBody'] ?? '',
+      visibility: json['visibility'] ?? '',
       description: json['description'] ?? '',
       averageRating: json['averageRating']?.toDouble(),
       averageDifficulty: json['averageDifficulty']?.toDouble(),
@@ -35,6 +41,8 @@ class DivingSpotCreate {
       'location': location.toJson(),
       'description': description,
       'averageRating': averageRating,
+      'waterBody': waterBody,
+      'visibility': visibility,
       'averageDifficulty': averageDifficulty,
       'image': image?.toJson(),
     };

@@ -1,3 +1,4 @@
+import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/screens/login_screen.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/screens/signup_screen_step_one.dart';
@@ -53,24 +54,33 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
   void _completeSignup() {
     setState(() async {
       try {
-        _cepErrorMessage = _cepController.text.isEmpty || !_isValidCep(_cepController.text) ? 'Campo obrigatório.' : '';
-        _countryErrorMessage = _countryController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _stateErrorMessage = _stateController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _cityErrorMessage = _cityController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _districtErrorMessage = _districtController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _streetErrorMessage = _streetController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _numberErrorMessage = _numberController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _cepErrorMessage =
+            _cepController.text.isEmpty || !_isValidCep(_cepController.text)
+                ? 'Campo obrigatório.'
+                : '';
+        _countryErrorMessage =
+            _countryController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _stateErrorMessage =
+            _stateController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _cityErrorMessage =
+            _cityController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _districtErrorMessage =
+            _districtController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _streetErrorMessage =
+            _streetController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _numberErrorMessage =
+            _numberController.text.isEmpty ? 'Campo obrigatório.' : '';
 
         if (_cepErrorMessage.isEmpty &&
-          _countryErrorMessage.isEmpty &&
-          _stateErrorMessage.isEmpty &&
-          _cityErrorMessage.isEmpty &&
-          _districtErrorMessage.isEmpty &&
-          _streetErrorMessage.isEmpty &&
-          _numberErrorMessage.isEmpty) {
-
-        var responseUser = await UserController().createUser(context, widget.newUser);
-        var userId = json.decode(responseUser.body)['_id'];
+            _countryErrorMessage.isEmpty &&
+            _stateErrorMessage.isEmpty &&
+            _cityErrorMessage.isEmpty &&
+            _districtErrorMessage.isEmpty &&
+            _streetErrorMessage.isEmpty &&
+            _numberErrorMessage.isEmpty) {
+          var responseUser =
+              await UserController().createUser(context, widget.newUser);
+          var userId = json.decode(responseUser.body)['_id'];
 
           Address newAddress = Address(
             country: _countryController.text,
@@ -79,7 +89,9 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
             neighborhood: _districtController.text,
             street: _streetController.text,
             number: int.parse(_numberController.text),
-            complement: _complementController.text.isEmpty ? null : _complementController.text,
+            complement: _complementController.text.isEmpty
+                ? null
+                : _complementController.text,
             postalCode: _cepController.text,
             userId: userId,
           );
@@ -90,33 +102,18 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
             // ignore: use_build_context_synchronously
             context: context,
             builder: (BuildContext context) {
-              return AlertDialog(
-                backgroundColor: Colors.white,
-                title: const Row(
-                  children: [
-                    Icon(Icons.check_circle, color: Color(0xFF007FFF)),
-                    SizedBox(width: 10),
-                    Text('Cadastro Realizado!'),
-                  ],
-                ),
-                content: const Text(
-                  'Seu cadastro foi realizado com sucesso. Por favor, faça o login para acessar o sistema.',
-                  style: TextStyle(color: Color(0xFF263238)),
-                ),
-                actions: <Widget>[
-                  TextButton(
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(color: Color(0xFF007FFF)),
+              return CustomAlertWithDescriptionDialog(
+                title: 'Cadastro Realizado!',
+                description:
+                    'Seu cadastro foi realizado com sucesso. Por favor, faça o login para acessar o sistema.',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const LoginScreen(),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const LoginScreen()),
-                      );
-                    },
-                  ),
-                ],
+                  );
+                },
               );
             },
           );
@@ -132,7 +129,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
 
   void _searchCep() async {
     if (_isValidCep(_cepController.text)) {
-      final response = await http.get(Uri.parse('https://viacep.com.br/ws/${_cepController.text}/json/'));
+      final response = await http.get(
+          Uri.parse('https://viacep.com.br/ws/${_cepController.text}/json/'));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         setState(() {
@@ -163,9 +161,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
         haveReturn: true,
         onPressed: () {
           Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => SignupScreenStepOne(newUser: widget.newUser))
-          );
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SignupScreenStepOne(newUser: widget.newUser)));
         },
       ),
       backgroundColor: Colors.white,
@@ -285,18 +284,24 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _cepErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _cepErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   hintText: '00000-000',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _cepErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _cepErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _cepErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                      color: _cepErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -392,18 +397,24 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _numberErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _numberErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   hintText: 'Digite o número do endereço',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _numberErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _numberErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _numberErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                      color: _numberErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : const Color(0xFF263238),
                     ),
                   ),
                 ),
