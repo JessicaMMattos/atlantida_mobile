@@ -1,12 +1,12 @@
 import 'dart:convert';
-
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/components/dropdown_button.dart';
 import 'package:atlantida_mobile/components/update_registerHeader.dart';
 import 'package:atlantida_mobile/models/dive_log_return.dart';
-import 'package:atlantida_mobile/screens/dive_log_details_screen.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
-import 'package:atlantida_mobile/screens/register_diving_spots_screen.dart';
+import 'package:atlantida_mobile/models/photo.dart';
+import 'package:atlantida_mobile/screens/details_dive_log.dart';
+import 'package:atlantida_mobile/screens/home.dart';
+import 'package:atlantida_mobile/screens/register_diving_spots.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
@@ -2608,23 +2608,6 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
     });
   }
 
-  Future<void> _pickVideo() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? video = await picker.pickVideo(source: ImageSource.gallery);
-    List<Photo> tempMedia = [];
-
-    if (video != null) {
-      final Uint8List videoData = await video.readAsBytes();
-      final String contentType = video.mimeType ?? 'video/mp4';
-      final String base64Data = base64Encode(videoData);
-      tempMedia.add(Photo(data: base64Data, contentType: contentType));
-    }
-
-    setState(() {
-      _media.addAll(tempMedia);
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -2859,9 +2842,9 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
               ),
               const SizedBox(height: 20),
 
-              const Title1(title: 'Adicionar Fotos/Vídeos'),
+              const Title1(title: 'Adicionar Fotos'),
               const SizedBox(height: 2),
-              const Title2(title: 'Anexe fotos e vídeos da sua experiência'),
+              const Title2(title: 'Anexe fotos da sua experiência'),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2873,22 +2856,6 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                           color: Color(0xFF007FFF)),
                       label: const Text(
                         'Selecionar Fotos',
-                        style: TextStyle(color: Color(0xFF007FFF)),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF007FFF)),
-                        backgroundColor: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: _pickVideo,
-                      icon:
-                          const Icon(Icons.videocam, color: Color(0xFF007FFF)),
-                      label: const Text(
-                        'Selecionar Vídeos',
                         style: TextStyle(color: Color(0xFF007FFF)),
                       ),
                       style: OutlinedButton.styleFrom(
@@ -2928,16 +2895,6 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                                 height: 100,
                                 fit: BoxFit.cover,
                               ),
-                            if (mediaItem.contentType.startsWith('video'))
-                              Container(
-                                width: 100,
-                                height: 100,
-                                color: Colors.black12,
-                                child: const Icon(
-                                  Icons.videocam,
-                                  color: Colors.black54,
-                                ),
-                              ),
                             Positioned(
                               top: 0,
                               right: 0,
@@ -2964,7 +2921,6 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                     const SizedBox(height: 20),
                   ],
                 ),
-              const SizedBox(height: 20),
 
               // Botões
               const SizedBox(height: 20),

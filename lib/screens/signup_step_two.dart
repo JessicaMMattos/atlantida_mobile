@@ -1,7 +1,8 @@
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
-import 'package:atlantida_mobile/screens/login_screen.dart';
+import 'package:atlantida_mobile/screens/login.dart';
+import 'package:atlantida_mobile/screens/terms%20_of_use.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
-import 'package:atlantida_mobile/screens/signup_screen_step_one.dart';
+import 'package:atlantida_mobile/screens/signup_step_one.dart';
 import 'package:atlantida_mobile/controllers/address_controller.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
@@ -41,6 +42,9 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
   String _districtErrorMessage = '';
   String _streetErrorMessage = '';
   String _numberErrorMessage = '';
+  String _termsErrorMessage = '';
+
+  bool _acceptTerms = false;
 
   bool _isValidCep(String cep) {
     return RegExp(r'^\d{5}-\d{3}$').hasMatch(cep);
@@ -51,9 +55,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
     filter: {'#': RegExp(r'[0-9]')},
   );
 
-  void _completeSignup() {
-    setState(() async {
-      try {
+  void _completeSignup() async {
+    setState(() {
         _cepErrorMessage =
             _cepController.text.isEmpty || !_isValidCep(_cepController.text)
                 ? 'Campo obrigatório.'
@@ -70,6 +73,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
             _streetController.text.isEmpty ? 'Campo obrigatório.' : '';
         _numberErrorMessage =
             _numberController.text.isEmpty ? 'Campo obrigatório.' : '';
+        if (!_acceptTerms) {
+            _termsErrorMessage = 'Você deve aceitar os termos de uso.';
+        }
+        });
 
         if (_cepErrorMessage.isEmpty &&
             _countryErrorMessage.isEmpty &&
@@ -77,7 +84,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
             _cityErrorMessage.isEmpty &&
             _districtErrorMessage.isEmpty &&
             _streetErrorMessage.isEmpty &&
-            _numberErrorMessage.isEmpty) {
+            _numberErrorMessage.isEmpty &&
+            _termsErrorMessage.isEmpty) {
+          
+          try {
           var responseUser =
               await UserController().createUser(context, widget.newUser);
           var userId = json.decode(responseUser.body)['_id'];
@@ -117,14 +127,13 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
               );
             },
           );
-        }
-      } catch (error) {
+          } catch (error) {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Erro no cadastro, tente novamente.')),
         );
       }
-    });
+        }
   }
 
   void _searchCep() async {
@@ -372,8 +381,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
               const SizedBox(height: 20),
 
               // Campo de Complemento
-              CustomTextField(
-                label: 'Complemento (opcional)',
+              CustomTextFieldOptional(
+                label: 'Complemento',
                 controller: _complementController,
                 description: 'Apartamento, sala, conjunto, andar',
               ),
@@ -427,7 +436,65 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
                     style: const TextStyle(color: Colors.red, fontSize: 12),
                   ),
                 ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 20),
+
+              Row(
+                children: [
+                  Checkbox(
+                    value: _acceptTerms,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        _acceptTerms = value ?? false;
+                        _termsErrorMessage = '';
+                      });
+                    },
+                    activeColor: const Color(0xFF007FFF),
+                  ),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TermsOfUseScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text.rich(
+                        TextSpan(
+                          text: 'Declaro que li e aceito os ',
+                          style: TextStyle(
+                            fontFamily: 'Inter',
+                            fontSize: 14,
+                            color: Color(0xFF263238),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: 'termos de uso',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                color: Color(0xFF007FFF),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color(0xFF007FFF),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (_termsErrorMessage.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    _termsErrorMessage,
+                    style: const TextStyle(color: Colors.red, fontSize: 12),
+                  ),
+                ),
+              const SizedBox(height: 20),
 
               SizedBox(
                 width: MediaQuery.of(context).size.width - 40,

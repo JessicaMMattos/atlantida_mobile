@@ -1,11 +1,11 @@
-import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
-import 'package:atlantida_mobile/models/diving_spot_return.dart';
-import 'package:atlantida_mobile/screens/dive_spot_details_screen.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
-import 'package:atlantida_mobile/screens/register_diving_spots_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:atlantida_mobile/screens/home.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:atlantida_mobile/models/diving_spot_return.dart';
+import 'package:atlantida_mobile/screens/details_dive_spot.dart';
+import 'package:atlantida_mobile/screens/register_diving_spots.dart';
+import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});

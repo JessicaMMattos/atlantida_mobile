@@ -1,8 +1,8 @@
-import 'package:atlantida_mobile/screens/redefine_password_screen.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
-import 'package:atlantida_mobile/screens/signup_screen_step_one.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
+import 'package:atlantida_mobile/screens/redefine_password.dart';
+import 'package:atlantida_mobile/screens/signup_step_one.dart';
 import 'package:atlantida_mobile/components/button.dart';
+import 'package:atlantida_mobile/screens/home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
@@ -79,22 +79,23 @@ class _LoginScreenState extends State<LoginScreen> {
               color: Colors.white,
             ),
             Positioned(
-              top: 50,
+              top: 125,
               width: MediaQuery.of(context).size.width,
               child: Column(
                 children: [
                   SvgPicture.asset(
-                    'assets/icons/Logo.svg',
-                    height: 45,
+                    'assets/icons/logo.svg',
+                    height: 40,
+                    fit: BoxFit.contain,
                   ),
                 ],
               ),
             ),
             Positioned(
-              top: 176,
+              top: 210,
               child: Container(
                 width: MediaQuery.of(context).size.width,
-                height: 491,
+                height: 450,
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   boxShadow: [

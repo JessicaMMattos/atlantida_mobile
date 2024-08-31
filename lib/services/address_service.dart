@@ -19,14 +19,6 @@ class AddressService {
     return response;
   }
 
-  Future<http.Response> getAddressById(String id) async {
-    final response = await http.get(
-      Uri.parse('$baseUrl/$id'),
-    );
-
-    return response;
-  }
-
   Future<http.Response> updateAddress(String id, AddressUpdate address) async {
     final response = await http.put(
       Uri.parse('$baseUrl/$id'),

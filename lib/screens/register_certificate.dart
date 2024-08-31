@@ -1,16 +1,14 @@
 import 'dart:convert';
-
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/controllers/certificate_controller.dart';
 import 'package:atlantida_mobile/models/certificate.dart';
 import 'package:atlantida_mobile/models/certificate_return.dart';
-import 'package:atlantida_mobile/screens/certificate_details_screen.dart';
+import 'package:atlantida_mobile/screens/details_certificate.dart';
 import 'package:atlantida_mobile/screens/certificate_screen.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
-
 import 'package:intl/intl.dart';
 
 class CertificateRegistrationScreen extends StatefulWidget {
@@ -274,7 +272,6 @@ class _CertificateRegistrationScreenState
           _certificationNumberErrorMessage.isEmpty &&
           _expirationDateErrorMessage.isEmpty &&
           _issueDateErrorMessage.isEmpty) {
-
         newCertificate = Certificate(
             certificateName: _certificateNameController.text,
             accreditor: _accreditorController.text,
@@ -303,46 +300,47 @@ class _CertificateRegistrationScreenState
         }
 
         if (hasUpdate) {
-        var newCert = await CertificateController().updateCertificate(updateCertificate.id, newCertificate);
+          var newCert = await CertificateController()
+              .updateCertificate(updateCertificate.id, newCertificate);
 
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (BuildContext context) {
-            return CustomAlertDialog(
-              text: 'Certificado atualizado com sucesso!',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CertificateDetailsScreen(certificate: newCert),
-                  ),
-                );
-              },
-            );
-          },
-        );
-      } else {
+          showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) {
+              return CustomAlertDialog(
+                text: 'Certificado atualizado com sucesso!',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          CertificateDetailsScreen(certificate: newCert),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        } else {
+          await CertificateController().createCertificate(newCertificate);
 
-        await CertificateController().createCertificate(newCertificate);
-
-        showDialog(
-          // ignore: use_build_context_synchronously
-          context: context,
-          builder: (BuildContext context) {
-            return CustomAlertDialog(
-              text: 'Certificado cadastrado com sucesso!',
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const CertificatesScreen(),
-                  ),
-                );
-              },
-            );
-          },
-        );
+          showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) {
+              return CustomAlertDialog(
+                text: 'Certificado cadastrado com sucesso!',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const CertificatesScreen(),
+                    ),
+                  );
+                },
+              );
+            },
+          );
         }
 
         _resetForm();
@@ -454,21 +452,34 @@ class _CertificateRegistrationScreenState
               const SizedBox(height: 20),
 
               // Campo de Nível de certificação
-              CustomTextField(
-                  label: 'Nível de certificação (opcional)',
+              CustomTextFieldOptional(
+                  label: 'Nível de certificação',
                   controller: _certificationLevelController,
                   description: 'Ex. Beginner'),
               const SizedBox(height: 20),
 
               // Campo de Data de emissão
-              const Text(
-                'Data de emissão (opcional)',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Color(0xFF263238),
-                ),
+              const Row(
+                children: [
+                  Text(
+                    'Data de emissão',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Color(0xFF263238),
+                    ),
+                  ),
+                  Text(
+                    ' (Opcional)',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
 
@@ -516,14 +527,27 @@ class _CertificateRegistrationScreenState
               const SizedBox(height: 20),
 
               // Campo de data de validade
-              const Text(
-                'Data de validade (opcional)',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Color(0xFF263238),
-                ),
+              const Row(
+                children: [
+                  Text(
+                    'Data de validade',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Color(0xFF263238),
+                    ),
+                  ),
+                  Text(
+                    ' (Opcional)',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
 
@@ -571,82 +595,95 @@ class _CertificateRegistrationScreenState
               const SizedBox(height: 20),
 
               // Campo para adicionar imagem
-const Title1(
-  title: 'Imagem do certificado (opcional)',
-),
-const SizedBox(height: 2),
-Title2(
-  title: hasUpdate
-      ? 'Altere a imagem de seu certificado'
-      : 'Insira uma imagem de seu certificado',
-),
-const SizedBox(height: 10),
-ElevatedButton(
-  onPressed: _pickImage,
-  style: ElevatedButton.styleFrom(
-    backgroundColor: Colors.white,
-    side: const BorderSide(
-      color: Colors.blue,
-    ),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(8),
-    ),
-  ),
-  child: const Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: [
-      Icon(
-        Icons.camera_alt,
-        color: Colors.blue,
-      ),
-      SizedBox(width: 8),
-      Text(
-        'Escolher imagem',
-        style: TextStyle(
-          color: Colors.blue,
-        ),
-      ),
-    ],
-  ),
-),
-if (_imageData != null)
-  Column(
-    children: [
-      const SizedBox(height: 10),
-      Stack(
-        children: [
-          Image.memory(
-            _imageData!,
-            height: 200,
-            fit: BoxFit.cover,
-          ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _imageData = null;
-                });
-              },
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.black54,
-                  shape: BoxShape.circle,
+              const Row(
+                children: [
+                  Title1(
+                    title: 'Imagem do certificado',
+                  ),
+                  Text(
+                    ' (Opcional)',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+              
+              const SizedBox(height: 2),
+              Title2(
+                title: hasUpdate
+                    ? 'Altere a imagem de seu certificado'
+                    : 'Insira uma imagem de seu certificado',
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _pickImage,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  side: const BorderSide(
+                    color: Colors.blue,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 24,
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.camera_alt,
+                      color: Colors.blue,
+                    ),
+                    SizedBox(width: 8),
+                    Text(
+                      'Escolher imagem',
+                      style: TextStyle(
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ),
-        ],
-      ),
-    ],
-  ),
-
+              if (_imageData != null)
+                Column(
+                  children: [
+                    const SizedBox(height: 10),
+                    Stack(
+                      children: [
+                        Image.memory(
+                          _imageData!,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _imageData = null;
+                              });
+                            },
+                            child: Container(
+                              decoration: const BoxDecoration(
+                                color: Colors.black54,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
 
               //Botão
               const SizedBox(height: 20),

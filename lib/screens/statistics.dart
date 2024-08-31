@@ -322,7 +322,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   buildStatisticCard(
                     context,
                     title: 'Corpo de Água Mais Comum',
-                    value: stats.mostCommonWaterBody!,
+                    value: _capitalize(stats.mostCommonWaterBody!),
                     icon: Icons.water,
                   ),
                 if (stats.mostCommonWeatherCondition != null &&
@@ -330,7 +330,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   buildStatisticCard(
                     context,
                     title: 'Clima Mais Comum',
-                    value: stats.mostCommonWeatherCondition!,
+                    value: _capitalize(stats.mostCommonWeatherCondition!),
                     icon: Icons.cloud,
                   ),
               ],
@@ -487,5 +487,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         );
       },
     );
+  }
+
+  String _capitalize(String text) {
+    return text[0].toUpperCase() + text.substring(1).toLowerCase();
   }
 }

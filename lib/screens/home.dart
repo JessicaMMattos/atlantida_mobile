@@ -1,22 +1,21 @@
-import 'dart:convert';
-import 'package:atlantida_mobile/models/dive_log_return.dart';
-import 'package:atlantida_mobile/models/user_return.dart';
-import 'package:atlantida_mobile/screens/dive_log_details_screen.dart';
-
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/services/dive_log_service.dart';
 import 'package:atlantida_mobile/services/weather_service.dart';
+import 'package:atlantida_mobile/screens/details_dive_log.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
+import 'package:atlantida_mobile/models/dive_log_return.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:atlantida_mobile/screens/login_screen.dart';
+import 'package:atlantida_mobile/models/user_return.dart';
+import 'package:atlantida_mobile/screens/login.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});

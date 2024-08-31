@@ -1,4 +1,5 @@
 import 'package:atlantida_mobile/models/dive_log.dart';
+import 'package:atlantida_mobile/models/photo.dart';
 
 class DiveLogReturn {
   late String id;

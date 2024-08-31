@@ -1,8 +1,8 @@
 import 'package:atlantida_mobile/screens/certificate_screen.dart';
-import 'package:atlantida_mobile/screens/dive_sites_screen.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
-import 'package:atlantida_mobile/screens/profile_screen.dart';
-import 'package:atlantida_mobile/screens/statistics_screen.dart';
+import 'package:atlantida_mobile/screens/dive_sites.dart';
+import 'package:atlantida_mobile/screens/home.dart';
+import 'package:atlantida_mobile/screens/profile.dart';
+import 'package:atlantida_mobile/screens/statistics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 

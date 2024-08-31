@@ -1,7 +1,7 @@
-import 'package:atlantida_mobile/screens/signup_screen_step_two.dart';
+import 'package:atlantida_mobile/screens/signup_step_two.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
-import 'package:atlantida_mobile/screens/login_screen.dart';
+import 'package:atlantida_mobile/screens/login.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
 import 'package:atlantida_mobile/components/button.dart';
 import 'package:atlantida_mobile/models/user.dart';

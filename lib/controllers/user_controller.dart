@@ -1,5 +1,5 @@
 import 'package:atlantida_mobile/models/user_return.dart';
-import 'package:atlantida_mobile/screens/first_screen.dart';
+import 'package:atlantida_mobile/screens/first.dart';
 // ignore: implementation_imports
 import 'package:http/src/response.dart';
 import '../services/user_service.dart';

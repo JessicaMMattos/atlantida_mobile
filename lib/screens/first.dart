@@ -1,7 +1,7 @@
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:atlantida_mobile/screens/login.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 import 'package:atlantida_mobile/components/button.dart';
-import 'package:atlantida_mobile/screens/login_screen.dart';
 
 class FirstScreen extends StatefulWidget {
   const FirstScreen({super.key});

@@ -1,4 +1,4 @@
-import 'package:atlantida_mobile/models/comment_return.dart';
+import 'package:atlantida_mobile/models/photo.dart';
 
 class Comment {
   final int rating;

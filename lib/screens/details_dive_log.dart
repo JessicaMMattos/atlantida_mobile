@@ -1,13 +1,14 @@
 import 'dart:convert';
-import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
-import 'package:atlantida_mobile/models/dive_log_return.dart';
-import 'package:atlantida_mobile/screens/dive_spot_details_screen.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
-import 'package:atlantida_mobile/screens/register_dive_log_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
+import 'package:atlantida_mobile/models/photo.dart';
+import 'package:atlantida_mobile/screens/home.dart';
+import 'package:atlantida_mobile/models/dive_log_return.dart';
+import 'package:atlantida_mobile/screens/full_image_gallery.dart';
+import 'package:atlantida_mobile/screens/details_dive_spot.dart';
+import 'package:atlantida_mobile/screens/register_dive_log.dart';
 import 'package:atlantida_mobile/models/diving_spot_return.dart';
-import 'package:atlantida_mobile/models/dive_log.dart';
+import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 
 class DiveLogDetailScreen extends StatefulWidget {
@@ -268,8 +269,10 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  FullScreenImageView(photo: photo),
+                              builder: (context) => FullScreenImageGallery(
+                                photos: widget.diveLog.photos!,
+                                initialIndex: index,
+                              ),
                             ),
                           );
                         },
@@ -743,23 +746,5 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
 
   String _capitalize(String text) {
     return text[0].toUpperCase() + text.substring(1).toLowerCase();
-  }
-}
-
-class FullScreenImageView extends StatelessWidget {
-  final Photo photo;
-
-  const FullScreenImageView({super.key, required this.photo});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: Center(
-        child: InteractiveViewer(
-          child: Image.memory(base64Decode(photo.data)),
-        ),
-      ),
-    );
   }
 }

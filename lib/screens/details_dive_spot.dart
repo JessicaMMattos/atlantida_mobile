@@ -1,23 +1,19 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:convert';
-import 'dart:io';
-import 'package:atlantida_mobile/controllers/comment_controller.dart';
-import 'package:atlantida_mobile/controllers/user_controller.dart';
-import 'package:atlantida_mobile/models/comment_return.dart';
-import 'package:atlantida_mobile/models/user.dart';
-import 'package:atlantida_mobile/screens/comment_registration_screen.dart';
-import 'package:atlantida_mobile/services/maps_service.dart';
-import 'package:flutter/material.dart';
-import 'package:atlantida_mobile/models/diving_spot_return.dart';
-import 'package:atlantida_mobile/screens/dive_sites_screen.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:video_player/video_player.dart';
+import 'package:flutter/material.dart';
+import 'package:atlantida_mobile/models/user.dart';
+import 'package:atlantida_mobile/screens/dive_sites.dart';
+import 'package:atlantida_mobile/services/maps_service.dart';
+import 'package:atlantida_mobile/models/comment_return.dart';
+import 'package:atlantida_mobile/screens/register_comment.dart';
+import 'package:atlantida_mobile/models/diving_spot_return.dart';
+import 'package:atlantida_mobile/screens/full_image_gallery.dart';
+import 'package:atlantida_mobile/controllers/user_controller.dart';
+import 'package:atlantida_mobile/controllers/comment_controller.dart';
 
 class DiveSpotDetailsScreen extends StatefulWidget {
   final DivingSpotReturn diveSpot;
-  final VoidCallback? onBack; 
+  final VoidCallback? onBack;
 
   const DiveSpotDetailsScreen({super.key, required this.diveSpot, this.onBack});
 
@@ -250,207 +246,220 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
   }
 
   Widget _buildReviews(DivingSpotReturn divingSpot) {
-    final commentController = CommentController();
+  final commentController = CommentController();
 
-    return FutureBuilder<List<CommentReturn>>(
-      future: commentController.getCommentsByDivingSpotId(divingSpot.id),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-            ),
-          );
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Erro ao carregar avaliações.'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('Nenhuma avaliação encontrada.'));
-        }
+  return FutureBuilder<List<CommentReturn>>(
+    future: commentController.getCommentsByDivingSpotId(divingSpot.id),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          ),
+        );
+      } else if (snapshot.hasError) {
+        return const Center(child: Text('Erro ao carregar avaliações.'));
+      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return const Center(child: Text('Nenhuma avaliação encontrada.'));
+      }
 
-        final comments = snapshot.data!;
-        return FutureBuilder<String>(
-          future: UserController().findUserByToken().then((user) => user.id),
-          builder: (context, userIdSnapshot) {
-            if (userIdSnapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(Colors.blue), // Ajuste aqui
-                ),
-              );
-            } else if (userIdSnapshot.hasError) {
-              return const Center(child: Text('Erro ao carregar usuário.'));
-            }
+      final comments = snapshot.data!;
+      return FutureBuilder<String>(
+        future: UserController().findUserByToken().then((user) => user.id),
+        builder: (context, userIdSnapshot) {
+          if (userIdSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+              ),
+            );
+          } else if (userIdSnapshot.hasError) {
+            return const Center(child: Text('Erro ao carregar usuário.'));
+          }
 
-            final userId = userIdSnapshot.data;
+          final userId = userIdSnapshot.data;
 
-            return ListView.builder(
-              itemCount: comments.length,
-              itemBuilder: (context, index) {
-                final comment = comments[index];
+          return ListView.builder(
+            itemCount: comments.length,
+            itemBuilder: (context, index) {
+              final comment = comments[index];
 
-                return FutureBuilder<User>(
-                  future: UserController().getUserById(comment.userId),
-                  builder: (context, userSnapshot) {
-                    if (userSnapshot.connectionState ==
-                        ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.blue), // Ajuste aqui
-                        ),
-                      );
-                    } else if (userSnapshot.hasError) {
-                      return const ListTile(
-                        title: Text('Erro ao carregar usuário.'),
-                      );
-                    }
-
-                    final user = userSnapshot.data!;
-                    final isCurrentUser = userId == comment.userId;
-
-                    final String formattedDate = comment.createdDate != null
-                        ? DateFormat('dd/MM/yyyy').format(
-                            DateTime.parse(comment.createdDate!)
-                                .toUtc()
-                                .add(const Duration(hours: -3))
-                                .toLocal(),
-                          )
-                        : '';
-
-                    return Card(
-                      color: Colors.white,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  '${user.firstName} ${user.lastName}',
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Text(
-                                  formattedDate, // Exibe a data formatada
-                                  style: const TextStyle(
-                                    fontFamily: 'Inter',
-                                    fontSize: 14,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Row(
-                              children: [
-                                const SizedBox(width: 4),
-                                Row(
-                                  children: List.generate(5, (i) {
-                                    return Icon(
-                                      i < comment.rating
-                                          ? Icons.star
-                                          : Icons.star_border,
-                                      color: Colors.blue,
-                                      size: 16,
-                                    );
-                                  }),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              comment.comment ?? '',
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
-                            if (comment.photos != null &&
-                                comment.photos!.isNotEmpty)
-                              const SizedBox(height: 8),
-                            if (comment.photos != null &&
-                                comment.photos!.isNotEmpty)
-                              SizedBox(
-                                height: 100,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: comment.photos!.length,
-                                  itemBuilder: (context, imgIndex) {
-                                    final photo = comment.photos![imgIndex];
-                                    return Padding(
-                                      padding:
-                                          const EdgeInsets.only(right: 8.0),
-                                      child: GestureDetector(
-                                        onTap: () {
-                                          // Exibir imagem ou vídeo em tela cheia
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  FullScreenImageView(
-                                                imageData: photo,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          child: Image.memory(
-                                            base64Decode(photo.data),
-                                            fit: BoxFit.cover,
-                                            width: 100,
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            if (isCurrentUser)
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      _editComment(comment);
-                                    },
-                                    child: const Text(
-                                      'Editar',
-                                      style: TextStyle(color: Colors.blue),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      _deleteComment(comment.id);
-                                    },
-                                    child: const Text(
-                                      'Excluir',
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
+              return FutureBuilder<User>(
+                future: UserController().getUserById(comment.userId),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                       ),
                     );
-                  },
-                );
-              },
-            );
-          },
-        );
-      },
-    );
-  }
+                  } else if (userSnapshot.hasError) {
+                    return const ListTile(
+                      title: Text('Erro ao carregar usuário.'),
+                    );
+                  }
+
+                  final user = userSnapshot.data!;
+                  final isCurrentUser = userId == comment.userId;
+
+                  final String formattedDate = comment.createdDate != null
+                      ? DateFormat('dd/MM/yyyy').format(
+                          DateTime.parse(comment.createdDate!)
+                              .toUtc()
+                              .add(const Duration(hours: -3))
+                              .toLocal(),
+                        )
+                      : '';
+
+                  return Card(
+                    color: Colors.white,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final isSmallScreen = constraints.maxWidth < 250;
+                              return Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        '${user.firstName} ${user.lastName}',
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      if (!isSmallScreen)
+                                        Text(
+                                          formattedDate,
+                                          style: const TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  if (isSmallScreen)
+                                    Text(
+                                      formattedDate,
+                                      style: const TextStyle(
+                                        fontFamily: 'Inter',
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                ],
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              const SizedBox(width: 4),
+                              Row(
+                                children: List.generate(5, (i) {
+                                  return Icon(
+                                    i < comment.rating
+                                        ? Icons.star
+                                        : Icons.star_border,
+                                    color: Colors.blue,
+                                    size: 16,
+                                  );
+                                }),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            comment.comment ?? '',
+                            style: const TextStyle(
+                              fontFamily: 'Inter',
+                              fontSize: 14,
+                              color: Colors.black,
+                            ),
+                          ),
+                          if (comment.photos != null && comment.photos!.isNotEmpty)
+                            const SizedBox(height: 8),
+                          if (comment.photos != null && comment.photos!.isNotEmpty)
+                            SizedBox(
+                            height: 100,
+                            child: ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: comment.photos!.length,
+                              itemBuilder: (context, imgIndex) {
+                                final photo = comment.photos![imgIndex];
+                                return Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => FullScreenImageGallery(
+                                            photos: comment.photos!,
+                                            initialIndex: imgIndex,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.memory(
+                                        base64Decode(photo.data),
+                                        fit: BoxFit.cover,
+                                        width: 100,
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          if (isCurrentUser)
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                TextButton(
+                                  onPressed: () {
+                                    _editComment(comment);
+                                  },
+                                  child: const Text(
+                                    'Editar',
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    _deleteComment(comment.id);
+                                  },
+                                  child: const Text(
+                                    'Excluir',
+                                    style: TextStyle(color: Colors.red),
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
+      );
+    },
+  );
+}
+
 
   Widget _buildInformation(DivingSpotReturn divingSpot) {
     return FutureBuilder<String>(
@@ -470,15 +479,15 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
           double difficulty = divingSpot.averageDifficulty!;
 
           if (difficulty >= 1.0 && difficulty < 2.0) {
-            levelText = '$difficulty - Iniciante';
+            levelText = 'Iniciante';
           } else if (difficulty >= 2.0 && difficulty < 3.0) {
-            levelText = '$difficulty - Leve';
+            levelText = 'Iniciante Médio';
           } else if (difficulty >= 3.0 && difficulty < 4.0) {
-            levelText = '$difficulty - Médio';
+            levelText = 'Médio';
           } else if (difficulty >= 4.0 && difficulty < 5.0) {
-            levelText = '$difficulty - Médio Alto';
+            levelText = 'Médio Avançado';
           } else if (difficulty == 5.0) {
-            levelText = '$difficulty - Alto';
+            levelText = 'Avançado';
           } else {
             levelText = 'N/A';
           }
@@ -492,17 +501,15 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                 : divingSpot.visibility!;
 
         String waterBodyText =
-            (divingSpot.waterBody.isEmpty)
-                ? 'N/A'
-                : divingSpot.waterBody;
+            (divingSpot.waterBody.isEmpty) ? 'N/A' : divingSpot.waterBody;
 
         return Column(
           children: [
             _buildInfoRow(
                 Icons.location_on_outlined, coordinatesText, locationText),
             _buildInfoRow(Icons.scuba_diving, 'Nível de mergulho', levelText),
-            _buildInfoRow(Icons.waves, 'Visibilidade', visibilityText),
-            _buildInfoRow(Icons.water_drop, 'Corpo de água', waterBodyText),
+            _buildInfoRow(Icons.waves, 'Visibilidade', _capitalize(visibilityText)),
+            _buildInfoRow(Icons.water_drop, 'Corpo de água', _capitalize(waterBodyText)),
           ],
         );
       },
@@ -510,34 +517,65 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, color: const Color(0xFF007FFF), size: 28),
-          const SizedBox(width: 16),
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 16,
-              color: Colors.black,
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 8.0),
+    child: LayoutBuilder(
+      builder: (context, constraints) {
+        final isSmallScreen = constraints.maxWidth < 360;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: const Color(0xFF007FFF), size: 28),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+                if (!isSmallScreen) const Spacer(),
+                if (!isSmallScreen)
+                  Expanded(
+                    child: Text(
+                      value,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+              ],
             ),
-          ),
-          const Spacer(),
-          Text(
-            value,
-            style: const TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            if (isSmallScreen)
+              Padding(
+                padding: const EdgeInsets.only(left: 44.0),
+                child: Text(
+                  value,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+          ],
+        );
+      },
+    ),
+  );
+}
+
 
   void _editComment(CommentReturn comment) async {
     Navigator.pushReplacement(
@@ -626,14 +664,17 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                         content: Text('Comentário excluído com sucesso.'),
                       ),
                     );
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context)
                         .pop(true); // Retorna verdadeiro para indicar sucesso
                   } catch (err) {
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Erro ao deletar comentário: $err'),
                       ),
                     );
+                    // ignore: use_build_context_synchronously
                     Navigator.of(context)
                         .pop(false); // Retorna falso em caso de erro
                   }
@@ -648,6 +689,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
         setState(() {});
       }
     } catch (err) {
+      // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Erro ao exibir diálogo de exclusão: $err'),
@@ -655,104 +697,11 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
       );
     }
   }
-}
 
-class FullScreenImageView extends StatefulWidget {
-  final Photo imageData;
-
-  const FullScreenImageView({super.key, required this.imageData});
-
-  @override
-  // ignore: library_private_types_in_public_api
-  _FullScreenImageViewState createState() => _FullScreenImageViewState();
-}
-
-class _FullScreenImageViewState extends State<FullScreenImageView> {
-  VideoPlayerController? _videoController;
-  bool _isVideo = false;
-  String? _tempVideoPath;
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.imageData.contentType.startsWith('video/')) {
-      _isVideo = true;
-      _initializeVideo();
+  String _capitalize(String text) {
+    if(text != "N/A"){
+      return text[0].toUpperCase() + text.substring(1).toLowerCase();  
     }
-  }
-
-  Future<void> _initializeVideo() async {
-    final bytes = base64Decode(widget.imageData.data);
-    final tempDir = await getTemporaryDirectory();
-    final tempFile = await File('${tempDir.path}/temp_video.mp4').create();
-    await tempFile.writeAsBytes(bytes);
-    _tempVideoPath = tempFile.path;
-
-    _videoController = VideoPlayerController.file(File(_tempVideoPath!))
-      ..initialize().then((_) {
-        setState(() {
-          _videoController!.play();
-        });
-      });
-  }
-
-  @override
-  void dispose() {
-    _videoController?.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-      ),
-      body: Center(
-        child: _isVideo
-            ? _videoController != null && _videoController!.value.isInitialized
-                ? AspectRatio(
-                    aspectRatio: _videoController!.value.aspectRatio,
-                    child: VideoPlayer(_videoController!),
-                  )
-                : const CircularProgressIndicator()
-            : InteractiveViewer(
-                minScale: 0.5,
-                maxScale: 4.0,
-                child: Image.memory(
-                  base64Decode(widget.imageData.data),
-                  fit: BoxFit.contain,
-                ),
-              ),
-      ),
-      floatingActionButton: _isVideo
-          ? FloatingActionButton(
-              backgroundColor: Colors.white,
-              onPressed: () {
-                setState(() {
-                  if (_videoController!.value.isPlaying) {
-                    _videoController!.pause();
-                  } else {
-                    _videoController!.play();
-                  }
-                });
-              },
-              child: Icon(
-                _videoController!.value.isPlaying
-                    ? Icons.pause
-                    : Icons.play_arrow,
-                color: Colors.black,
-              ),
-            )
-          : null,
-    );
+    return text;
   }
 }

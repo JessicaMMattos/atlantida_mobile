@@ -1,3 +1,5 @@
+import 'package:atlantida_mobile/models/photo.dart';
+
 class CommentReturn {
   late String id;
   final int rating;
@@ -40,27 +42,6 @@ class CommentReturn {
       'divingSpotId': divingSpotId,
       'userId': userId,
       'createdDate': createdDate,
-    };
-  }
-}
-
-class Photo {
-  final String data;
-  final String contentType;
-
-  Photo({required this.data, required this.contentType});
-
-  factory Photo.fromJson(Map<String, dynamic> json) {
-    return Photo(
-      data: json['data'],
-      contentType: json['contentType'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'data': data,
-      'contentType': contentType,
     };
   }
 }

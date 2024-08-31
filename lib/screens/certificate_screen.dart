@@ -1,12 +1,12 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
 import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/models/certificate_return.dart';
-import 'package:atlantida_mobile/screens/certificate_details_screen.dart';
-import 'package:atlantida_mobile/screens/register_certificate_screen.dart';
-import 'package:flutter/material.dart';
+import 'package:atlantida_mobile/screens/details_certificate.dart';
+import 'package:atlantida_mobile/screens/register_certificate.dart';
 import 'package:atlantida_mobile/controllers/certificate_controller.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class CertificatesScreen extends StatefulWidget {
   const CertificatesScreen({super.key});
@@ -107,7 +107,11 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                 const SizedBox(height: 5),
                 Expanded(
                   child: _isLoading
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: Colors.blue,
+                          ),
+                        )
                       : _certificates == null || _certificates!.isEmpty
                           ? const Center(
                               child: Text('Nenhum certificado encontrado.'))
@@ -127,7 +131,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF007FFF), // Fundo azul
+        backgroundColor: const Color(0xFF007FFF),
         onPressed: () {
           Navigator.pushReplacement(
             context,
@@ -138,7 +142,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
         },
         child: const Icon(
           Icons.add,
-          color: Colors.white, // Ícone branco
+          color: Colors.white,
         ),
       ),
     );
@@ -149,7 +153,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
     bool isWideScreen = screenWidth > 600;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 5.0),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8.0),
         side: BorderSide(
@@ -178,7 +182,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                   ),
           ),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(10.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

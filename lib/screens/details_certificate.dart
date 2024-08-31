@@ -1,12 +1,11 @@
 import 'dart:convert';
-
-import 'package:atlantida_mobile/controllers/certificate_controller.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter/material.dart';
 import 'package:atlantida_mobile/models/certificate.dart';
 import 'package:atlantida_mobile/models/certificate_return.dart';
 import 'package:atlantida_mobile/screens/certificate_screen.dart';
-import 'package:atlantida_mobile/screens/register_certificate_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:atlantida_mobile/screens/register_certificate.dart';
+import 'package:atlantida_mobile/controllers/certificate_controller.dart';
 
 class CertificateDetailsScreen extends StatefulWidget {
   final CertificateReturn certificate;

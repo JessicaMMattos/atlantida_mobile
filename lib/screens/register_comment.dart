@@ -1,15 +1,16 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
-import 'package:atlantida_mobile/components/text_field.dart';
-import 'package:atlantida_mobile/controllers/comment_controller.dart';
-import 'package:atlantida_mobile/models/comment_return.dart';
-import 'package:atlantida_mobile/screens/dive_spot_details_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:atlantida_mobile/models/diving_spot_return.dart';
+import 'package:atlantida_mobile/models/photo.dart';
 import 'package:atlantida_mobile/models/comment.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:atlantida_mobile/models/comment_return.dart';
+import 'package:atlantida_mobile/components/text_field.dart';
+import 'package:atlantida_mobile/screens/details_dive_spot.dart';
+import 'package:atlantida_mobile/models/diving_spot_return.dart';
+import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
+import 'package:atlantida_mobile/controllers/comment_controller.dart';
 
 class CommentRegistrationScreen extends StatefulWidget {
   final DivingSpotReturn divingSpot;
@@ -115,18 +116,49 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
 
         if (widget.comment != null) {
           await CommentController().updateComment(widget.comment!.id, comment);
+
+          showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) {
+              return CustomAlertDialog(
+                text: 'Comentário atualizado com sucesso!',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
+                    ),
+                  );
+                },
+              );
+            },
+          );
         } else {
           await CommentController().createComment(comment);
+
+          showDialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            builder: (BuildContext context) {
+              return CustomAlertDialog(
+                text: 'Comentário adicionado com sucesso!',
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
+                    ),
+                  );
+                },
+              );
+            },
+          );
         }
 
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(
-            builder: (context) =>
-                DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
-          ),
-        );
+        _resetForm();
       }
     } catch (error) {
       // ignore: use_build_context_synchronously

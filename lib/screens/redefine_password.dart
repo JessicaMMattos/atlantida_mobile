@@ -2,7 +2,7 @@ import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
 import 'package:atlantida_mobile/components/button.dart';
-import 'package:atlantida_mobile/screens/login_screen.dart';
+import 'package:atlantida_mobile/screens/login.dart';
 import 'package:flutter/material.dart';
 
 class RedefinePasswordScreen extends StatefulWidget {

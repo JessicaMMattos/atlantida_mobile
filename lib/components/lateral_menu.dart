@@ -1,6 +1,6 @@
 import 'package:atlantida_mobile/controllers/user_controller.dart';
-import 'package:atlantida_mobile/screens/register_dive_log_screen.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
+import 'package:atlantida_mobile/screens/register_dive_log.dart';
+import 'package:atlantida_mobile/screens/home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 

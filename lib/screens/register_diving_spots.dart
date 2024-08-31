@@ -1,12 +1,10 @@
 import 'dart:convert';
-
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
-import 'package:atlantida_mobile/components/dropdown_button.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:atlantida_mobile/models/diving_spot_create.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
-import 'package:atlantida_mobile/screens/home_screen.dart';
+import 'package:atlantida_mobile/screens/home.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
 import 'package:atlantida_mobile/components/button.dart';
@@ -265,9 +263,23 @@ class _DivingSpotRegistrationScreenState
               const SizedBox(height: 20),
 
               // Campo de Descrição
-              const Title1(
-                title: 'Descrição (opcional)',
+              const Row(
+                children: [
+                  Title1(
+                    title: 'Descrição',
+                  ),
+                  Text(
+                    ' (Opcional)',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
+              
               const SizedBox(height: 10),
               TextFormField(
                 controller: _descriptionController,
@@ -441,8 +453,21 @@ class _DivingSpotRegistrationScreenState
               const SizedBox(height: 25),
 
               // Campo para adicionar imagem
-              const Title1(
-                title: 'Adicionar Imagem (opcional)',
+              const Row(
+                children: [
+                  Title1(
+                    title: 'Adicionar Imagem',
+                  ),
+                  Text(
+                    ' (Opcional)',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 2),
               const Title2(

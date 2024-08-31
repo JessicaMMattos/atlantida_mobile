@@ -22,20 +22,6 @@ class AddressController {
     }
   }
 
-  Future<Address> getAddressById(BuildContext context, String id) async {
-    try {
-      var response = await _addressService.getAddressById(id);
-
-      if (response.statusCode == 200) {
-        return Address.fromJson(jsonDecode(response.body));
-      } else {
-        throw Exception('Failed to fetch address: ${response.body}');
-      }
-    } catch (error) {
-      throw Exception(error);
-    }
-  }
-
   Future<http.Response> updateAddress(String id, AddressUpdate address) async {
     try {
       var response = await _addressService.updateAddress(id, address);

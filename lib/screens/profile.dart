@@ -1,20 +1,22 @@
+import 'package:atlantida_mobile/screens/about_us.dart';
+import 'package:atlantida_mobile/screens/terms%20_of_use.dart';
+import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:atlantida_mobile/controllers/address_controller.dart';
+import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
 import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/components/senha_field.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
-import 'package:atlantida_mobile/controllers/address_controller.dart';
-import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/models/address_update.dart';
 import 'package:atlantida_mobile/models/user.dart';
 import 'package:atlantida_mobile/models/user_return.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -115,6 +117,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                   ),
                   const Spacer(),
+                  ListTile(
+                    leading: const Icon(Icons.description_outlined,
+                        color: Colors.black),
+                    title: const Text('Termos de uso'),
+                    trailing: const Icon(Icons.arrow_forward_ios,
+                        color: Colors.black),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const TermsOfUseScreen(),
+                        ),
+                      );
+                    },
+                  ),
+                  ListTile(
+                    leading:
+                        const Icon(Icons.info_outline, color: Colors.black),
+                    title: const Text('Sobre nós'),
+                    trailing: const Icon(Icons.arrow_forward_ios,
+                        color: Colors.black),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AboutUsScreen(),
+                        ),
+                      );
+                    },
+                  ),
                   ListTile(
                     leading: const Icon(Icons.exit_to_app, color: Colors.red),
                     title: const Text(
@@ -630,8 +662,8 @@ class _AccountScreenState extends State<AccountScreen> {
             const SizedBox(height: 20),
 
             // Campo de Complemento
-            CustomTextField(
-              label: 'Complemento (opcional)',
+            CustomTextFieldOptional(
+              label: 'Complemento',
               controller: _complementController,
               description: 'Apartamento, sala, conjunto, andar',
             ),
