@@ -119,28 +119,28 @@ class AboutUsScreen extends StatelessWidget {
                       {
                         'name': 'Jéssica Mattos',
                         'role': 'Desenvolvedora Full Stack',
-                        'imagePath': 'images/jessica-picture.png',
+                        'imagePath': 'assets/images/jessica-picture.png',
                         'linkedInUrl':
                             'https://www.linkedin.com/in/j%C3%A9ssicammattos/',
                       },
                       {
                         'name': 'Ícaro Vieira',
                         'role': 'UI/UX Designer',
-                        'imagePath': 'images/icaro-picture.png',
+                        'imagePath': 'assets/images/icaro-picture.png',
                         'linkedInUrl':
                             'https://www.linkedin.com/in/icaro-vieira1202/',
                       },
                       {
                         'name': 'Diego Negretto',
                         'role': 'Orientador',
-                        'imagePath': 'images/diego-picture.png',
+                        'imagePath': 'assets/images/diego-picture.png',
                         'linkedInUrl':
                             'https://www.linkedin.com/in/diego-negretto-8653a7a2/',
                       },
                       {
                         'name': 'Camilo Perucci',
                         'role': 'Coorientador',
-                        'imagePath': 'images/camilo-picture.png',
+                        'imagePath': 'assets/images/camilo-picture.png',
                         'linkedInUrl':
                             'https://www.linkedin.com/in/camilo-perucci-98a14422/',
                       },
@@ -233,10 +233,8 @@ class AboutUsScreen extends StatelessWidget {
   }
 
   Future<void> _launchUrl(String url) async {
-    final uri = Uri.parse(url);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
       throw 'Could not launch $url';
     }
   }

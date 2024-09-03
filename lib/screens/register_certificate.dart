@@ -283,7 +283,7 @@ class _CertificateRegistrationScreenState
         }
 
         if (_expirationDateController.text.isNotEmpty) {
-          newCertificate.certificationLevel = _expirationDateController.text;
+          newCertificate.expirationDate = _expirationDateController.text;
         }
 
         if (_issueDateController.text.isNotEmpty) {

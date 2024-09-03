@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:atlantida_mobile/models/diving_spot_create.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
 import 'package:atlantida_mobile/screens/home.dart';
@@ -47,15 +46,11 @@ class _DivingSpotRegistrationScreenState
     final XFile? image = await picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      final Uint8List? compressedImageData =
-          await FlutterImageCompress.compressWithFile(
-        image.path,
-        quality: 70,
-      );
+      final Uint8List imageData = await image.readAsBytes();
 
-      if (compressedImageData != null) {
+      if (imageData != null) {
         setState(() {
-          _imageData = compressedImageData;
+          _imageData = imageData;
           _imageContentType = image.mimeType;
         });
       }
