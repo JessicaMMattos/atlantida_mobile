@@ -27,10 +27,10 @@ O aplicativo **Atlântida Mobile** possui as seguintes funcionalidades:
 
 ## Imagens do Aplicativo
 
-<img src="assets/images/screenshot1.jpeg" alt="Tela Inicial" width="300"/>
-<img src="assets/images/screenshot2.jpeg" alt="Tela de Mapas" width="300"/>
-<img src="assets/images/screenshot3.jpeg" alt="Tela de Comentários do Mergulho" width="300"/>
-<img src="assets/images/screenshot5.jpeg" alt="Gráficos" width="260"/>
+<img src="assets/images/screenshot1.jpeg" alt="Tela Inicial" width="200"/>
+<img src="assets/images/screenshot2.jpeg" alt="Tela de Mapas" width="200"/>
+<img src="assets/images/screenshot3.jpeg" alt="Tela de Comentários do Mergulho" width="200"/>
+<img src="assets/images/screenshot5.jpeg" alt="Gráficos" width="200"/>
 
 ## Licença
 
