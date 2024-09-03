@@ -331,7 +331,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 10),
                     const Text(
-                      'Seja bem-vindo!',
+                      'Seja bem-vindo(a)!',
                       style: TextStyle(
                         fontFamily: 'Inter',
                         fontWeight: FontWeight.w400,
@@ -414,7 +414,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 10),
+                                  const SizedBox(height: 5),
                                   Row(
                                     children: [
                                       const Icon(Icons.calendar_month,

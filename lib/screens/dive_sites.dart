@@ -8,7 +8,9 @@ import 'package:atlantida_mobile/screens/register_diving_spots.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final DivingSpotReturn? diveSpot;
+
+  const MapScreen({super.key, this.diveSpot});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -42,6 +44,12 @@ class _MapScreenState extends State<MapScreen> {
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
+
+    if (widget.diveSpot != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _moveToSpot(widget.diveSpot!);
+      });
+    }
   }
 
   Future<void> _getUserLocation() async {
@@ -73,6 +81,18 @@ class _MapScreenState extends State<MapScreen> {
         desiredAccuracy: LocationAccuracy.high);
   }
 
+  void _moveToSpot(DivingSpotReturn spot) {
+    setState(() {
+      isListVisible = false;
+    });
+
+    final LatLng position = LatLng(
+      spot.location.coordinates[0],
+      spot.location.coordinates[1],
+    );
+    mapController.animateCamera(CameraUpdate.newLatLng(position));
+  }
+
   void _onSearchChanged() {
     _filterDiveLogs(_searchController.text);
   }
@@ -85,28 +105,27 @@ class _MapScreenState extends State<MapScreen> {
     });
   }
 
-  void _addMarkers() {
+  void _addMarkers() async {
     _markers.clear();
+
     for (var spot in filteredDiveSpots) {
       _markers.add(
         Marker(
           markerId: MarkerId(spot.id),
           position: LatLng(
-              spot.location.coordinates[1], spot.location.coordinates[0]),
-          infoWindow: InfoWindow(
-            title: spot.name,
-            snippet: 'Toque para mais detalhes...',
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DiveSpotDetailsScreen(diveSpot: spot),
-                ),
-              );
-            },
+              spot.location.coordinates[0], spot.location.coordinates[1]),
+          onTap: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DiveSpotDetailsScreen(diveSpot: spot),
+              ),
+            );
+          },
+          icon: await BitmapDescriptor.asset(
+            const ImageConfiguration(),
+            'assets/images/pin-mobile.png',
           ),
-          icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueAzure), // Ícone padrão azul para os pontos
         ),
       );
     }
@@ -298,7 +317,6 @@ class _MapScreenState extends State<MapScreen> {
               });
             },
             child: Container(
-              color: Colors.grey[200],
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Center(
                 child: Text(
@@ -407,12 +425,7 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DiveSpotDetailsScreen(diveSpot: spot),
-                ),
-              );
+              _moveToSpot(spot);
             },
           );
         },
@@ -474,15 +487,16 @@ class _MapScreenState extends State<MapScreen> {
           : Stack(
               children: [
                 GoogleMap(
-                  onMapCreated: _onMapCreated,
-                  initialCameraPosition: CameraPosition(
-                    target: _initialPosition,
-                    zoom: 10.0,
-                  ),
-                  markers: _markers,
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                ),
+                    onMapCreated: _onMapCreated,
+                    initialCameraPosition: CameraPosition(
+                      target: _initialPosition,
+                      zoom: 10.0,
+                    ),
+                    markers: _markers,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    zoomControlsEnabled: false,
+                    mapToolbarEnabled: false),
                 Positioned(
                   bottom: MediaQuery.of(context).size.height * 0.01,
                   left: MediaQuery.of(context).size.width * 0.02,

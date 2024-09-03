@@ -143,34 +143,37 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CommentRegistrationScreen(
-                          divingSpot: widget.diveSpot),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CommentRegistrationScreen(
+                            divingSpot: widget.diveSpot),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF007FFF),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
                     ),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007FFF),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
                   ),
-                ),
-                child: const Text(
-                  'AVALIAR PONTO',
-                  style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                  child: const Text(
+                    'AVALIAR PONTO',
+                    style: TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -231,7 +234,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
           ),
           const SizedBox(height: 20),
           SizedBox(
-            height: 200,
+            height: MediaQuery.of(context).size.height * 0.3,
             child: TabBarView(
               children: [
                 _buildInformation(widget.diveSpot),
@@ -239,227 +242,234 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 10),
         ],
       ),
     );
   }
 
   Widget _buildReviews(DivingSpotReturn divingSpot) {
-  final commentController = CommentController();
+    final commentController = CommentController();
 
-  return FutureBuilder<List<CommentReturn>>(
-    future: commentController.getCommentsByDivingSpotId(divingSpot.id),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return const Center(
-          child: CircularProgressIndicator(
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-          ),
-        );
-      } else if (snapshot.hasError) {
-        return const Center(child: Text('Erro ao carregar avaliações.'));
-      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-        return const Center(child: Text('Nenhuma avaliação encontrada.'));
-      }
+    return FutureBuilder<List<CommentReturn>>(
+      future: commentController.getCommentsByDivingSpotId(divingSpot.id),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return const Center(child: Text('Erro ao carregar avaliações.'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text('Nenhuma avaliação encontrada.'));
+        }
 
-      final comments = snapshot.data!;
-      return FutureBuilder<String>(
-        future: UserController().findUserByToken().then((user) => user.id),
-        builder: (context, userIdSnapshot) {
-          if (userIdSnapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-              ),
-            );
-          } else if (userIdSnapshot.hasError) {
-            return const Center(child: Text('Erro ao carregar usuário.'));
-          }
+        final comments = snapshot.data!;
+        return FutureBuilder<String>(
+          future: UserController().findUserByToken().then((user) => user.id),
+          builder: (context, userIdSnapshot) {
+            if (userIdSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                ),
+              );
+            } else if (userIdSnapshot.hasError) {
+              return const Center(child: Text('Erro ao carregar usuário.'));
+            }
 
-          final userId = userIdSnapshot.data;
+            final userId = userIdSnapshot.data;
 
-          return ListView.builder(
-            itemCount: comments.length,
-            itemBuilder: (context, index) {
-              final comment = comments[index];
+            return ListView.builder(
+              itemCount: comments.length,
+              itemBuilder: (context, index) {
+                final comment = comments[index];
 
-              return FutureBuilder<User>(
-                future: UserController().getUserById(comment.userId),
-                builder: (context, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                      ),
-                    );
-                  } else if (userSnapshot.hasError) {
-                    return const ListTile(
-                      title: Text('Erro ao carregar usuário.'),
-                    );
-                  }
+                return FutureBuilder<User>(
+                  future: UserController().getUserById(comment.userId),
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.blue),
+                        ),
+                      );
+                    } else if (userSnapshot.hasError) {
+                      return const ListTile(
+                        title: Text('Erro ao carregar usuário.'),
+                      );
+                    }
 
-                  final user = userSnapshot.data!;
-                  final isCurrentUser = userId == comment.userId;
+                    final user = userSnapshot.data!;
+                    final isCurrentUser = userId == comment.userId;
 
-                  final String formattedDate = comment.createdDate != null
-                      ? DateFormat('dd/MM/yyyy').format(
-                          DateTime.parse(comment.createdDate!)
-                              .toUtc()
-                              .add(const Duration(hours: -3))
-                              .toLocal(),
-                        )
-                      : '';
+                    final String formattedDate = comment.createdDate != null
+                        ? DateFormat('dd/MM/yyyy').format(
+                            DateTime.parse(comment.createdDate!)
+                                .toUtc()
+                                .add(const Duration(hours: -3))
+                                .toLocal(),
+                          )
+                        : '';
 
-                  return Card(
-                    color: Colors.white,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          LayoutBuilder(
-                            builder: (context, constraints) {
-                              final isSmallScreen = constraints.maxWidth < 250;
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        '${user.firstName} ${user.lastName}',
-                                        style: const TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      if (!isSmallScreen)
+                    return Card(
+                      color: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            LayoutBuilder(
+                              builder: (context, constraints) {
+                                final isSmallScreen =
+                                    constraints.maxWidth < 250;
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
                                         Text(
-                                          formattedDate,
+                                          '${user.firstName} ${user.lastName}',
                                           style: const TextStyle(
                                             fontFamily: 'Inter',
-                                            fontSize: 14,
-                                            color: Colors.grey,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
                                           ),
                                         ),
-                                    ],
-                                  ),
-                                  if (isSmallScreen)
-                                    Text(
-                                      formattedDate,
-                                      style: const TextStyle(
-                                        fontFamily: 'Inter',
-                                        fontSize: 14,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                ],
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const SizedBox(width: 4),
-                              Row(
-                                children: List.generate(5, (i) {
-                                  return Icon(
-                                    i < comment.rating
-                                        ? Icons.star
-                                        : Icons.star_border,
-                                    color: Colors.blue,
-                                    size: 16,
-                                  );
-                                }),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            comment.comment ?? '',
-                            style: const TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                          if (comment.photos != null && comment.photos!.isNotEmpty)
-                            const SizedBox(height: 8),
-                          if (comment.photos != null && comment.photos!.isNotEmpty)
-                            SizedBox(
-                            height: 100,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: comment.photos!.length,
-                              itemBuilder: (context, imgIndex) {
-                                final photo = comment.photos![imgIndex];
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => FullScreenImageGallery(
-                                            photos: comment.photos!,
-                                            initialIndex: imgIndex,
+                                        if (!isSmallScreen)
+                                          Text(
+                                            formattedDate,
+                                            style: const TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontSize: 14,
+                                              color: Colors.grey,
+                                            ),
                                           ),
-                                        ),
-                                      );
-                                    },
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.memory(
-                                        base64Decode(photo.data),
-                                        fit: BoxFit.cover,
-                                        width: 100,
-                                      ),
+                                      ],
                                     ),
-                                  ),
+                                    if (isSmallScreen)
+                                      Text(
+                                        formattedDate,
+                                        style: const TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontSize: 14,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                  ],
                                 );
                               },
                             ),
-                          ),
-                          if (isCurrentUser)
+                            const SizedBox(height: 4),
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
                               children: [
-                                TextButton(
-                                  onPressed: () {
-                                    _editComment(comment);
-                                  },
-                                  child: const Text(
-                                    'Editar',
-                                    style: TextStyle(color: Colors.blue),
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    _deleteComment(comment.id);
-                                  },
-                                  child: const Text(
-                                    'Excluir',
-                                    style: TextStyle(color: Colors.red),
-                                  ),
+                                const SizedBox(width: 4),
+                                Row(
+                                  children: List.generate(5, (i) {
+                                    return Icon(
+                                      i < comment.rating
+                                          ? Icons.star
+                                          : Icons.star_border,
+                                      color: Colors.blue,
+                                      size: 16,
+                                    );
+                                  }),
                                 ),
                               ],
                             ),
-                        ],
+                            const SizedBox(height: 8),
+                            Text(
+                              comment.comment ?? '',
+                              style: const TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                            if (comment.photos != null &&
+                                comment.photos!.isNotEmpty)
+                              const SizedBox(height: 8),
+                            if (comment.photos != null &&
+                                comment.photos!.isNotEmpty)
+                              SizedBox(
+                                height: 100,
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: comment.photos!.length,
+                                  itemBuilder: (context, imgIndex) {
+                                    final photo = comment.photos![imgIndex];
+                                    return Padding(
+                                      padding:
+                                          const EdgeInsets.only(right: 8.0),
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  FullScreenImageGallery(
+                                                photos: comment.photos!,
+                                                initialIndex: imgIndex,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Image.memory(
+                                            base64Decode(photo.data),
+                                            fit: BoxFit.cover,
+                                            width: 100,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            if (isCurrentUser)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      _editComment(comment);
+                                    },
+                                    child: const Text(
+                                      'Editar',
+                                      style: TextStyle(color: Colors.blue),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      _deleteComment(comment.id);
+                                    },
+                                    child: const Text(
+                                      'Excluir',
+                                      style: TextStyle(color: Colors.red),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-        },
-      );
-    },
-  );
-}
-
+                    );
+                  },
+                );
+              },
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget _buildInformation(DivingSpotReturn divingSpot) {
     return FutureBuilder<String>(
@@ -504,32 +514,43 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
             (divingSpot.waterBody.isEmpty) ? 'N/A' : divingSpot.waterBody;
 
         return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildInfoRow(
+            _buildInfoRowMapa(
                 Icons.location_on_outlined, coordinatesText, locationText),
             _buildInfoRow(Icons.scuba_diving, 'Nível de mergulho', levelText),
-            _buildInfoRow(Icons.waves, 'Visibilidade', _capitalize(visibilityText)),
-            _buildInfoRow(Icons.water_drop, 'Corpo de água', _capitalize(waterBodyText)),
+            _buildInfoRow(
+                Icons.waves, 'Visibilidade', _capitalize(visibilityText)),
+            _buildInfoRow(
+                Icons.water_drop, 'Corpo de água', _capitalize(waterBodyText)),
           ],
         );
       },
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(vertical: 8.0),
-    child: LayoutBuilder(
-      builder: (context, constraints) {
-        final isSmallScreen = constraints.maxWidth < 360;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+  Widget _buildInfoRowMapa(IconData icon, String label, String value) {
+    return InkWell(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MapScreen(diveSpot: widget.diveSpot),
+          ),
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isSmallScreen = constraints.maxWidth < 200;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Icon(icon, color: const Color(0xFF007FFF), size: 28),
                 const SizedBox(width: 16),
                 Expanded(
+                  flex: isSmallScreen ? 2 : 1,
                   child: Text(
                     label,
                     style: const TextStyle(
@@ -539,25 +560,53 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                     ),
                   ),
                 ),
-                if (!isSmallScreen) const Spacer(),
-                if (!isSmallScreen)
-                  Expanded(
-                    child: Text(
-                      value,
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                      textAlign: TextAlign.right,
+                if (!isSmallScreen) const SizedBox(width: 16),
+                Expanded(
+                  flex: isSmallScreen ? 3 : 1,
+                  child: Text(
+                    value,
+                    style: const TextStyle(
+                      fontFamily: 'Inter',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
+                    textAlign: isSmallScreen ? TextAlign.left : TextAlign.right,
                   ),
+                ),
               ],
-            ),
-            if (isSmallScreen)
-              Padding(
-                padding: const EdgeInsets.only(left: 44.0),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isSmallScreen = constraints.maxWidth < 200;
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(icon, color: const Color(0xFF007FFF), size: 28),
+              const SizedBox(width: 16),
+              Expanded(
+                flex: isSmallScreen ? 2 : 1,
+                child: Text(
+                  label,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 16,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+              if (!isSmallScreen) const SizedBox(width: 16),
+              Expanded(
+                flex: isSmallScreen ? 3 : 1,
                 child: Text(
                   value,
                   style: const TextStyle(
@@ -566,16 +615,15 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
-                  textAlign: TextAlign.left,
+                  textAlign: isSmallScreen ? TextAlign.left : TextAlign.right,
                 ),
               ),
-          ],
-        );
-      },
-    ),
-  );
-}
-
+            ],
+          );
+        },
+      ),
+    );
+  }
 
   void _editComment(CommentReturn comment) async {
     Navigator.pushReplacement(
@@ -699,8 +747,8 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
   }
 
   String _capitalize(String text) {
-    if(text != "N/A"){
-      return text[0].toUpperCase() + text.substring(1).toLowerCase();  
+    if (text != "N/A") {
+      return text[0].toUpperCase() + text.substring(1).toLowerCase();
     }
     return text;
   }
