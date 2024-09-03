@@ -39,9 +39,10 @@ class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
         ),
         title: GestureDetector(
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+              (Route<dynamic> route) => false,
             );
           },
           child: SvgPicture.asset(
@@ -93,7 +94,7 @@ class LateralMenuDrawer extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const DiveRegistrationScreen()),
                   );

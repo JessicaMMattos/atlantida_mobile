@@ -1171,25 +1171,28 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              FractionallySizedBox(
-                widthFactor: 0.8,
-                child: ElevatedButton.icon(
-                  onPressed: _deleteAccount,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade100,
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                  ),
-                  icon: const Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                  ),
-                  label: const Text(
-                    'Deletar conta',
-                    style: TextStyle(
-                      fontFamily: 'Inter',
-                      fontSize: 15,
-                      fontWeight: FontWeight.normal,
+              Align(
+                alignment: Alignment.center,
+                child: FractionallySizedBox(
+                  widthFactor: 0.8,
+                  child: ElevatedButton.icon(
+                    onPressed: _deleteAccount,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red.shade100,
+                      padding: const EdgeInsets.symmetric(vertical: 15),
+                    ),
+                    icon: const Icon(
+                      Icons.delete,
                       color: Colors.red,
+                    ),
+                    label: const Text(
+                      'Deletar conta',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 15,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.red,
+                      ),
                     ),
                   ),
                 ),

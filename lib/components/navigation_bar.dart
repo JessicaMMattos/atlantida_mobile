@@ -17,9 +17,10 @@ class NavBar extends StatelessWidget {
       currentIndex: index,
       onTap: (int selectedIndex) {
         if (selectedIndex == 2) {
-          Navigator.pushReplacement(
+          Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+            (Route<dynamic> route) => false,
           );
         } else if (selectedIndex == 0) {
           Navigator.pushReplacement(

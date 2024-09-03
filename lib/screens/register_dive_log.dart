@@ -293,11 +293,10 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
   void _cancel() {
     _resetForm();
 
-    Navigator.pushReplacement(
+    Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(
-        builder: (context) => const HomeScreen(),
-      ),
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      (Route<dynamic> route) => false,
     );
   }
 
@@ -2518,11 +2517,10 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
             return CustomAlertDialog(
               text: 'Mergulho registrado com sucesso!',
               onPressed: () {
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  (Route<dynamic> route) => false,
                 );
               },
             );

@@ -42,6 +42,8 @@ class _CertificateRegistrationScreenState
   String _expirationDateErrorMessage = '';
   String _date = '';
 
+  bool _isProcessing = false;
+
   // ignore: prefer_typing_uninitialized_variables
   var newCertificate;
   var hasUpdate = false;
@@ -91,6 +93,17 @@ class _CertificateRegistrationScreenState
     final utcDate = DateTime.parse(dateUtc);
     final localDate = utcDate.toLocal();
     return DateFormat('dd/MM/yyyy').format(localDate);
+  }
+
+  String _formatDateForSaving(String date) {
+    try {
+      DateFormat inputFormat = DateFormat('dd/MM/yyyy');
+      DateFormat outputFormat = DateFormat('yyyy-MM-dd');
+      DateTime parsedDate = inputFormat.parseStrict(date);
+      return outputFormat.format(parsedDate);
+    } catch (e) {
+      throw const FormatException('Invalid date format');
+    }
   }
 
   int _daysInMonth(int month, int year) {
@@ -235,6 +248,12 @@ class _CertificateRegistrationScreenState
   }
 
   void _nextStep() async {
+    if (_isProcessing) return;
+
+    setState(() {
+      _isProcessing = true;
+    });
+
     try {
       if (_issueDateController.text.isNotEmpty) {
         final issueDateValidation = _validateDate(_issueDateController.text);
@@ -283,11 +302,11 @@ class _CertificateRegistrationScreenState
         }
 
         if (_expirationDateController.text.isNotEmpty) {
-          newCertificate.expirationDate = _expirationDateController.text;
+          newCertificate.expirationDate = _formatDateForSaving(_expirationDateController.text);
         }
 
         if (_issueDateController.text.isNotEmpty) {
-          newCertificate.issuanceDate = _issueDateController.text;
+          newCertificate.issuanceDate = _formatDateForSaving(_issueDateController.text);
         }
 
         if (_imageData != null) {
@@ -352,6 +371,10 @@ class _CertificateRegistrationScreenState
           content: Text('Erro ao cadastrar certificado, tente novamente.'),
         ),
       );
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -719,7 +742,7 @@ class _CertificateRegistrationScreenState
                   SizedBox(
                     width: screenWidth * 0.4,
                     child: ElevatedButton(
-                      onPressed: _nextStep,
+                      onPressed: _isProcessing ? null : _nextStep,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF007FFF),
                         padding: const EdgeInsets.symmetric(
@@ -733,7 +756,11 @@ class _CertificateRegistrationScreenState
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: Text(
+                      child: _isProcessing
+                    ? const CircularProgressIndicator(
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                      )
+                    : Text(
                         hasUpdate ? 'EDITAR' : 'ADICIONAR',
                         style: const TextStyle(
                           color: Colors.white,

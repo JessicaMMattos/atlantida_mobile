@@ -180,11 +180,11 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
                             Text('Registro de mergulho excluído com sucesso.'),
                       ),
                     );
-                    Navigator.pushReplacement(
+                    Navigator.pushAndRemoveUntil(
                       // ignore: use_build_context_synchronously
                       context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomeScreen()),
+                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      (Route<dynamic> route) => false,
                     );
                   } catch (err) {
                     // ignore: use_build_context_synchronously
@@ -231,11 +231,10 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
             color: Color(0xFF007FFF),
           ),
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              (Route<dynamic> route) => false,
             );
           },
         ),

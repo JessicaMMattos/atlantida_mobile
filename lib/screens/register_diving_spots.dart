@@ -122,11 +122,10 @@ class _DivingSpotRegistrationScreenState
               description:
                   'Muito obrigado(a) por contribuir com a plataforma cadastrando um novo local.',
               onPressed: () {
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  (Route<dynamic> route) => false,
                 );
               },
             );

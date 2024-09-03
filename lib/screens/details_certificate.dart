@@ -140,7 +140,7 @@ class _CertificateDetailsScreenStateState
                         content: Text('Certificado excluído com sucesso.'),
                       ),
                     );
-                    Navigator.pushReplacement(
+                    Navigator.push(
                       // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(
@@ -191,7 +191,7 @@ class _CertificateDetailsScreenStateState
             color: Color(0xFF007FFF),
           ),
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => const CertificatesScreen(),

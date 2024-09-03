@@ -133,7 +133,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFF007FFF),
         onPressed: () {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const CertificateRegistrationScreen(),
@@ -214,7 +214,7 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
                         color: const Color(0xFF007FFF),
                       ),
                       onPressed: () {
-                        Navigator.pushReplacement(
+                        Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => CertificateDetailsScreen(

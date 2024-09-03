@@ -55,7 +55,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
             if (widget.onBack != null) {
               widget.onBack!();
             } else {
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const MapScreen(),
@@ -126,15 +126,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      widget.diveSpot.description ?? '',
-                      style: const TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black54,
-                      ),
-                    ),
+                    DescriptionsWidget(comment: widget.diveSpot.description),
                     const SizedBox(height: 16),
                     _buildTabs(),
                     const SizedBox(height: 16),
@@ -383,14 +375,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                               ],
                             ),
                             const SizedBox(height: 8),
-                            Text(
-                              comment.comment ?? '',
-                              style: const TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                color: Colors.black,
-                              ),
-                            ),
+                            DescriptionsWidget(comment: comment.comment),
                             if (comment.photos != null &&
                                 comment.photos!.isNotEmpty)
                               const SizedBox(height: 8),
@@ -626,7 +611,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
   }
 
   void _editComment(CommentReturn comment) async {
-    Navigator.pushReplacement(
+    Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => CommentRegistrationScreen(
@@ -752,4 +737,53 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
     }
     return text;
   }
+}
+
+class DescriptionsWidget extends StatefulWidget {
+  final String? comment;
+
+  const DescriptionsWidget({super.key, this.comment});
+
+  @override
+  // ignore: library_private_types_in_public_api
+  _DescriptionsWidgetState createState() => _DescriptionsWidgetState();
+}
+
+class _DescriptionsWidgetState extends State<DescriptionsWidget> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _isExpanded = !_isExpanded;
+            });
+          },
+          child: Text(
+            widget.comment ?? '',
+            style: const TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 14,
+              color: Colors.black,
+            ),
+            maxLines: _isExpanded ? null : 3,
+            overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+          ),
+        ),
+        if (!_isExpanded && (widget.comment?.length ?? 0) > 100)
+          const Text(
+            'Ver mais...',
+            style: TextStyle(
+              fontFamily: 'Inter',
+              fontSize: 14,
+              color: Colors.blue,
+            ),
+          ),
+      ],
+    );
+  } 
 }

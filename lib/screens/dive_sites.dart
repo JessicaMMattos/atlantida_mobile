@@ -115,7 +115,7 @@ class _MapScreenState extends State<MapScreen> {
           position: LatLng(
               spot.location.coordinates[0], spot.location.coordinates[1]),
           onTap: () {
-            Navigator.pushReplacement(
+            Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => DiveSpotDetailsScreen(diveSpot: spot),
@@ -421,7 +421,16 @@ class _MapScreenState extends State<MapScreen> {
                 Text(
                     '${rating.toStringAsFixed(1)} (${spot.numberOfComments?.toInt() ?? 0} comentários)'),
                 const SizedBox(height: 4),
-                Text(spot.description ?? 'Sem descrição disponível'),
+                Text(
+                  spot.description ?? 'Sem descrição disponível',
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontFamily: 'Inter',
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
               ],
             ),
             onTap: () {
@@ -446,11 +455,10 @@ class _MapScreenState extends State<MapScreen> {
             color: Color(0xFF007FFF),
           ),
           onPressed: () {
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(
-                builder: (context) => const HomeScreen(),
-              ),
+              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              (Route<dynamic> route) => false,
             );
           },
         ),
