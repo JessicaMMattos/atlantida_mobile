@@ -27,21 +27,10 @@ O aplicativo **Atlântida Mobile** possui as seguintes funcionalidades:
 
 ## Imagens do Aplicativo
 
-### Tela Inicial
-
-![Tela Inicial](assets/images/screenshot1.jpeg)
-
-### Tela de Mapas
-
-![Tela de Mapas](assets/images/screenshot2.jpeg)
-
-### Tela de Comentários dos Pontos de Mergulho
-
-![Tela de Comentários do Mergulho](assets/images/screenshot3.jpeg)
-
-### Tela de Estatisticas dos mergulhos
-
-![Gráficos](assets/images/screenshot5.jpeg)
+<img src="assets/images/screenshot1.jpeg" alt="Tela Inicial" width="300"/>
+<img src="assets/images/screenshot2.jpeg" alt="Tela de Mapas" width="300"/>
+<img src="assets/images/screenshot3.jpeg" alt="Tela de Comentários do Mergulho" width="300"/>
+<img src="assets/images/screenshot5.jpeg" alt="Gráficos" width="260"/>
 
 ## Licença
 
