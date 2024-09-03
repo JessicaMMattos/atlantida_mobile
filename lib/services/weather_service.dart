@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class WeatherService {
-  final String? apiKey = dotenv.env['API_KEY'];
+  final String? apiKey = dotenv.env['API_KEY_WEATHER_MAP'];
   final String baseUrl = 'https://api.openweathermap.org/data/3.0';
 
   Future<Map<String, dynamic>> getWeatherForecast(double lat, double lon) async {

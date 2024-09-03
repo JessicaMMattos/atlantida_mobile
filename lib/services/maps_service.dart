@@ -1,7 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:atlantida_mobile/models/diving_spot_return.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
