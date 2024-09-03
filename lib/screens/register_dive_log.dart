@@ -172,7 +172,6 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
   @override
   void initState() {
     super.initState();
-    _resetForm();
     _initializeForm();
   }
 
