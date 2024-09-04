@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:atlantida_mobile/models/user.dart';
@@ -12,10 +13,11 @@ import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/controllers/comment_controller.dart';
 
 class DiveSpotDetailsScreen extends StatefulWidget {
-  final DivingSpotReturn diveSpot;
+  final String diveSpotId;
   final VoidCallback? onBack;
 
-  const DiveSpotDetailsScreen({super.key, required this.diveSpot, this.onBack});
+  const DiveSpotDetailsScreen(
+      {super.key, required this.diveSpotId, this.onBack});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -24,23 +26,95 @@ class DiveSpotDetailsScreen extends StatefulWidget {
 
 class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
   late Future<String> locationFuture;
+  late DivingSpotReturn diveSpot;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    _filterDiveLog();
     locationFuture = _fetchLocation();
+  }
+
+  void _filterDiveLog() async {
+    try {
+      setState(() {
+        isLoading = true;
+      });
+
+      DivingSpotReturn spot =
+          await DivingSpotController().getDivingSpotById(widget.diveSpotId);
+
+      setState(() {
+        diveSpot = spot;
+      });
+    } catch (error) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Erro ao carregar Ponto de Mergulho, tente novamente.'),
+        ),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<String> _fetchLocation() async {
     final result = await GoogleMapsService().getCityAndState(
-      widget.diveSpot.location.coordinates[0],
-      widget.diveSpot.location.coordinates[1],
+      diveSpot.location.coordinates[0],
+      diveSpot.location.coordinates[1],
     );
     return '${result['name'] ?? 'Desconhecido'}, ${result['state'] ?? 'Desconhecido'}';
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFF007FFF),
+            ),
+            onPressed: () {
+              if (widget.onBack != null) {
+                widget.onBack!();
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MapScreen(),
+                  ),
+                );
+              }
+            },
+          ),
+          title: const Text(
+            'Resultados',
+            style: TextStyle(
+              color: Color(0xFF007FFF),
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+          actions: const [
+            SizedBox(width: 48),
+          ],
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.blue),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -86,14 +160,14 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildImage(widget.diveSpot.image),
+                    _buildImage(diveSpot.image),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: Text(
-                            widget.diveSpot.name,
+                            diveSpot.name,
                             style: const TextStyle(
                               fontFamily: 'Inter',
                               fontSize: 20,
@@ -111,8 +185,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              widget.diveSpot.averageRating
-                                      ?.toStringAsFixed(1) ??
+                              diveSpot.averageRating?.toStringAsFixed(1) ??
                                   '0.0',
                               style: const TextStyle(
                                 fontFamily: 'Inter',
@@ -126,7 +199,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 8),
-                    DescriptionsWidget(comment: widget.diveSpot.description),
+                    DescriptionsWidget(comment: diveSpot.description),
                     const SizedBox(height: 16),
                     _buildTabs(),
                     const SizedBox(height: 16),
@@ -147,8 +220,8 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => CommentRegistrationScreen(
-                            divingSpot: widget.diveSpot),
+                        builder: (context) =>
+                            CommentRegistrationScreen(divingSpot: diveSpot),
                       ),
                     );
                   },
@@ -229,8 +302,8 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
             height: MediaQuery.of(context).size.height * 0.3,
             child: TabBarView(
               children: [
-                _buildInformation(widget.diveSpot),
-                _buildReviews(widget.diveSpot),
+                _buildInformation(diveSpot),
+                _buildReviews(diveSpot),
               ],
             ),
           ),
@@ -520,7 +593,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MapScreen(diveSpot: widget.diveSpot),
+            builder: (context) => MapScreen(diveSpot: diveSpot),
           ),
         );
       },
@@ -614,8 +687,8 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CommentRegistrationScreen(
-            divingSpot: widget.diveSpot, comment: comment),
+        builder: (context) =>
+            CommentRegistrationScreen(divingSpot: diveSpot, comment: comment),
       ),
     );
   }
@@ -771,7 +844,8 @@ class _DescriptionsWidgetState extends State<DescriptionsWidget> {
               color: Colors.black,
             ),
             maxLines: _isExpanded ? null : 3,
-            overflow: _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+            overflow:
+                _isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
           ),
         ),
         if (!_isExpanded && (widget.comment?.length ?? 0) > 100)
@@ -785,5 +859,5 @@ class _DescriptionsWidgetState extends State<DescriptionsWidget> {
           ),
       ],
     );
-  } 
+  }
 }

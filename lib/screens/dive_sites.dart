@@ -27,6 +27,7 @@ class _MapScreenState extends State<MapScreen> {
   List<DivingSpotReturn> filteredDiveSpots = [];
   final Set<Marker> _markers = {};
   bool isListVisible = true;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -53,6 +54,10 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _getUserLocation() async {
+    setState(() {
+      isLoading = true;
+    });
+
     Position? position = await _determinePosition();
     if (position != null) {
       setState(() {
@@ -98,6 +103,10 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _loadDivingSpots() async {
+    setState(() {
+      isLoading = true;
+    });
+
     diveSpots = await DivingSpotController().getAllDivingSpots();
     setState(() {
       filteredDiveSpots = diveSpots;
@@ -106,6 +115,10 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _addMarkers() async {
+    setState(() {
+      isLoading = true;
+    });
+
     _markers.clear();
 
     for (var spot in filteredDiveSpots) {
@@ -118,7 +131,8 @@ class _MapScreenState extends State<MapScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DiveSpotDetailsScreen(diveSpot: spot),
+                builder: (context) =>
+                    DiveSpotDetailsScreen(diveSpotId: spot.id),
               ),
             );
           },
@@ -129,6 +143,10 @@ class _MapScreenState extends State<MapScreen> {
         ),
       );
     }
+
+    setState(() {
+      isLoading = false;
+    });
   }
 
   void _filterDiveLogs(String query) async {

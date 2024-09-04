@@ -21,12 +21,14 @@ class _LoginScreenState extends State<LoginScreen> {
   String _passwordErrorMessage = '';
   String _loginErrorMessage = '';
   bool _isObscure = true;
+  bool _isLoading = false;
 
   void _login() async {
     setState(() {
       _emailErrorMessage = '';
       _passwordErrorMessage = '';
       _loginErrorMessage = '';
+      _isLoading = true;
     });
 
     String email = _emailController.text;
@@ -43,30 +45,33 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
 
-    if (_emailErrorMessage.isNotEmpty || _passwordErrorMessage.isNotEmpty) {
-      return;
-    }
-
     try {
-      var response = await UserController().loginUser(context, email, password);
+      if (_emailErrorMessage.isEmpty && _passwordErrorMessage.isEmpty) {
+        var response =
+            await UserController().loginUser(context, email, password);
 
-      if (response.statusCode == 200) {
-        Navigator.pushAndRemoveUntil(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-          (Route<dynamic> route) => false,
-        );
-      } else {
-        setState(() {
-          _loginErrorMessage = 'E-mail e/ou senha incorretos.';
-        });
+        if (response.statusCode == 200) {
+          Navigator.pushAndRemoveUntil(
+            // ignore: use_build_context_synchronously
+            context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            (Route<dynamic> route) => false,
+          );
+        } else {
+          setState(() {
+            _loginErrorMessage = 'E-mail e/ou senha incorretos.';
+          });
+        }
       }
     } catch (error) {
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro no login, tente novamente.')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -141,24 +146,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                 color: Color(0xFF263238),
                               ),
                             ),
-                            const SizedBox(height: 10), 
+                            const SizedBox(height: 10),
                             TextField(
                               controller: _emailController,
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                                    color: _emailErrorMessage.isNotEmpty ||
+                                            _loginErrorMessage.isNotEmpty
+                                        ? Colors.red
+                                        : Colors.grey,
                                   ),
                                 ),
                                 hintText: 'Digite seu e-mail',
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                                    color: _emailErrorMessage.isNotEmpty ||
+                                            _loginErrorMessage.isNotEmpty
+                                        ? Colors.red
+                                        : Colors.grey,
                                   ),
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                                    color: _emailErrorMessage.isNotEmpty ||
+                                            _loginErrorMessage.isNotEmpty
+                                        ? Colors.red
+                                        : const Color(0xFF263238),
                                   ),
                                 ),
                               ),
@@ -199,7 +213,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onTap: () {
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(builder: (context) => const RedefinePasswordScreen()),
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const RedefinePasswordScreen()),
                                     );
                                   },
                                   child: const Text(
@@ -224,18 +240,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                   decoration: InputDecoration(
                                     border: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: _passwordErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                                        color: _passwordErrorMessage
+                                                    .isNotEmpty ||
+                                                _loginErrorMessage.isNotEmpty
+                                            ? Colors.red
+                                            : Colors.grey,
                                       ),
                                     ),
                                     hintText: 'Digite sua senha',
                                     enabledBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: _passwordErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                                        color: _passwordErrorMessage
+                                                    .isNotEmpty ||
+                                                _loginErrorMessage.isNotEmpty
+                                            ? Colors.red
+                                            : Colors.grey,
                                       ),
                                     ),
                                     focusedBorder: OutlineInputBorder(
                                       borderSide: BorderSide(
-                                        color: _passwordErrorMessage.isNotEmpty || _loginErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                                        color: _passwordErrorMessage
+                                                    .isNotEmpty ||
+                                                _loginErrorMessage.isNotEmpty
+                                            ? Colors.red
+                                            : const Color(0xFF263238),
                                       ),
                                     ),
                                   ),
@@ -281,13 +309,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       const SizedBox(height: 10),
-                      
+
                       // Botão de login
                       SizedBox(
                         width: MediaQuery.of(context).size.width - 40,
                         child: Button(
-                          titleButton: 'LOGIN',
-                          onPressed: _login,
+                          titleButton: _isLoading ? 'CARREGANDO...' : 'LOGIN',
+                          onPressed: _isLoading ? () {} : _login,
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -308,7 +336,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             onTap: () {
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const SignupScreenStepOne()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignupScreenStepOne()),
                               );
                             },
                             child: const Text(

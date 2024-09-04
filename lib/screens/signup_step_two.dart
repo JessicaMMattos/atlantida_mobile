@@ -45,6 +45,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
   String _termsErrorMessage = '';
 
   bool _acceptTerms = false;
+  bool _isLoading = false;
 
   bool _isValidCep(String cep) {
     return RegExp(r'^\d{5}-\d{3}$').hasMatch(cep);
@@ -57,83 +58,87 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
 
   void _completeSignup() async {
     setState(() {
-        _cepErrorMessage =
-            _cepController.text.isEmpty || !_isValidCep(_cepController.text)
-                ? 'Campo obrigatório.'
-                : '';
-        _countryErrorMessage =
-            _countryController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _stateErrorMessage =
-            _stateController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _cityErrorMessage =
-            _cityController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _districtErrorMessage =
-            _districtController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _streetErrorMessage =
-            _streetController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _numberErrorMessage =
-            _numberController.text.isEmpty ? 'Campo obrigatório.' : '';
-        if (!_acceptTerms) {
-            _termsErrorMessage = 'Você deve aceitar os termos de uso.';
-        }
-        });
+      _isLoading = true;
+      _cepErrorMessage =
+          _cepController.text.isEmpty || !_isValidCep(_cepController.text)
+              ? 'Campo obrigatório.'
+              : '';
+      _countryErrorMessage =
+          _countryController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _stateErrorMessage =
+          _stateController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _cityErrorMessage =
+          _cityController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _districtErrorMessage =
+          _districtController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _streetErrorMessage =
+          _streetController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _numberErrorMessage =
+          _numberController.text.isEmpty ? 'Campo obrigatório.' : '';
+      if (!_acceptTerms) {
+        _termsErrorMessage = 'Você deve aceitar os termos de uso.';
+      }
+    });
 
-        if (_cepErrorMessage.isEmpty &&
-            _countryErrorMessage.isEmpty &&
-            _stateErrorMessage.isEmpty &&
-            _cityErrorMessage.isEmpty &&
-            _districtErrorMessage.isEmpty &&
-            _streetErrorMessage.isEmpty &&
-            _numberErrorMessage.isEmpty &&
-            _termsErrorMessage.isEmpty) {
-          
-          try {
-          var responseUser =
-              await UserController().createUser(context, widget.newUser);
-          var userId = json.decode(responseUser.body)['_id'];
+    if (_cepErrorMessage.isEmpty &&
+        _countryErrorMessage.isEmpty &&
+        _stateErrorMessage.isEmpty &&
+        _cityErrorMessage.isEmpty &&
+        _districtErrorMessage.isEmpty &&
+        _streetErrorMessage.isEmpty &&
+        _numberErrorMessage.isEmpty &&
+        _termsErrorMessage.isEmpty) {
+      try {
+        var responseUser =
+            await UserController().createUser(context, widget.newUser);
+        var userId = json.decode(responseUser.body)['_id'];
 
-          Address newAddress = Address(
-            country: _countryController.text,
-            state: _stateController.text,
-            city: _cityController.text,
-            neighborhood: _districtController.text,
-            street: _streetController.text,
-            number: int.parse(_numberController.text),
-            complement: _complementController.text.isEmpty
-                ? null
-                : _complementController.text,
-            postalCode: _cepController.text,
-            userId: userId,
-          );
+        Address newAddress = Address(
+          country: _countryController.text,
+          state: _stateController.text,
+          city: _cityController.text,
+          neighborhood: _districtController.text,
+          street: _streetController.text,
+          number: int.parse(_numberController.text),
+          complement: _complementController.text.isEmpty
+              ? null
+              : _complementController.text,
+          postalCode: _cepController.text,
+          userId: userId,
+        );
 
+        // ignore: use_build_context_synchronously
+        await AddressController().createAddress(newAddress);
+        showDialog(
           // ignore: use_build_context_synchronously
-          await AddressController().createAddress(newAddress);
-          showDialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            builder: (BuildContext context) {
-              return CustomAlertWithDescriptionDialog(
-                title: 'Cadastro Realizado!',
-                description:
-                    'Seu cadastro foi realizado com sucesso. Por favor, faça o login para acessar o sistema.',
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const LoginScreen(),
-                    ),
-                  );
-                },
-              );
-            },
-          );
-          } catch (error) {
+          context: context,
+          builder: (BuildContext context) {
+            return CustomAlertWithDescriptionDialog(
+              title: 'Cadastro Realizado!',
+              description:
+                  'Seu cadastro foi realizado com sucesso. Por favor, faça o login para acessar o sistema.',
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
+                  ),
+                );
+              },
+            );
+          },
+        );
+      } catch (error) {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Erro no cadastro, tente novamente.')),
         );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
-        }
+    }
   }
 
   void _searchCep() async {
@@ -499,8 +504,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
               SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Button(
-                  titleButton: 'CONTINUAR',
-                  onPressed: _completeSignup,
+                  titleButton: _isLoading ? 'CARREGANDO...' : 'CONTINUAR',
+                  onPressed: _isLoading ? () {} : _completeSignup,
                 ),
               ),
             ],

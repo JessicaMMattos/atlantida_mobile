@@ -25,7 +25,8 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
   final TextEditingController _birthdateController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   String _nameErrorMessage = '';
   String _surnameErrorMessage = '';
@@ -43,7 +44,8 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
     if (widget.newUser != null) {
       _nameController.text = widget.newUser!.firstName;
       _surnameController.text = widget.newUser!.lastName;
-      _birthdateController.text = DateFormat('dd/MM/yyyy').format(DateTime.parse(widget.newUser!.birthDate));
+      _birthdateController.text = DateFormat('dd/MM/yyyy')
+          .format(DateTime.parse(widget.newUser!.birthDate));
       _emailController.text = widget.newUser!.email;
       _passwordController.text = widget.newUser!.password;
       _confirmPasswordController.text = widget.newUser!.password;
@@ -72,14 +74,17 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
         final year = int.parse(parts[2]);
 
         if (month < 1 || month > 12) {
-          errors['format'] = 'Data de nascimento inválida (formato DD/MM/AAAA).';
+          errors['format'] =
+              'Data de nascimento inválida (formato DD/MM/AAAA).';
         } else {
           final daysInMonth = _daysInMonth(month, year);
           if (day < 1 || day > daysInMonth) {
-            errors['format'] = 'Data de nascimento inválida (formato DD/MM/AAAA).';
+            errors['format'] =
+                'Data de nascimento inválida (formato DD/MM/AAAA).';
           } else {
             final currentDate = DateTime.now();
-            final minAgeDate = DateTime(currentDate.year - 10, currentDate.month, currentDate.day);
+            final minAgeDate = DateTime(
+                currentDate.year - 10, currentDate.month, currentDate.day);
             final birthDate = DateTime(year, month, day);
             if (birthDate.isAfter(minAgeDate)) {
               errors['age'] = 'Usuário deve ter no mínimo 10 anos de idade.';
@@ -114,19 +119,24 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
 
   void _signupUser() async {
     final birthdateValidation = _validateBirthdate(_birthdateController.text);
-    
+
     setState(() {
-      _nameErrorMessage = _nameController.text.isEmpty ? 'Campo obrigatório.' : '';
-      _surnameErrorMessage = _surnameController.text.isEmpty ? 'Campo obrigatório.' : '';
-      _birthdateErrorMessage = birthdateValidation['format'] ?? birthdateValidation['age'] ?? '';
+      _nameErrorMessage =
+          _nameController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _surnameErrorMessage =
+          _surnameController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _birthdateErrorMessage =
+          birthdateValidation['format'] ?? birthdateValidation['age'] ?? '';
       _emailErrorMessage = _emailController.text.isEmpty
           ? 'Campo obrigatório.'
           : !_isValidEmail(_emailController.text)
               ? 'E-mail inválido.'
               : '';
-      _passwordErrorMessage = _passwordController.text.isEmpty ? 'Campo obrigatório.' : '';
-      _confirmPasswordErrorMessage = _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
-      
+      _passwordErrorMessage =
+          _passwordController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _confirmPasswordErrorMessage =
+          _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
+
       if (_passwordController.text != _confirmPasswordController.text) {
         _confirmPasswordErrorMessage = 'Senhas não coincidem.';
       }
@@ -138,9 +148,9 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
         _emailErrorMessage.isEmpty &&
         _passwordErrorMessage.isEmpty &&
         _confirmPasswordErrorMessage.isEmpty) {
-      
       try {
-        final emailExists = await UserController().findUserByEmail(context, _emailController.text);
+        final emailExists = await UserController()
+            .findUserByEmail(context, _emailController.text);
 
         if (emailExists) {
           setState(() {
@@ -158,13 +168,16 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
           Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
             context,
-            MaterialPageRoute(builder: (context) => SignupScreenStepTwo(newUser: newUser)),
+            MaterialPageRoute(
+                builder: (context) => SignupScreenStepTwo(newUser: newUser)),
           );
         }
       } catch (error) {
         // ignore: use_build_context_synchronously
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro na primeira etapa do cadastro, tente novamente.')),
+          const SnackBar(
+              content:
+                  Text('Erro na primeira etapa do cadastro, tente novamente.')),
         );
       }
     }
@@ -301,7 +314,7 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
               ),
               const SizedBox(height: 20),
 
-               // Campo de data de nascimento
+              // Campo de data de nascimento
               const Text(
                 'Data de Nascimento',
                 style: TextStyle(
@@ -323,18 +336,24 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _birthdateErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _birthdateErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   hintText: 'dd/mm/aaaa',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _birthdateErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _birthdateErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _birthdateErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                      color: _birthdateErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : const Color(0xFF263238),
                     ),
                   ),
                 ),
@@ -377,18 +396,24 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _passwordErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _passwordErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   hintText: 'Digite sua senha',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _passwordErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _passwordErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _passwordErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                      color: _passwordErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : const Color(0xFF263238),
                     ),
                   ),
                   suffixIcon: IconButton(
@@ -398,9 +423,7 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                       });
                     },
                     icon: Icon(
-                      _isObscure1
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _isObscure1 ? Icons.visibility_off : Icons.visibility,
                     ),
                   ),
                 ),
@@ -435,18 +458,24 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _confirmPasswordErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _confirmPasswordErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   hintText: 'Digite sua senha novamente',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _confirmPasswordErrorMessage.isNotEmpty ? Colors.red : Colors.grey,
+                      color: _confirmPasswordErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _confirmPasswordErrorMessage.isNotEmpty ? Colors.red : const Color(0xFF263238),
+                      color: _confirmPasswordErrorMessage.isNotEmpty
+                          ? Colors.red
+                          : const Color(0xFF263238),
                     ),
                   ),
                   suffixIcon: IconButton(
@@ -456,9 +485,7 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                       });
                     },
                     icon: Icon(
-                      _isObscure2
-                          ? Icons.visibility_off
-                          : Icons.visibility,
+                      _isObscure2 ? Icons.visibility_off : Icons.visibility,
                     ),
                   ),
                 ),

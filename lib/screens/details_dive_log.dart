@@ -23,6 +23,7 @@ class DiveLogDetailScreen extends StatefulWidget {
 
 class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
   DivingSpotReturn? divingSpot;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -36,8 +37,12 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
           .getDivingSpotById(widget.diveLog.divingSpotId);
       setState(() {
         divingSpot = spot;
+        isLoading = false;
       });
     } catch (error) {
+      setState(() {
+        isLoading = false;
+      });
       // ignore: use_build_context_synchronously
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -89,7 +94,7 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
       context,
       MaterialPageRoute(
         builder: (context) => DiveSpotDetailsScreen(
-          diveSpot: divingSpot,
+          diveSpotId: divingSpot.id,
           onBack: () {
             Navigator.pushReplacement(
               context,
@@ -183,7 +188,8 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
                     Navigator.pushAndRemoveUntil(
                       // ignore: use_build_context_synchronously
                       context,
-                      MaterialPageRoute(builder: (context) => const HomeScreen()),
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } catch (err) {
@@ -219,6 +225,41 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
+
+    if (isLoading) {
+      return Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Color(0xFF007FFF),
+            ),
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                (Route<dynamic> route) => false,
+              );
+            },
+          ),
+          title: Text(
+            widget.diveLog.title,
+            style: const TextStyle(
+              color: Color(0xFF007FFF),
+              fontFamily: 'Inter',
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(color: Colors.blue),
+        ),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,

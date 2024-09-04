@@ -57,7 +57,8 @@ class _FirstScreenState extends State<FirstScreen> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    const SizedBox(height: 120.0), // Espaçamento entre texto e bolinhas
+                    const SizedBox(
+                        height: 120.0), // Espaçamento entre texto e bolinhas
                   ],
                 ),
               );

@@ -31,6 +31,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
   final TextEditingController _commentController = TextEditingController();
   List<Photo> _media = [];
   String _ratingErrorMessage = '';
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -87,13 +88,17 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
       context,
       MaterialPageRoute(
         builder: (context) =>
-            DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
+            DiveSpotDetailsScreen(diveSpotId: widget.divingSpot.id),
       ),
     );
   }
 
   Future<void> _nextStep() async {
+    if (_isProcessing) return;
+
     setState(() {
+      _isProcessing = true;
+
       if (_rating == 0) {
         _ratingErrorMessage = 'Campo obrigatório.';
       } else {
@@ -127,8 +132,8 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
+                      builder: (context) => DiveSpotDetailsScreen(
+                          diveSpotId: widget.divingSpot.id),
                     ),
                   );
                 },
@@ -148,8 +153,8 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
+                      builder: (context) => DiveSpotDetailsScreen(
+                          diveSpotId: widget.divingSpot.id),
                     ),
                   );
                 },
@@ -189,7 +194,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
               context,
               MaterialPageRoute(
                 builder: (context) =>
-                    DiveSpotDetailsScreen(diveSpot: widget.divingSpot),
+                    DiveSpotDetailsScreen(diveSpotId: widget.divingSpot.id),
               ),
             );
           },
@@ -461,7 +466,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                   SizedBox(
                     width: screenWidth * 0.4,
                     child: ElevatedButton(
-                      onPressed: _nextStep,
+                      onPressed: _isProcessing ? null : _nextStep,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF007FFF),
                         padding: const EdgeInsets.symmetric(
@@ -475,12 +480,17 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: Text(
-                        widget.comment != null ? 'EDITAR' : 'AVALIAR',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: _isProcessing
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            )
+                          : Text(
+                              widget.comment != null ? 'EDITAR' : 'AVALIAR',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],

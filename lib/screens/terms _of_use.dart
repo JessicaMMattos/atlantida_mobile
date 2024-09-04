@@ -54,16 +54,17 @@ class TermsOfUseScreen extends StatelessWidget {
           }
 
           return SingleChildScrollView(
-            padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 16.0),
+            padding: EdgeInsets.symmetric(
+                horizontal: horizontalPadding, vertical: 16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Center(
                   child: SvgPicture.asset(
-                  'assets/icons/logo.svg',
-                  height: 35,
-                  fit: BoxFit.contain,
-                ),
+                    'assets/icons/logo.svg',
+                    height: 35,
+                    fit: BoxFit.contain,
+                  ),
                 ),
                 const SizedBox(height: 16.0),
                 Center(
@@ -78,7 +79,7 @@ class TermsOfUseScreen extends StatelessWidget {
                 const SizedBox(height: 16.0),
                 Text(
                   'Termos de Uso',
-                   style: TextStyle(
+                  style: TextStyle(
                     fontFamily: 'Inter',
                     fontWeight: FontWeight.bold,
                     fontSize: titleFontSize,
@@ -300,12 +301,12 @@ class TermsOfUseScreen extends StatelessWidget {
                     text:
                         'Se você tiver dúvidas, preocupações ou comentários sobre estes Termos de Uso, entre em contato conosco através do nosso e-mail: ',
                     style: TextStyle(
-                    fontFamily: 'Inter',
-                    fontWeight: FontWeight.normal,
-                    fontSize: fontSize,
-                    color: Colors.black,
-                    height: 1.5,
-                  ),
+                      fontFamily: 'Inter',
+                      fontWeight: FontWeight.normal,
+                      fontSize: fontSize,
+                      color: Colors.black,
+                      height: 1.5,
+                    ),
                     children: const [
                       TextSpan(
                         text: 'atlantidamergulhos@gmail.com',

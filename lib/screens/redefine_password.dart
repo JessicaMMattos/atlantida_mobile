@@ -16,9 +16,14 @@ class RedefinePasswordScreen extends StatefulWidget {
 class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   String _message = '';
+  bool _isLoading = false;
 
   void _resetPassword() async {
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       String email = _emailController.text;
 
       if (email.isEmpty) {
@@ -42,6 +47,10 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Erro ao enviar email de recuperação.')),
       );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -180,8 +189,9 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
                       SizedBox(
                         width: screenWidth - 2 * (screenWidth * 0.05),
                         child: Button(
-                          titleButton: 'REDEFINIR SENHA',
-                          onPressed: _resetPassword,
+                          titleButton:
+                              _isLoading ? 'CARREGANDO...' : 'REDEFINIR SENHA',
+                          onPressed: _isLoading ? () {} : _resetPassword,
                         ),
                       ),
                       SizedBox(height: screenHeight * 0.02),

@@ -208,7 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     } else if (filterCriterion == 'Título') {
-      List<DiveLogReturn> results = await DiveLogService().getDiveLogsByTitle(query);
+      List<DiveLogReturn> results =
+          await DiveLogService().getDiveLogsByTitle(query);
       setState(() {
         filteredDiveLogs = results;
       });

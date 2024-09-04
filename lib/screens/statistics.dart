@@ -26,6 +26,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   late Future<List<DiveLogReturn>> _diveLogs;
 
   final PageController _pageController = PageController();
+  bool isLoading = true;
 
   @override
   void dispose() {
@@ -44,6 +45,9 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Future<void> _fetchStatistics() async {
+    setState(() {
+      isLoading = true;
+    });
     final String startDateStr = DateFormat('yyyy-MM-dd').format(_startDate);
     final String endDateStr = DateFormat('yyyy-MM-dd').format(_endDate);
 
@@ -76,6 +80,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
             content: Text(
                 'Erro ao carregar estatísticas. Por favor, tente novamente mais tarde.')),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -156,6 +164,20 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   @override
   Widget build(BuildContext context) {
     final screenSize = MediaQuery.of(context).size;
+
+    if (isLoading) {
+      return const Scaffold(
+        appBar: LateralMenu(),
+        drawer: LateralMenuDrawer(),
+        bottomNavigationBar: NavBar(
+          index: 0,
+        ),
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.blue),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: const LateralMenu(),
@@ -249,7 +271,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       future: _diveStatistics,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: Colors.blue));
+          return const Center(
+              child: CircularProgressIndicator(color: Colors.blue));
         } else if (snapshot.hasError || _errorMessage != null) {
           return Column(
             mainAxisSize: MainAxisSize.min,
@@ -430,10 +453,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         });
         _updateData();
       },
-      items: <String>[
-        'Tempo total de fundo',
-        'Profundidade Atingida'
-      ].map<DropdownMenuItem<String>>((String value) {
+      items: <String>['Tempo total de fundo', 'Profundidade Atingida']
+          .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
           child: Text(value),
@@ -448,7 +469,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       future: _diveLogs,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator(color: Colors.blue));
+          return const Center(
+              child: CircularProgressIndicator(color: Colors.blue));
         }
         if (snapshot.hasError ||
             snapshot.data == null ||

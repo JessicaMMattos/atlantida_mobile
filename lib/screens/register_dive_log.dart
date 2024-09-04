@@ -192,13 +192,13 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
       _selectedDiveType = widget.diveLog!.type;
 
       _depthController.text = widget.diveLog!.depth?.toString() ?? '';
-      
+
       int totalMinutes = widget.diveLog!.bottomTimeInMinutes ?? 0;
       int hours = totalMinutes ~/ 60;
       int minutes = totalMinutes % 60;
 
-      _bottomTimeInMinutesController.text = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
-
+      _bottomTimeInMinutesController.text =
+          '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}';
 
       _selectedWaterType = widget.diveLog!.waterType ?? '';
       _selectedWaterBody = widget.diveLog!.waterBody ?? '';
@@ -238,7 +238,10 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
       _selectedAdditionalEquipment = widget.diveLog!.additionalEquipment ?? [];
 
       _notesController.text = widget.diveLog!.notes ?? '';
-      _rating = widget.diveLog!.rating as double?;
+
+      var intRating = widget.diveLog!.rating;
+      _rating = intRating?.toDouble();
+
       _difficulty = widget.diveLog!.difficulty;
       _media = widget.diveLog!.photos ?? [];
     }
@@ -2474,7 +2477,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
       }
 
       if (_rating != null) {
-        newDiveLog.rating = _rating;
+        newDiveLog.rating = _rating?.toInt();
       }
 
       if (_difficulty != null) {

@@ -29,15 +29,12 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
 
   Future<void> _fetchCertificates() async {
     try {
-      // Buscar todos os certificados
       List<CertificateReturn> certificates =
           await _certificateController.getCertificatesByToken();
 
-      // Buscar certificados vencidos
       List<CertificateReturn> expiredCertificates =
           await _certificateController.getExpiredCertificates();
 
-      // Verifica quais certificados na lista original estão vencidos e marca-os
       for (var cert in certificates) {
         if (expiredCertificates
             .any((expiredCert) => expiredCert.id == cert.id)) {
@@ -47,13 +44,18 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
 
       setState(() {
         _certificates = certificates;
-        _isLoading = false;
       });
     } catch (error) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text(
+                'Erro ao carregar os certificados. Por favor, tente novamente mais tarde.')),
+      );
+    } finally {
       setState(() {
         _isLoading = false;
       });
-      // Lida com o erro de forma apropriada, exibe mensagem, etc.
     }
   }
 

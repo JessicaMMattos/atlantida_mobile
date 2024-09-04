@@ -302,11 +302,13 @@ class _CertificateRegistrationScreenState
         }
 
         if (_expirationDateController.text.isNotEmpty) {
-          newCertificate.expirationDate = _formatDateForSaving(_expirationDateController.text);
+          newCertificate.expirationDate =
+              _formatDateForSaving(_expirationDateController.text);
         }
 
         if (_issueDateController.text.isNotEmpty) {
-          newCertificate.issuanceDate = _formatDateForSaving(_issueDateController.text);
+          newCertificate.issuanceDate =
+              _formatDateForSaving(_issueDateController.text);
         }
 
         if (_imageData != null) {
@@ -634,7 +636,7 @@ class _CertificateRegistrationScreenState
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 2),
               Title2(
                 title: hasUpdate
@@ -757,15 +759,16 @@ class _CertificateRegistrationScreenState
                         ),
                       ),
                       child: _isProcessing
-                    ? const CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                      )
-                    : Text(
-                        hasUpdate ? 'EDITAR' : 'ADICIONAR',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            )
+                          : Text(
+                              hasUpdate ? 'EDITAR' : 'ADICIONAR',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],

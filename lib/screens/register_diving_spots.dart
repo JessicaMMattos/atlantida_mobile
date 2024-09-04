@@ -40,6 +40,7 @@ class _DivingSpotRegistrationScreenState
   String _waterTypeErrorMessage = '';
   String _latitudeErrorMessage = '';
   String _longitudeErrorMessage = '';
+  bool _isProcessing = false;
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
@@ -67,7 +68,10 @@ class _DivingSpotRegistrationScreenState
 
   Future<void> _submitForm() async {
     try {
+      if (_isProcessing) return;
+
       setState(() {
+        _isProcessing = true;
         _nameErrorMessage =
             _nameController.text.isEmpty ? 'Campo obrigatório.' : '';
         _waterTypeErrorMessage =
@@ -140,6 +144,10 @@ class _DivingSpotRegistrationScreenState
               Text('Erro ao cadastrar Ponto de Mergulho, tente novamente.'),
         ),
       );
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -273,7 +281,7 @@ class _DivingSpotRegistrationScreenState
                   ),
                 ],
               ),
-              
+
               const SizedBox(height: 10),
               TextFormField(
                 controller: _descriptionController,
@@ -540,10 +548,15 @@ class _DivingSpotRegistrationScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(
-                    child: Button(
-                      titleButton: 'CADASTRAR PONTO',
-                      onPressed: _submitForm,
-                    ),
+                    child: _isProcessing
+                        ? const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.blue),
+                          )
+                        : Button(
+                            titleButton: 'CADASTRAR PONTO',
+                            onPressed: _submitForm,
+                          ),
                   ),
                 ],
               ),

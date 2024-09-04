@@ -201,6 +201,8 @@ class _AccountScreenState extends State<AccountScreen> {
   String _streetErrorMessage = '';
   String _numberErrorMessage = '';
 
+  bool isLoading = true;
+
   final cepMaskFormatter = MaskTextInputFormatter(
     mask: '#####-###',
     filter: {'#': RegExp(r'[0-9]')},
@@ -234,6 +236,10 @@ class _AccountScreenState extends State<AccountScreen> {
 
   Future<void> _loadAddress(String userId) async {
     try {
+      setState(() {
+        isLoading = true;
+      });
+
       var address = await AddressController().getAddressByUserId(userId);
       setState(() {
         if (address?.id != null) {
@@ -255,6 +261,10 @@ class _AccountScreenState extends State<AccountScreen> {
             content:
                 Text('Erro ao carregar endereço, tente novamente mais tarde.')),
       );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -825,9 +835,13 @@ class _SecurityScreenState extends State<SecurityScreen> {
   String _oldPasswordError = '';
   String _newPasswordError = '';
   String _confirmPasswordError = '';
+  bool _isProcessing = false;
 
   void _passwordUpdate() async {
+    if (_isProcessing) return;
+
     setState(() {
+      _isProcessing = true;
       _oldPasswordError =
           _oldPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
       _newPasswordError =
@@ -880,6 +894,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
           const SnackBar(
               content: Text('Erro ao atualizar senha, tente novamente.')),
         );
+      } finally {
+        setState(() {
+          _isProcessing = false;
+        });
       }
     }
   }
@@ -1136,7 +1154,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   SizedBox(
                     width: screenWidth * 0.4,
                     child: ElevatedButton(
-                      onPressed: _passwordUpdate,
+                      onPressed: _isProcessing ? null : _passwordUpdate,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF007FFF),
                         padding: const EdgeInsets.symmetric(
@@ -1150,12 +1168,17 @@ class _SecurityScreenState extends State<SecurityScreen> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: const Text(
-                        'SALVAR',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: _isProcessing
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            )
+                          : const Text(
+                              'SALVAR',
+                              style: TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],
