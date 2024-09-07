@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 import 'package:atlantida_mobile/models/diving_spot_create.dart';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
-import 'package:atlantida_mobile/screens/home.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
 import 'package:atlantida_mobile/components/button.dart';
@@ -49,12 +49,10 @@ class _DivingSpotRegistrationScreenState
     if (image != null) {
       final Uint8List imageData = await image.readAsBytes();
 
-      if (imageData != null) {
-        setState(() {
-          _imageData = imageData;
-          _imageContentType = image.mimeType;
-        });
-      }
+      setState(() {
+        _imageData = imageData;
+        _imageContentType = image.mimeType;
+      });
     }
   }
 
@@ -68,8 +66,6 @@ class _DivingSpotRegistrationScreenState
 
   Future<void> _submitForm() async {
     try {
-      if (_isProcessing) return;
-
       setState(() {
         _isProcessing = true;
         _nameErrorMessage =
@@ -128,7 +124,7 @@ class _DivingSpotRegistrationScreenState
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
                   (Route<dynamic> route) => false,
                 );
               },

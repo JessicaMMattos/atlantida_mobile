@@ -2,7 +2,7 @@ class DiveStatistics {
   late int totalDives;
   late double totalDepth;
   late double averageDepth;
-  late double totalBottomTime;
+  late double averageBottomTime;
   String? mostCommonWaterBody;
   String? mostCommonWeatherCondition;
   String? userId;
@@ -10,7 +10,7 @@ class DiveStatistics {
   DiveStatistics({
     required this.totalDives,
     required this.averageDepth,
-    required this.totalBottomTime,
+    required this.averageBottomTime,
     this.mostCommonWaterBody,
     this.mostCommonWeatherCondition,
     this.userId,
@@ -20,7 +20,7 @@ class DiveStatistics {
     return DiveStatistics(
       totalDives: json['totalDives'] ?? 0,
       averageDepth: double.tryParse(json['averageDepth']?.toString() ?? '0.00') ?? 0.00,
-      totalBottomTime: json['totalBottomTime']?.toDouble() ?? 0,
+      averageBottomTime: json['averageBottomTime']?.toDouble() ?? 0,
       mostCommonWaterBody: json['mostCommonWaterBody'] as String?,
       mostCommonWeatherCondition: json['mostCommonWeatherCondition'] as String?,
       userId: json['userId'] as String?,
@@ -31,7 +31,7 @@ class DiveStatistics {
     return {
       'totalDives': totalDives,
       'averageDepth': averageDepth,
-      'totalBottomTime': totalBottomTime,
+      'averageBottomTime': averageBottomTime,
       'mostCommonWaterBody': mostCommonWaterBody,
       'mostCommonWeatherCondition': mostCommonWeatherCondition,
       'userId': userId,

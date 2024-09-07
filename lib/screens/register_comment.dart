@@ -94,19 +94,17 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
   }
 
   Future<void> _nextStep() async {
-    if (_isProcessing) return;
-
-    setState(() {
-      _isProcessing = true;
-
-      if (_rating == 0) {
-        _ratingErrorMessage = 'Campo obrigatório.';
-      } else {
-        _ratingErrorMessage = '';
-      }
-    });
-
     try {
+      setState(() {
+        _isProcessing = true;
+
+        if (_rating == 0) {
+          _ratingErrorMessage = 'Campo obrigatório.';
+        } else {
+          _ratingErrorMessage = '';
+        }
+      });
+
       if (_ratingErrorMessage.isEmpty) {
         final comment =
             Comment(rating: _rating, divingSpotId: widget.divingSpot.id);
@@ -129,7 +127,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
               return CustomAlertDialog(
                 text: 'Comentário atualizado com sucesso!',
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DiveSpotDetailsScreen(
@@ -150,7 +148,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
               return CustomAlertDialog(
                 text: 'Comentário adicionado com sucesso!',
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) => DiveSpotDetailsScreen(
@@ -172,6 +170,10 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
           content: Text('Erro ao registrar avaliação, tente novamente.'),
         ),
       );
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 

@@ -1,5 +1,4 @@
 import 'package:atlantida_mobile/components/lateral_menu.dart';
-import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
 import 'package:atlantida_mobile/controllers/diving_statistics_controller.dart';
@@ -91,7 +90,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _startDate,
-      firstDate: DateTime(2000),
+      firstDate: DateTime(1900),
       lastDate: DateTime(2101),
     );
 
@@ -169,9 +168,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       return const Scaffold(
         appBar: LateralMenu(),
         drawer: LateralMenuDrawer(),
-        bottomNavigationBar: NavBar(
-          index: 0,
-        ),
         backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Colors.blue),
@@ -182,9 +178,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     return Scaffold(
       appBar: const LateralMenu(),
       drawer: const LateralMenuDrawer(),
-      bottomNavigationBar: const NavBar(
-        index: 0,
-      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -336,8 +329,8 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 ),
                 buildStatisticCard(
                   context,
-                  title: 'Tempo Total de Fundo',
-                  value: '${stats.totalBottomTime} minutos',
+                  title: 'Tempo médio de Fundo',
+                  value: '${stats.averageBottomTime} minutos',
                   icon: Icons.timer,
                 ),
                 if (stats.mostCommonWaterBody != null &&

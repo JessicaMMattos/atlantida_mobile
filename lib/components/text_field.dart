@@ -7,6 +7,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController controller;
   final String errorMessage;
   final bool isRequired;
+  final bool haveCapitalization;
 
   const CustomTextField({
     super.key,
@@ -15,6 +16,7 @@ class CustomTextField extends StatelessWidget {
     required this.controller,
     this.errorMessage = '',
     this.isRequired = false,
+    this.haveCapitalization = true,
   });
 
   @override
@@ -33,6 +35,9 @@ class CustomTextField extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         TextField(
+          textCapitalization: haveCapitalization
+              ? TextCapitalization.sentences
+              : TextCapitalization.none,
           controller: controller,
           decoration: InputDecoration(
             border: OutlineInputBorder(
@@ -99,15 +104,15 @@ class CustomTextFieldOptional extends StatelessWidget {
         Row(
           children: [
             Title1(title: label),
-              const Text(
-                ' (Opcional)',
-                style: TextStyle(
-                  fontFamily: 'Inter',
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                  color: Colors.grey,
-                ),
+            const Text(
+              ' (Opcional)',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+                color: Colors.grey,
               ),
+            ),
           ],
         ),
         const SizedBox(height: 10),

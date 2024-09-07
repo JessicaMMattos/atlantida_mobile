@@ -1,6 +1,6 @@
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:atlantida_mobile/screens/home.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:atlantida_mobile/models/diving_spot_return.dart';
 import 'package:atlantida_mobile/screens/details_dive_spot.dart';
@@ -475,7 +475,7 @@ class _MapScreenState extends State<MapScreen> {
           onPressed: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
               (Route<dynamic> route) => false,
             );
           },
@@ -516,7 +516,7 @@ class _MapScreenState extends State<MapScreen> {
                     onMapCreated: _onMapCreated,
                     initialCameraPosition: CameraPosition(
                       target: _initialPosition,
-                      zoom: 10.0,
+                      zoom: 6.0,
                     ),
                     markers: _markers,
                     myLocationEnabled: true,

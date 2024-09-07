@@ -1,8 +1,8 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:atlantida_mobile/models/photo.dart';
-import 'package:atlantida_mobile/screens/home.dart';
 import 'package:atlantida_mobile/models/dive_log_return.dart';
 import 'package:atlantida_mobile/screens/full_image_gallery.dart';
 import 'package:atlantida_mobile/screens/details_dive_spot.dart';
@@ -189,7 +189,7 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
                       // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const HomeScreen()),
+                          builder: (context) => const MainNavigationScreen()),
                       (Route<dynamic> route) => false,
                     );
                   } catch (err) {
@@ -240,7 +240,7 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                 context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
+                MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
                 (Route<dynamic> route) => false,
               );
             },
@@ -274,7 +274,7 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
           onPressed: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
               (Route<dynamic> route) => false,
             );
           },

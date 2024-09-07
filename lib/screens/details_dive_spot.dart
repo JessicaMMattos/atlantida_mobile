@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:atlantida_mobile/models/user.dart';
-import 'package:atlantida_mobile/screens/dive_sites.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
 import 'package:atlantida_mobile/models/comment_return.dart';
 import 'package:atlantida_mobile/screens/register_comment.dart';
@@ -90,7 +90,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const MapScreen(),
+                    builder: (context) => const MainNavigationScreen(index: 1),
                   ),
                 );
               }
@@ -132,7 +132,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const MapScreen(),
+                  builder: (context) => const MainNavigationScreen(index: 1),
                 ),
               );
             }
@@ -593,7 +593,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MapScreen(diveSpot: diveSpot),
+            builder: (context) => MainNavigationScreen(index: 1, diveSpot: diveSpot),
           ),
         );
       },
@@ -701,14 +701,14 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
           return AlertDialog(
             backgroundColor: Colors.white,
             contentPadding: const EdgeInsets.all(
-                20), // Adiciona padding ao redor do conteúdo
+                20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             content: ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width *
-                    0.8, // Define a largura máxima
+                    0.8,
               ),
               child: const Column(
                 mainAxisSize: MainAxisSize.min,

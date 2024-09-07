@@ -1,7 +1,6 @@
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
-import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/services/dive_log_service.dart';
 import 'package:atlantida_mobile/services/weather_service.dart';
 import 'package:atlantida_mobile/screens/details_dive_log.dart';
@@ -307,9 +306,6 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: const LateralMenu(),
       drawer: const LateralMenuDrawer(),
-      bottomNavigationBar: const NavBar(
-        index: 2,
-      ),
       backgroundColor: Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -644,7 +640,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      '${DateFormat('dd/MM/yyyy').format(DateTime.parse(diveLog.date as String) ?? DateTime.now())}',
+                                                      DateFormat('dd/MM/yyyy').format(DateTime.parse(diveLog.date)),
                                                       style: const TextStyle(
                                                         fontFamily: 'Inter',
                                                         fontSize: 16,

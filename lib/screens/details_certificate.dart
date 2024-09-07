@@ -1,9 +1,9 @@
 import 'dart:convert';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:atlantida_mobile/models/certificate.dart';
 import 'package:atlantida_mobile/models/certificate_return.dart';
-import 'package:atlantida_mobile/screens/certificate_screen.dart';
 import 'package:atlantida_mobile/screens/register_certificate.dart';
 import 'package:atlantida_mobile/controllers/certificate_controller.dart';
 
@@ -140,11 +140,11 @@ class _CertificateDetailsScreenStateState
                         content: Text('Certificado excluído com sucesso.'),
                       ),
                     );
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       // ignore: use_build_context_synchronously
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const CertificatesScreen()),
+                          builder: (context) => const MainNavigationScreen(index: 3)),
                     );
                   } catch (err) {
                     // ignore: use_build_context_synchronously
@@ -194,7 +194,7 @@ class _CertificateDetailsScreenStateState
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const CertificatesScreen(),
+                builder: (context) => const MainNavigationScreen(index: 3),
               ),
             );
           },

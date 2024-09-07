@@ -1,8 +1,9 @@
+import 'package:atlantida_mobile/components/custom_error_message.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:atlantida_mobile/screens/redefine_password.dart';
 import 'package:atlantida_mobile/screens/signup_step_one.dart';
 import 'package:atlantida_mobile/components/button.dart';
-import 'package:atlantida_mobile/screens/home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
@@ -22,30 +23,49 @@ class _LoginScreenState extends State<LoginScreen> {
   String _loginErrorMessage = '';
   bool _isObscure = true;
   bool _isLoading = false;
+  OverlayEntry? _errorOverlay;
+
+  void _showErrorMessage(String message) {
+    _errorOverlay?.remove();
+    _errorOverlay = OverlayEntry(
+      builder: (context) => CustomErrorMessage(
+        message: message,
+        onDismiss: () {
+          _errorOverlay?.remove();
+          _errorOverlay = null;
+        },
+      ),
+    );
+    Overlay.of(context).insert(_errorOverlay!);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      _errorOverlay?.remove();
+      _errorOverlay = null;
+    });
+  }
 
   void _login() async {
-    setState(() {
-      _emailErrorMessage = '';
-      _passwordErrorMessage = '';
-      _loginErrorMessage = '';
-      _isLoading = true;
-    });
-
-    String email = _emailController.text;
-    String password = _passwordController.text;
-
-    if (email.isEmpty) {
-      setState(() {
-        _emailErrorMessage = "Campo obrigatório.";
-      });
-    }
-    if (password.isEmpty) {
-      setState(() {
-        _passwordErrorMessage = "Campo obrigatório.";
-      });
-    }
-
     try {
+      setState(() {
+        _emailErrorMessage = '';
+        _passwordErrorMessage = '';
+        _loginErrorMessage = '';
+        _isLoading = true;
+      });
+
+      String email = _emailController.text;
+      String password = _passwordController.text;
+
+      if (email.isEmpty) {
+        setState(() {
+          _emailErrorMessage = "Campo obrigatório.";
+        });
+      }
+      if (password.isEmpty) {
+        setState(() {
+          _passwordErrorMessage = "Campo obrigatório.";
+        });
+      }
       if (_emailErrorMessage.isEmpty && _passwordErrorMessage.isEmpty) {
         var response =
             await UserController().loginUser(context, email, password);
@@ -54,7 +74,8 @@ class _LoginScreenState extends State<LoginScreen> {
           Navigator.pushAndRemoveUntil(
             // ignore: use_build_context_synchronously
             context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()),
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen()),
             (Route<dynamic> route) => false,
           );
         } else {
@@ -65,9 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (error) {
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro no login, tente novamente.')),
-      );
+      _showErrorMessage('Ocorreu um erro inesperado. Tente novamente.');
     } finally {
       setState(() {
         _isLoading = false;

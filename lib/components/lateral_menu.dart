@@ -1,6 +1,6 @@
 import 'package:atlantida_mobile/controllers/user_controller.dart';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:atlantida_mobile/screens/register_dive_log.dart';
-import 'package:atlantida_mobile/screens/home.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +41,7 @@ class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
           onTap: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const HomeScreen()),
+              MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
               (Route<dynamic> route) => false,
             );
           },
@@ -64,10 +64,7 @@ class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class LateralMenuDrawer extends StatelessWidget {
-
-  const LateralMenuDrawer({
-    super.key
-  });
+  const LateralMenuDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -91,12 +88,13 @@ class LateralMenuDrawer extends StatelessWidget {
             const Divider(color: Colors.white, thickness: 1),
             const Spacer(),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const DiveRegistrationScreen()),
+                    MaterialPageRoute(
+                        builder: (context) => const DiveRegistrationScreen()),
                   );
                 },
                 child: Container(
@@ -119,22 +117,26 @@ class LateralMenuDrawer extends StatelessWidget {
                         ),
                         child: Column(
                           children: [
-                            SizedBox(height: screenHeight * 0.05),
+                            SizedBox(height: screenHeight * 0.03),
                             Container(
                               height: screenHeight * 0.3,
                               decoration: const BoxDecoration(
-                                image: DecorationImage(
-                                  image: AssetImage('assets/images/mergulho.png'),
-                                  fit: BoxFit.cover,
-                                ),
                                 borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10),
                                   topRight: Radius.circular(10),
                                 ),
                               ),
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  'assets/icons/illustration-diver.svg',
+                                  height: screenHeight * 10,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(vertical: screenHeight * 0.02),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: screenHeight * 0.02),
                               decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.only(
@@ -145,7 +147,8 @@ class LateralMenuDrawer extends StatelessWidget {
                               child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.add, color: Colors.black, size: 16),
+                                  Icon(Icons.add,
+                                      color: Colors.black, size: 16),
                                   SizedBox(width: 5),
                                   Text(
                                     'Registrar mergulho',
@@ -154,7 +157,7 @@ class LateralMenuDrawer extends StatelessWidget {
                                       fontWeight: FontWeight.w400,
                                       fontSize: 15,
                                       color: Colors.black,
-                                  ),
+                                    ),
                                   ),
                                 ],
                               ),

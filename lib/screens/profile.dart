@@ -1,11 +1,11 @@
 import 'package:atlantida_mobile/screens/about_us.dart';
-import 'package:atlantida_mobile/screens/terms%20_of_use.dart';
+import 'package:atlantida_mobile/screens/control.dart';
+import 'package:atlantida_mobile/screens/terms_of_use.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/address_controller.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
-import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/components/senha_field.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
@@ -56,7 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: const LateralMenu(),
       drawer: const LateralMenuDrawer(),
-      bottomNavigationBar: const NavBar(index: 4),
       backgroundColor: Colors.white,
       body: user == null
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -202,6 +201,7 @@ class _AccountScreenState extends State<AccountScreen> {
   String _numberErrorMessage = '';
 
   bool isLoading = true;
+  bool _isProcessing = false;
 
   final cepMaskFormatter = MaskTextInputFormatter(
     mask: '#####-###',
@@ -220,9 +220,8 @@ class _AccountScreenState extends State<AccountScreen> {
     _birthdateController.text =
         formatDate(widget.user.birthDate); // Formatar data
     _emailController.text = widget.user.email;
-    if (widget.user.id != null) {
-      _loadAddress(widget.user.id);
-    }
+    
+    _loadAddress(widget.user.id);
   }
 
   String formatDate(String date) {
@@ -270,6 +269,10 @@ class _AccountScreenState extends State<AccountScreen> {
 
   void _userUpdate() async {
     try {
+      setState(() {
+        _isProcessing = true;
+      });
+
       if (_validateFields()) {
         User userUpdate = User(
             firstName: _nameController.text,
@@ -300,10 +303,10 @@ class _AccountScreenState extends State<AccountScreen> {
             return CustomAlertDialog(
               text: 'Perfil atualizado com sucesso!',
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
+                    builder: (context) => const MainNavigationScreen(index: 4),
                   ),
                 );
               },
@@ -317,6 +320,10 @@ class _AccountScreenState extends State<AccountScreen> {
         const SnackBar(
             content: Text('Erro ao atualizar usuário, tente novamente.')),
       );
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -410,7 +417,7 @@ class _AccountScreenState extends State<AccountScreen> {
   void _toGoBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
     );
   }
 
@@ -425,7 +432,7 @@ class _AccountScreenState extends State<AccountScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
           );
         },
       ),
@@ -760,7 +767,7 @@ class _AccountScreenState extends State<AccountScreen> {
                 SizedBox(
                   width: screenWidth * 0.4,
                   child: ElevatedButton(
-                    onPressed: _userUpdate,
+                    onPressed: _isProcessing ? null : _userUpdate,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF007FFF),
                       padding: const EdgeInsets.symmetric(
@@ -774,12 +781,17 @@ class _AccountScreenState extends State<AccountScreen> {
                         borderRadius: BorderRadius.circular(30.0),
                       ),
                     ),
-                    child: const Text(
-                      'SALVAR',
-                      style: TextStyle(
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: _isProcessing
+                        ? const CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.blue),
+                          )
+                        : const Text(
+                            'SALVAR',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
               ],
@@ -838,26 +850,24 @@ class _SecurityScreenState extends State<SecurityScreen> {
   bool _isProcessing = false;
 
   void _passwordUpdate() async {
-    if (_isProcessing) return;
+    try {
+      setState(() {
+        _isProcessing = true;
+        _oldPasswordError =
+            _oldPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _newPasswordError =
+            _newPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
+        _confirmPasswordError =
+            _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
 
-    setState(() {
-      _isProcessing = true;
-      _oldPasswordError =
-          _oldPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
-      _newPasswordError =
-          _newPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
-      _confirmPasswordError =
-          _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
+        if (_newPasswordController.text != _confirmPasswordController.text) {
+          _confirmPasswordError = 'Senhas não coincidem.';
+        }
+      });
 
-      if (_newPasswordController.text != _confirmPasswordController.text) {
-        _confirmPasswordError = 'Senhas não coincidem.';
-      }
-    });
-
-    if (_oldPasswordError.isEmpty &&
-        _newPasswordError.isEmpty &&
-        _confirmPasswordError.isEmpty) {
-      try {
+      if (_oldPasswordError.isEmpty &&
+          _newPasswordError.isEmpty &&
+          _confirmPasswordError.isEmpty) {
         var responseBody = await UserController().updatePassword(
             _oldPasswordController.text, _newPasswordController.text);
 
@@ -871,10 +881,10 @@ class _SecurityScreenState extends State<SecurityScreen> {
               return CustomAlertDialog(
                 text: 'Senha atualizada com sucesso!',
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const ProfileScreen(),
+                      builder: (context) => const MainNavigationScreen(index: 4)
                     ),
                   );
                 },
@@ -888,17 +898,17 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 content: Text('Erro ao atualizar senha, tente novamente.')),
           );
         }
-      } catch (error) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Erro ao atualizar senha, tente novamente.')),
-        );
-      } finally {
-        setState(() {
-          _isProcessing = false;
-        });
       }
+    } catch (error) {
+      // ignore: use_build_context_synchronously
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('Erro ao atualizar senha, tente novamente.')),
+      );
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -1018,7 +1028,6 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 if (isPasswordCorrect) {
                   await _deleteUserAccount();
                 } else {
-                  // Mostrar mensagem de erro
                   // ignore: use_build_context_synchronously
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -1065,7 +1074,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
     _resetForm();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const ProfileScreen()),
+      MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
     );
   }
 
@@ -1080,7 +1089,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ProfileScreen()),
+            MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
           );
         },
       ),

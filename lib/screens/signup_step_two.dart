@@ -1,6 +1,7 @@
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
+import 'package:atlantida_mobile/components/custom_error_message.dart';
 import 'package:atlantida_mobile/screens/login.dart';
-import 'package:atlantida_mobile/screens/terms%20_of_use.dart';
+import 'package:atlantida_mobile/screens/terms_of_use.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/screens/signup_step_one.dart';
 import 'package:atlantida_mobile/controllers/address_controller.dart';
@@ -47,6 +48,8 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
   bool _acceptTerms = false;
   bool _isLoading = false;
 
+  OverlayEntry? _errorOverlay;
+
   bool _isValidCep(String cep) {
     return RegExp(r'^\d{5}-\d{3}$').hasMatch(cep);
   }
@@ -56,9 +59,27 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
     filter: {'#': RegExp(r'[0-9]')},
   );
 
+  void _showErrorMessage(String message) {
+    _errorOverlay?.remove();
+    _errorOverlay = OverlayEntry(
+      builder: (context) => CustomErrorMessage(
+        message: message,
+        onDismiss: () {
+          _errorOverlay?.remove();
+          _errorOverlay = null;
+        },
+      ),
+    );
+    Overlay.of(context).insert(_errorOverlay!);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      _errorOverlay?.remove();
+      _errorOverlay = null;
+    });
+  }
+
   void _completeSignup() async {
     setState(() {
-      _isLoading = true;
       _cepErrorMessage =
           _cepController.text.isEmpty || !_isValidCep(_cepController.text)
               ? 'Campo obrigatório.'
@@ -89,6 +110,10 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
         _numberErrorMessage.isEmpty &&
         _termsErrorMessage.isEmpty) {
       try {
+        setState(() {
+          _isLoading = true;
+        });
+
         var responseUser =
             await UserController().createUser(context, widget.newUser);
         var userId = json.decode(responseUser.body)['_id'];
@@ -118,7 +143,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
               description:
                   'Seu cadastro foi realizado com sucesso. Por favor, faça o login para acessar o sistema.',
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => const LoginScreen(),
@@ -129,10 +154,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
           },
         );
       } catch (error) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erro no cadastro, tente novamente.')),
-        );
+        _showErrorMessage('Ocorreu um erro inesperado. Tente novamente.');
       } finally {
         setState(() {
           _isLoading = false;

@@ -4,8 +4,8 @@ import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/controllers/certificate_controller.dart';
 import 'package:atlantida_mobile/models/certificate.dart';
 import 'package:atlantida_mobile/models/certificate_return.dart';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:atlantida_mobile/screens/details_certificate.dart';
-import 'package:atlantida_mobile/screens/certificate_screen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -40,7 +40,6 @@ class _CertificateRegistrationScreenState
   String _certificationNumberErrorMessage = '';
   String _issueDateErrorMessage = '';
   String _expirationDateErrorMessage = '';
-  String _date = '';
 
   bool _isProcessing = false;
 
@@ -148,7 +147,6 @@ class _CertificateRegistrationScreenState
               if (date.isAfter(currentDate.add(const Duration(days: 1)))) {
                 errors['age'] = 'Data inválida.';
               }
-              _date = DateFormat('yyyy-MM-dd').format(date);
             }
           }
         }
@@ -185,7 +183,6 @@ class _CertificateRegistrationScreenState
               if (date.isBefore(currentDate)) {
                 errors['age'] = 'Certificação vencida.';
               }
-              _date = DateFormat('yyyy-MM-dd').format(date);
             }
           }
         }
@@ -204,12 +201,10 @@ class _CertificateRegistrationScreenState
     if (image != null) {
       final Uint8List imageData = await image.readAsBytes();
 
-      if (imageData != null) {
-        setState(() {
-          _imageData = imageData;
-          _imageContentType = image.mimeType;
-        });
-      }
+      setState(() {
+        _imageData = imageData;
+        _imageContentType = image.mimeType;
+      });
     }
   }
 
@@ -227,7 +222,6 @@ class _CertificateRegistrationScreenState
       _certificationNumberErrorMessage = '';
       _issueDateErrorMessage = '';
       _expirationDateErrorMessage = '';
-      _date = '';
       newCertificate = null;
 
       _imageData = null;
@@ -242,19 +236,17 @@ class _CertificateRegistrationScreenState
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (context) => const CertificatesScreen(),
+        builder: (context) => const MainNavigationScreen(index: 3),
       ),
     );
   }
 
   void _nextStep() async {
-    if (_isProcessing) return;
-
-    setState(() {
-      _isProcessing = true;
-    });
-
     try {
+      setState(() {
+        _isProcessing = true;
+      });
+
       if (_issueDateController.text.isNotEmpty) {
         final issueDateValidation = _validateDate(_issueDateController.text);
 
@@ -331,7 +323,7 @@ class _CertificateRegistrationScreenState
               return CustomAlertDialog(
                 text: 'Certificado atualizado com sucesso!',
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       builder: (context) =>
@@ -352,10 +344,10 @@ class _CertificateRegistrationScreenState
               return CustomAlertDialog(
                 text: 'Certificado cadastrado com sucesso!',
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const CertificatesScreen(),
+                      builder: (context) => const MainNavigationScreen(index: 3),
                     ),
                   );
                 },
@@ -398,7 +390,7 @@ class _CertificateRegistrationScreenState
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => const CertificatesScreen(),
+                builder: (context) => const MainNavigationScreen(index: 3),
               ),
             );
           },
@@ -468,19 +460,19 @@ class _CertificateRegistrationScreenState
 
               // Número de certificação
               CustomTextField(
-                label: 'Número de certificação',
-                controller: _certificationNumberController,
-                description: '',
-                isRequired: true,
-                errorMessage: _certificationNumberErrorMessage,
-              ),
+                  label: 'Número de certificação',
+                  controller: _certificationNumberController,
+                  description: '',
+                  isRequired: true,
+                  errorMessage: _certificationNumberErrorMessage,
+                  haveCapitalization: false),
               const SizedBox(height: 20),
 
               // Campo de Nível de certificação
               CustomTextFieldOptional(
                   label: 'Nível de certificação',
                   controller: _certificationLevelController,
-                  description: 'Ex. Beginner'),
+                  description: 'Ex. Iniciante'),
               const SizedBox(height: 20),
 
               // Campo de Data de emissão

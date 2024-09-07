@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:atlantida_mobile/components/lateral_menu.dart';
-import 'package:atlantida_mobile/components/navigation_bar.dart';
 import 'package:atlantida_mobile/models/certificate_return.dart';
 import 'package:atlantida_mobile/screens/details_certificate.dart';
 import 'package:atlantida_mobile/screens/register_certificate.dart';
@@ -64,7 +63,6 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
     return Scaffold(
       appBar: const LateralMenu(),
       drawer: const LateralMenuDrawer(),
-      bottomNavigationBar: const NavBar(index: 3),
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),

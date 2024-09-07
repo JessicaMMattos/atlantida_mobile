@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
+import 'package:atlantida_mobile/components/custom_error_message.dart';
 import 'package:atlantida_mobile/components/dropdown_button.dart';
-import 'package:atlantida_mobile/components/update_registerHeader.dart';
+import 'package:atlantida_mobile/components/update_register_header.dart';
 import 'package:atlantida_mobile/models/dive_log_return.dart';
 import 'package:atlantida_mobile/models/photo.dart';
+import 'package:atlantida_mobile/screens/control.dart';
 import 'package:atlantida_mobile/screens/details_dive_log.dart';
-import 'package:atlantida_mobile/screens/home.dart';
 import 'package:atlantida_mobile/screens/register_diving_spots.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
@@ -141,6 +142,7 @@ var newDiveLog;
 var hasUpdate = false;
 // ignore: prefer_typing_uninitialized_variables
 var updateDiveLog;
+bool _isProcessing = false;
 
 class DecimalTextInputFormatter extends TextInputFormatter {
   @override
@@ -297,7 +299,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
 
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const HomeScreen()),
+      MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
       (Route<dynamic> route) => false,
     );
   }
@@ -389,15 +391,19 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
           } else {
             final currentDate = DateTime.now();
             final birthDate = DateTime(year, month, day);
-            if (birthDate.isAfter(currentDate)) {
+
+            if (year < 1900) {
+              errors['format'] = 'Data inválida.';
+            } else if (birthDate.isAfter(currentDate)) {
               errors['age'] = 'Data inválida.';
+            } else {
+              _date = DateFormat('yyyy-MM-dd').format(birthDate);
             }
-            _date = DateFormat('yyyy-MM-dd').format(birthDate);
           }
         }
       }
     } catch (e) {
-      errors['format'] = 'Data de nascimento inválida (formato DD/MM/AAAA).';
+      errors['format'] = 'Data inválida (formato DD/MM/AAAA).';
     }
 
     return errors;
@@ -2470,8 +2476,33 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
     );
   }
 
+  OverlayEntry? _errorOverlay;
+
+  void _showErrorMessage(String message) {
+    _errorOverlay?.remove();
+    _errorOverlay = OverlayEntry(
+      builder: (context) => CustomErrorMessage(
+        message: message,
+        onDismiss: () {
+          _errorOverlay?.remove();
+          _errorOverlay = null;
+        },
+      ),
+    );
+    Overlay.of(context).insert(_errorOverlay!);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      _errorOverlay?.remove();
+      _errorOverlay = null;
+    });
+  }
+
   Future<void> _nextStep() async {
     try {
+      setState(() {
+        _isProcessing = true;
+      });
+
       if (_notesController.text.isNotEmpty) {
         newDiveLog.notes = _notesController.text;
       }
@@ -2499,7 +2530,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
             return CustomAlertDialog(
               text: 'Mergulho atualizado com sucesso!',
               onPressed: () {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                     builder: (context) => DiveLogDetailScreen(diveLog: newDive),
@@ -2521,7 +2552,8 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const MainNavigationScreen()),
                   (Route<dynamic> route) => false,
                 );
               },
@@ -2532,10 +2564,11 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
 
       _resetForm();
     } catch (error) {
-      // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro na ultima etapa, tente novamente.')),
-      );
+      _showErrorMessage('Ocorreu um erro inesperado. Tente novamente.');
+    } finally {
+      setState(() {
+        _isProcessing = false;
+      });
     }
   }
 
@@ -2956,7 +2989,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                   SizedBox(
                     width: screenWidth * 0.4,
                     child: ElevatedButton(
-                      onPressed: _nextStep,
+                      onPressed: _isProcessing ? null : _nextStep,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF007FFF),
                         padding: const EdgeInsets.symmetric(
@@ -2970,12 +3003,17 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: Text(
-                        hasUpdate ? 'EDITAR' : 'REGISTRAR',
-                        style: const TextStyle(
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: _isProcessing
+                          ? const CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.blue),
+                            )
+                          : Text(
+                              hasUpdate ? 'EDITAR' : 'REGISTRAR',
+                              style: const TextStyle(
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
                   ),
                 ],

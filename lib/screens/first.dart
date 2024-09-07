@@ -19,9 +19,9 @@ class _FirstScreenState extends State<FirstScreen> {
     'Guia subaquático pessoal!\nDescubra, registre, compartilhe\ne acompanhe sua evolução!',
   ];
   final List<String> _images = [
-    'assets/images/image1.jpg',
-    'assets/images/image2.jpg',
-    'assets/images/image3.jpg',
+    'assets/images/image1.png',
+    'assets/images/image2.png',
+    'assets/images/image3.png',
   ];
 
   @override

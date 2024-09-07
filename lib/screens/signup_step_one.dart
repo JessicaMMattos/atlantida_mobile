@@ -1,3 +1,4 @@
+import 'package:atlantida_mobile/components/custom_error_message.dart';
 import 'package:atlantida_mobile/screens/signup_step_two.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
@@ -37,6 +38,9 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
   String _confirmPasswordErrorMessage = '';
   bool _isObscure1 = true;
   bool _isObscure2 = true;
+  bool _isLoading = false;
+
+  OverlayEntry? _errorOverlay;
 
   @override
   void initState() {
@@ -117,6 +121,25 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
     }
   }
 
+  void _showErrorMessage(String message) {
+    _errorOverlay?.remove();
+    _errorOverlay = OverlayEntry(
+      builder: (context) => CustomErrorMessage(
+        message: message,
+        onDismiss: () {
+          _errorOverlay?.remove();
+          _errorOverlay = null;
+        },
+      ),
+    );
+    Overlay.of(context).insert(_errorOverlay!);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      _errorOverlay?.remove();
+      _errorOverlay = null;
+    });
+  }
+
   void _signupUser() async {
     final birthdateValidation = _validateBirthdate(_birthdateController.text);
 
@@ -132,8 +155,9 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
           : !_isValidEmail(_emailController.text)
               ? 'E-mail inválido.'
               : '';
-      _passwordErrorMessage =
-          _passwordController.text.isEmpty ? 'Campo obrigatório.' : '';
+      _passwordErrorMessage = _passwordController.text.isEmpty
+          ? 'Campo obrigatório.'
+          : _passwordErrorMessage;
       _confirmPasswordErrorMessage =
           _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
 
@@ -149,6 +173,10 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
         _passwordErrorMessage.isEmpty &&
         _confirmPasswordErrorMessage.isEmpty) {
       try {
+        setState(() {
+          _isLoading = true;
+        });
+
         final emailExists = await UserController()
             .findUserByEmail(context, _emailController.text);
 
@@ -165,7 +193,7 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
             birthDate: _birthdate,
           );
 
-          Navigator.pushReplacement(
+          Navigator.push(
             // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(
@@ -173,12 +201,11 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
           );
         }
       } catch (error) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content:
-                  Text('Erro na primeira etapa do cadastro, tente novamente.')),
-        );
+        _showErrorMessage('Ocorreu um erro inesperado. Tente novamente.');
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -376,6 +403,7 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                 controller: _emailController,
                 errorMessage: _emailErrorMessage,
                 isRequired: true,
+                haveCapitalization: false
               ),
               const SizedBox(height: 20),
 
@@ -427,6 +455,25 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                     ),
                   ),
                 ),
+                onChanged: (value) {
+                  String errorMessage = '';
+
+                  if (value.length < 8) {
+                    errorMessage += '\n• Mínimo 8 caracteres.';
+                  }
+                  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                    errorMessage += '\n• Pelo menos 1 letra maiúscula.';
+                  }
+                  if (!RegExp(r'[0-9]').hasMatch(value)) {
+                    errorMessage += '\n• Pelo menos 1 número.';
+                  }
+
+                  setState(() {
+                    _passwordErrorMessage = errorMessage.isEmpty
+                        ? ''
+                        : 'A senha deve conter:$errorMessage';
+                  });
+                },
               ),
               if (_passwordErrorMessage.isNotEmpty)
                 Padding(
@@ -506,8 +553,8 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
               SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Button(
-                  titleButton: 'CONTINUAR',
-                  onPressed: _signupUser,
+                  titleButton: _isLoading ? 'CARREGANDO...' : 'CONTINUAR',
+                  onPressed: _isLoading ? () {} : _signupUser,
                 ),
               ),
             ],

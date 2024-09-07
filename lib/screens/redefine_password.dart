@@ -1,4 +1,5 @@
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
+import 'package:atlantida_mobile/components/custom_error_message.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
 import 'package:atlantida_mobile/components/button.dart';
@@ -17,6 +18,26 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
   final TextEditingController _emailController = TextEditingController();
   String _message = '';
   bool _isLoading = false;
+  OverlayEntry? _errorOverlay;
+
+  void _showErrorMessage(String message) {
+    _errorOverlay?.remove();
+    _errorOverlay = OverlayEntry(
+      builder: (context) => CustomErrorMessage(
+        message: message,
+        onDismiss: () {
+          _errorOverlay?.remove();
+          _errorOverlay = null;
+        },
+      ),
+    );
+    Overlay.of(context).insert(_errorOverlay!);
+
+    Future.delayed(const Duration(seconds: 4), () {
+      _errorOverlay?.remove();
+      _errorOverlay = null;
+    });
+  }
 
   void _resetPassword() async {
     try {
@@ -44,9 +65,7 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
       }
     } catch (error) {
       // ignore: use_build_context_synchronously
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erro ao enviar email de recuperação.')),
-      );
+      _showErrorMessage('Ocorreu um erro inesperado. Tente novamente.');
     } finally {
       setState(() {
         _isLoading = false;
@@ -63,7 +82,7 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
           description:
               'Por favor, verifique sua caixa de entrada e spam para encontrar a nova senha.',
           onPressed: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => const LoginScreen(),

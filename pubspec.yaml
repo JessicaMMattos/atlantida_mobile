@@ -53,6 +53,7 @@ flutter:
     - assets/icons/certificados.svg
     - assets/icons/perfil.svg
     - assets/icons/view-certificate.svg
+    - assets/icons/illustration-diver.svg
     - .env
 
   fonts:
