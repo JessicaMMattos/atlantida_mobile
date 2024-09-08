@@ -93,13 +93,13 @@ class _FirstScreenState extends State<FirstScreen> {
             ),
           ),
 
-          // Botão "Fazer Login"
+          // Botão "Entrar na conta"
           Positioned(
             bottom: 20.0,
             left: 20.0,
             right: 20.0,
             child: Button(
-              titleButton: 'FAZER LOGIN',
+              titleButton: 'ENTRAR NA CONTA',
               onPressed: () {
                 Navigator.push(
                   context,
