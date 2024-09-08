@@ -20,7 +20,7 @@ class DiveStatistics {
     return DiveStatistics(
       totalDives: json['totalDives'] ?? 0,
       averageDepth: double.tryParse(json['averageDepth']?.toString() ?? '0.00') ?? 0.00,
-      averageBottomTime: json['averageBottomTime']?.toDouble() ?? 0,
+      averageBottomTime: double.tryParse(json['averageBottomTime']?.toString() ?? '0.00') ?? 0.00,
       mostCommonWaterBody: json['mostCommonWaterBody'] as String?,
       mostCommonWeatherCondition: json['mostCommonWeatherCondition'] as String?,
       userId: json['userId'] as String?,
