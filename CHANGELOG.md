@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.1.0-beta] - 2024-09-07
+## [1.1.0-beta] - 2024-09-13
 
 ### Added
 - **Functional Requirements:**
