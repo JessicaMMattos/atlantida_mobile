@@ -76,6 +76,7 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
   void _showSuccessDialog() {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return CustomAlertWithDescriptionDialog(
           title: 'Senha redefinida com sucesso',

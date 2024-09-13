@@ -319,6 +319,7 @@ class _CertificateRegistrationScreenState
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return CustomAlertDialog(
                 text: 'Certificado atualizado com sucesso!',
@@ -340,6 +341,7 @@ class _CertificateRegistrationScreenState
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return CustomAlertDialog(
                 text: 'Certificado cadastrado com sucesso!',

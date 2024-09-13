@@ -113,6 +113,7 @@ class _DiveLogDetailScreenState extends State<DiveLogDetailScreen> {
     try {
       bool? shouldUpdate = await showDialog<bool>(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.white,

@@ -138,6 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showGpsInactiveAlert(String message) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,
@@ -521,7 +522,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(width: 10),
                             const Text(
-                              'Registrar mergulho agora',
+                              'Registrar mergulho',
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.bold,

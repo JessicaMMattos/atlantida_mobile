@@ -137,6 +137,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
         showDialog(
           // ignore: use_build_context_synchronously
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return CustomAlertWithDescriptionDialog(
               title: 'Cadastro Realizado!',

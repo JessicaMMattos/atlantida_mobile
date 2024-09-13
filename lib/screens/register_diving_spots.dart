@@ -122,6 +122,7 @@ class _DivingSpotRegistrationScreenState
         showDialog(
           // ignore: use_build_context_synchronously
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return CustomAlertWithDescriptionDialog(
               title: 'Local de mergulho Cadastrado!',

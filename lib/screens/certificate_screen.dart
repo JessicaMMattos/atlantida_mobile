@@ -170,7 +170,8 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
             child: certificate.certificateImage != null
                 ? Image.memory(
                     base64Decode(certificate.certificateImage!.data),
-                    fit: BoxFit.contain,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
                   )
                 : const Center(
                     child: Icon(

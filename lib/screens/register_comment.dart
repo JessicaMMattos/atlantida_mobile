@@ -123,6 +123,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return CustomAlertDialog(
                 text: 'Comentário atualizado com sucesso!',
@@ -144,6 +145,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return CustomAlertDialog(
                 text: 'Comentário adicionado com sucesso!',

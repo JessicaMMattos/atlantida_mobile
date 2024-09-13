@@ -298,6 +298,7 @@ class _AccountScreenState extends State<AccountScreen> {
         showDialog(
           // ignore: use_build_context_synchronously
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return CustomAlertDialog(
               text: 'Perfil atualizado com sucesso!',
@@ -879,6 +880,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
           showDialog(
             // ignore: use_build_context_synchronously
             context: context,
+            barrierDismissible: false,
             builder: (BuildContext context) {
               return CustomAlertDialog(
                 text: 'Senha atualizada com sucesso!',
@@ -932,6 +934,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
 
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: Colors.white,

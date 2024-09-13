@@ -2546,6 +2546,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
         showDialog(
           // ignore: use_build_context_synchronously
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return CustomAlertDialog(
               text: 'Mergulho atualizado com sucesso!',
@@ -2566,6 +2567,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
         showDialog(
           // ignore: use_build_context_synchronously
           context: context,
+          barrierDismissible: false,
           builder: (BuildContext context) {
             return CustomAlertDialog(
               text: 'Mergulho registrado com sucesso!',
