@@ -67,7 +67,7 @@ class AboutUsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 18.0),
                 OutlinedButton(
-                  onPressed: () {}, // Botão não clicável
+                  onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     side: const BorderSide(color: Colors.black),
                     backgroundColor: Colors.transparent,
@@ -77,7 +77,7 @@ class AboutUsScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,
-                      color: Colors.black, // Texto preto
+                      color: Colors.black,
                     ),
                   ),
                 ),
