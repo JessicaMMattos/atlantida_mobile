@@ -55,7 +55,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
       backgroundColor: Colors.white,
       body: user == null
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -220,7 +219,7 @@ class _AccountScreenState extends State<AccountScreen> {
     _birthdateController.text =
         formatDate(widget.user.birthDate); // Formatar data
     _emailController.text = widget.user.email;
-    
+
     _loadAddress(widget.user.id);
   }
 
@@ -353,15 +352,15 @@ class _AccountScreenState extends State<AccountScreen> {
           _numberController.text.isEmpty ? 'Campo obrigatório.' : '';
     });
 
-    if (_nameErrorMessage.isNotEmpty &&
-        _surnameErrorMessage.isNotEmpty &&
-        _birthdateErrorMessage.isNotEmpty &&
-        _cepErrorMessage.isNotEmpty &&
-        _countryErrorMessage.isNotEmpty &&
-        _stateErrorMessage.isNotEmpty &&
-        _cityErrorMessage.isNotEmpty &&
-        _districtErrorMessage.isNotEmpty &&
-        _streetErrorMessage.isNotEmpty &&
+    if (_nameErrorMessage.isNotEmpty ||
+        _surnameErrorMessage.isNotEmpty ||
+        _birthdateErrorMessage.isNotEmpty ||
+        _cepErrorMessage.isNotEmpty ||
+        _countryErrorMessage.isNotEmpty ||
+        _stateErrorMessage.isNotEmpty ||
+        _cityErrorMessage.isNotEmpty ||
+        _districtErrorMessage.isNotEmpty ||
+        _streetErrorMessage.isNotEmpty ||
         _numberErrorMessage.isNotEmpty) {
       return false;
     }
@@ -417,7 +416,8 @@ class _AccountScreenState extends State<AccountScreen> {
   void _toGoBack() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
+      MaterialPageRoute(
+          builder: (context) => const MainNavigationScreen(index: 4)),
     );
   }
 
@@ -432,7 +432,8 @@ class _AccountScreenState extends State<AccountScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(index: 4)),
           );
         },
       ),
@@ -848,6 +849,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
   String _newPasswordError = '';
   String _confirmPasswordError = '';
   bool _isProcessing = false;
+  bool _isObscure1 = true;
 
   void _passwordUpdate() async {
     try {
@@ -856,7 +858,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
         _oldPasswordError =
             _oldPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
         _newPasswordError =
-            _newPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
+            _newPasswordController.text.isEmpty ? 'Campo obrigatório.' : _newPasswordError;
         _confirmPasswordError =
             _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
 
@@ -884,8 +886,8 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MainNavigationScreen(index: 4)
-                    ),
+                        builder: (context) =>
+                            const MainNavigationScreen(index: 4)),
                   );
                 },
               );
@@ -1070,14 +1072,6 @@ class _SecurityScreenState extends State<SecurityScreen> {
     }
   }
 
-  void _toGoBack() {
-    _resetForm();
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
@@ -1089,12 +1083,12 @@ class _SecurityScreenState extends State<SecurityScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const MainNavigationScreen(index: 4)),
+            MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(index: 4)),
           );
         },
       ),
       body: SingleChildScrollView(
-        // Adiciona rolagem para evitar overflow
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -1117,12 +1111,84 @@ class _SecurityScreenState extends State<SecurityScreen> {
                 errorMessage: _oldPasswordError,
               ),
               const SizedBox(height: 20),
-              SenhaTextField(
-                label: 'Nova Senha',
-                controller: _newPasswordController,
-                description: 'Informe sua nova senha',
-                errorMessage: _newPasswordError,
+              const Text(
+                'Nova Senha',
+                style: TextStyle(
+                  fontFamily: 'Inter',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Color(0xFF263238),
+                ),
               ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: _newPasswordController,
+                obscureText: _isObscure1,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _newPasswordError.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+                  ),
+                  hintText: 'Informe sua nova senha',
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _newPasswordError.isNotEmpty
+                          ? Colors.red
+                          : Colors.grey,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: _newPasswordError.isNotEmpty
+                          ? Colors.red
+                          : const Color(0xFF263238),
+                    ),
+                  ),
+                  suffixIcon: IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isObscure1 = !_isObscure1;
+                      });
+                    },
+                    icon: Icon(
+                      _isObscure1 ? Icons.visibility_off : Icons.visibility,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  String errorMessage = '';
+
+                  if (value.length < 8) {
+                    errorMessage += '\n• Mínimo 8 caracteres.';
+                  }
+                  if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                    errorMessage += '\n• Pelo menos 1 letra maiúscula.';
+                  }
+                  if (!RegExp(r'[0-9]').hasMatch(value)) {
+                    errorMessage += '\n• Pelo menos 1 número.';
+                  }
+
+                  setState(() {
+                    _newPasswordError = errorMessage.isEmpty
+                        ? ''
+                        : 'A senha deve conter:$errorMessage';
+                  });
+                },
+              ),
+              if (_newPasswordError.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 5.0),
+                  child: Text(
+                    _newPasswordError,
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
               const SizedBox(height: 20),
               SenhaTextField(
                 label: 'Confirmar Senha',
@@ -1137,7 +1203,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
                   SizedBox(
                     width: screenWidth * 0.4,
                     child: ElevatedButton(
-                      onPressed: _toGoBack,
+                      onPressed: _resetForm,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         side: const BorderSide(color: Color(0xFF007FFF)),

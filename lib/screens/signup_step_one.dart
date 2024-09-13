@@ -487,7 +487,6 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                   ),
                 ),
               const SizedBox(height: 20),
-
               // Campo de confirmação de senha
               const Text(
                 'Confirme sua senha',

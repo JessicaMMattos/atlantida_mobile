@@ -60,7 +60,7 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
         _message = response;
       });
 
-      if (_message == 'Senha redefinida com sucesso.') {
+      if (_message == 'Senha redefinida com sucesso') {
         _showSuccessDialog();
       }
     } catch (error) {

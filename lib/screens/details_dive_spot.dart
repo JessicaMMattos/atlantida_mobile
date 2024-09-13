@@ -12,12 +12,15 @@ import 'package:atlantida_mobile/screens/full_image_gallery.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/controllers/comment_controller.dart';
 
+import '../models/midia_data.dart';
+
 class DiveSpotDetailsScreen extends StatefulWidget {
   final String diveSpotId;
   final VoidCallback? onBack;
+  final int initialTabIndex;
 
   const DiveSpotDetailsScreen(
-      {super.key, required this.diveSpotId, this.onBack});
+      {super.key, required this.diveSpotId, this.onBack, this.initialTabIndex = 0});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -275,6 +278,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
   Widget _buildTabs() {
     return DefaultTabController(
       length: 2,
+      initialIndex: widget.initialTabIndex,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -395,15 +399,17 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          '${user.firstName} ${user.lastName}',
-                                          style: const TextStyle(
-                                            fontFamily: 'Inter',
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
+                                        Expanded(
+                                          child: Text(
+                                            '${user.firstName} ${user.lastName}',
+                                            style: const TextStyle(
+                                              fontFamily: 'Inter',
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16,
+                                            ),
                                           ),
                                         ),
                                         if (!isSmallScreen)
@@ -418,12 +424,16 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                                       ],
                                     ),
                                     if (isSmallScreen)
-                                      Text(
-                                        formattedDate,
-                                        style: const TextStyle(
-                                          fontFamily: 'Inter',
-                                          fontSize: 14,
-                                          color: Colors.grey,
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(top: 4.0),
+                                        child: Text(
+                                          formattedDate,
+                                          style: const TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
                                         ),
                                       ),
                                   ],
@@ -593,7 +603,8 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MainNavigationScreen(index: 1, diveSpot: diveSpot),
+            builder: (context) =>
+                MainNavigationScreen(index: 1, diveSpot: diveSpot),
           ),
         );
       },
@@ -700,15 +711,13 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            contentPadding: const EdgeInsets.all(
-                20),
+            contentPadding: const EdgeInsets.all(20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
             ),
             content: ConstrainedBox(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width *
-                    0.8,
+                maxWidth: MediaQuery.of(context).size.width * 0.8,
               ),
               child: const Column(
                 mainAxisSize: MainAxisSize.min,
@@ -771,8 +780,13 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                       ),
                     );
                     // ignore: use_build_context_synchronously
-                    Navigator.of(context)
-                        .pop(true); // Retorna verdadeiro para indicar sucesso
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            DiveSpotDetailsScreen(
+                                diveSpotId: widget.diveSpotId, initialTabIndex: 1)
+                      ),
+                    );
                   } catch (err) {
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -781,8 +795,7 @@ class _DiveSpotDetailsState extends State<DiveSpotDetailsScreen> {
                       ),
                     );
                     // ignore: use_build_context_synchronously
-                    Navigator.of(context)
-                        .pop(false); // Retorna falso em caso de erro
+                    Navigator.of(context).pop(false);
                   }
                 },
               ),
@@ -849,12 +862,19 @@ class _DescriptionsWidgetState extends State<DescriptionsWidget> {
           ),
         ),
         if (!_isExpanded && (widget.comment?.length ?? 0) > 100)
-          const Text(
-            'Ver mais...',
-            style: TextStyle(
-              fontFamily: 'Inter',
-              fontSize: 14,
-              color: Colors.blue,
+          GestureDetector(
+            onTap: () {
+              setState(() {
+                _isExpanded = true;
+              });
+            },
+            child: const Text(
+              'Ver mais...',
+              style: TextStyle(
+                fontFamily: 'Inter',
+                fontSize: 14,
+                color: Colors.blue,
+              ),
             ),
           ),
       ],

@@ -82,7 +82,7 @@ final List<String> _waterBody = [
   'RIO',
   'OUTRO'
 ];
-final List<String> _visibility = ['ALTA', 'BAIXA', 'MODERADA'];
+final List<String> _visibility = ['BAIXA', 'MODERADA', 'ALTA'];
 final List<String> _waves = ['', 'NENHUMA', 'PEQUENA', 'MÉDIA', 'GRANDE'];
 final List<String> _current = ['', 'NENHUM', 'LEVE', 'MÉDIA', 'FORTE'];
 final List<String> _surge = ['', 'LEVE', 'MÉDIA', 'FORTE'];
@@ -184,12 +184,19 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
   }
 
   void _initializeForm() {
+    if (widget.divingSpot != null) {
+      setState(() {
+        _locationErrorMessage = "";
+        _isLocationNotFound = false;
+      });
+      _locationDivingSpotId = widget.divingSpot!.id;
+      _locationController.text = widget.divingSpot!.name;
+    }
+
     if (widget.diveLog != null) {
       updateDiveLog = widget.diveLog;
       hasUpdate = true;
       _titleController.text = widget.diveLog!.title;
-      _locationDivingSpotId = widget.divingSpot!.id;
-      _locationController.text = widget.divingSpot!.name;
       _dateController.text = _formatDate(widget.diveLog!.date);
       _selectedDiveType = widget.diveLog!.type;
 
@@ -467,8 +474,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
+      appBar: const LateralMenu(isHome: true),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -619,12 +625,16 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                           onPressed: () {
                             final currentRoute =
                                 ModalRoute.of(context)?.settings.name;
+
+                            _locationController.clear();
+
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) =>
                                     DivingSpotRegistrationScreen(
-                                        previousRoute: currentRoute),
+                                        previousRoute: currentRoute,
+                                        isRegisterDiving: true),
                               ),
                             );
                           },
@@ -682,10 +692,16 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
               if (_locationSuggestions.isNotEmpty) ...[
                 const SizedBox(height: 10),
                 SizedBox(
-                  height: 80,
-                  child: Stack(
-                    children: [
-                      ListView.builder(
+                  height: 90,
+                  child: ScrollbarTheme(
+                    data: ScrollbarThemeData(
+                      thumbColor: WidgetStateProperty.all(
+                          const Color.fromARGB(255, 119, 119, 120)),
+                      trackVisibility: WidgetStateProperty.all(true),
+                    ),
+                    child: Scrollbar(
+                      thumbVisibility: true,
+                      child: ListView.builder(
                         itemCount: _locationSuggestions.length,
                         itemBuilder: (context, index) {
                           final spot = _locationSuggestions[index];
@@ -698,7 +714,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                         scrollDirection: Axis.vertical,
                         physics: const BouncingScrollPhysics(),
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ],
@@ -828,63 +844,65 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
 
               // Botões
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _cancel,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFF007FFF)),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _cancel,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Color(0xFF007FFF)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'CANCELAR',
-                        style: TextStyle(
-                          color: Color(0xFF007FFF),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007FFF),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'PRÓXIMA',
-                        style: TextStyle(
-                          color: Colors.white,
+                        child: const Text(
+                          'CANCELAR',
+                          style: TextStyle(
+                            color: Color(0xFF007FFF),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _nextStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007FFF),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'PRÓXIMA',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -980,8 +998,7 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
+      appBar: const LateralMenu(isHome: true),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -1247,63 +1264,65 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
 
               // Botões
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _toGoBack,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFF007FFF)),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _toGoBack,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Color(0xFF007FFF)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'VOLTAR',
-                        style: TextStyle(
-                          color: Color(0xFF007FFF),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007FFF),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'PRÓXIMA',
-                        style: TextStyle(
-                          color: Colors.white,
+                        child: const Text(
+                          'VOLTAR',
+                          style: TextStyle(
+                            color: Color(0xFF007FFF),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _nextStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007FFF),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'PRÓXIMA',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -1394,8 +1413,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
+      appBar: const LateralMenu(isHome: true),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -1812,63 +1830,65 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
 
               // Botões
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _toGoBack,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFF007FFF)),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _toGoBack,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Color(0xFF007FFF)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'VOLTAR',
-                        style: TextStyle(
-                          color: Color(0xFF007FFF),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007FFF),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'PRÓXIMA',
-                        style: TextStyle(
-                          color: Colors.white,
+                        child: const Text(
+                          'VOLTAR',
+                          style: TextStyle(
+                            color: Color(0xFF007FFF),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _nextStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007FFF),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'PRÓXIMA',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -1976,8 +1996,7 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
+      appBar: const LateralMenu(isHome: true),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -2393,64 +2412,65 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
 
               // Botões
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _toGoBack,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFF007FFF)),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _toGoBack,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Color(0xFF007FFF)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'VOLTAR',
-                        style: TextStyle(
-                          color: Color(0xFF007FFF),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007FFF),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'PRÓXIMA',
-                        style: TextStyle(
-                          color: Colors.white,
+                        child: const Text(
+                          'VOLTAR',
+                          style: TextStyle(
+                            color: Color(0xFF007FFF),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _nextStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007FFF),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'PRÓXIMA',
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-
-              const SizedBox(width: 10),
             ],
           ),
         ),
@@ -2648,8 +2668,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
+      appBar: const LateralMenu(isHome: true),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -2957,68 +2976,70 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
 
               // Botões
               const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _toGoBack,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        side: const BorderSide(color: Color(0xFF007FFF)),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+              Padding(
+                padding: const EdgeInsets.only(bottom: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _toGoBack,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          side: const BorderSide(color: Color(0xFF007FFF)),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'VOLTAR',
-                        style: TextStyle(
-                          color: Color(0xFF007FFF),
+                        child: const Text(
+                          'VOLTAR',
+                          style: TextStyle(
+                            color: Color(0xFF007FFF),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: screenWidth * 0.4,
-                    child: ElevatedButton(
-                      onPressed: _isProcessing ? null : _nextStep,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007FFF),
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 22, horizontal: 30),
-                        textStyle: const TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
+                    SizedBox(
+                      width: screenWidth * 0.4,
+                      child: ElevatedButton(
+                        onPressed: _isProcessing ? null : _nextStep,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007FFF),
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 22, horizontal: 30),
+                          textStyle: const TextStyle(
+                            fontFamily: 'Inter',
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
-                      child: _isProcessing
-                          ? const CircularProgressIndicator(
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.blue),
-                            )
-                          : Text(
-                              hasUpdate ? 'EDITAR' : 'REGISTRAR',
-                              style: const TextStyle(
-                                color: Colors.white,
+                        child: _isProcessing
+                            ? const CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.blue),
+                              )
+                            : Text(
+                                hasUpdate ? 'EDITAR' : 'REGISTRAR',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-              const SizedBox(width: 10),
             ],
           ),
         ),

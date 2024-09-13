@@ -131,7 +131,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => DiveSpotDetailsScreen(
-                          diveSpotId: widget.divingSpot.id),
+                          diveSpotId: widget.divingSpot.id, initialTabIndex: 1)
                     ),
                   );
                 },
@@ -152,7 +152,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => DiveSpotDetailsScreen(
-                          diveSpotId: widget.divingSpot.id),
+                          diveSpotId: widget.divingSpot.id, initialTabIndex: 1)
                     ),
                   );
                 },

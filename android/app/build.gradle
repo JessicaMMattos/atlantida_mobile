@@ -51,6 +51,12 @@ android {
         versionName flutterVersionName
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            outputFileName = "Atlântida-${variant.versionName}.apk"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

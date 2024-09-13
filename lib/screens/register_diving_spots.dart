@@ -2,7 +2,10 @@ import 'dart:convert';
 import 'package:atlantida_mobile/components/custom_alert_dialog.dart';
 import 'package:atlantida_mobile/controllers/diving_spot_controller.dart';
 import 'package:atlantida_mobile/models/diving_spot_create.dart';
-import 'package:atlantida_mobile/screens/control.dart';
+import 'package:atlantida_mobile/models/diving_spot_return.dart';
+import 'package:atlantida_mobile/models/midia_data.dart';
+import 'package:atlantida_mobile/screens/details_dive_spot.dart';
+import 'package:atlantida_mobile/screens/register_dive_log.dart';
 import 'package:atlantida_mobile/services/maps_service.dart';
 import 'package:atlantida_mobile/components/text_field.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
@@ -13,8 +16,9 @@ import 'package:flutter/material.dart';
 
 class DivingSpotRegistrationScreen extends StatefulWidget {
   final String? previousRoute;
+  final bool? isRegisterDiving;
 
-  const DivingSpotRegistrationScreen({super.key, this.previousRoute});
+  const DivingSpotRegistrationScreen({super.key, this.previousRoute, this.isRegisterDiving = false});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -111,7 +115,9 @@ class _DivingSpotRegistrationScreenState
           divingSpot.image = image;
         }
 
-        await DivingSpotController().createDivingSpot(divingSpot);
+        var response = await DivingSpotController().createDivingSpot(divingSpot);
+
+        DivingSpotReturn diveSpot = DivingSpotReturn.fromJson(jsonDecode(response.body));
 
         showDialog(
           // ignore: use_build_context_synchronously
@@ -122,11 +128,20 @@ class _DivingSpotRegistrationScreenState
               description:
                   'Muito obrigado(a) por contribuir com a plataforma cadastrando um novo local.',
               onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
-                  (Route<dynamic> route) => false,
-                );
+                if(widget.isRegisterDiving == true){
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => DiveRegistrationScreen(divingSpot: diveSpot)),
+                  );
+                }
+                else{
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DiveSpotDetailsScreen(diveSpotId: diveSpot.id),
+                    ),
+                  );
+                }
               },
             );
           },

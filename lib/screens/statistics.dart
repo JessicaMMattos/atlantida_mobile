@@ -91,7 +91,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       context: context,
       initialDate: _startDate,
       firstDate: DateTime(1900),
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now(),
     );
 
     if (picked != null && picked != _startDate) {
@@ -112,7 +112,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       context: context,
       initialDate: _endDate,
       firstDate: _startDate,
-      lastDate: DateTime(2101),
+      lastDate: DateTime.now(),
     );
 
     if (picked != null && picked != _endDate) {
@@ -167,7 +167,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
     if (isLoading) {
       return const Scaffold(
         appBar: LateralMenu(),
-        drawer: LateralMenuDrawer(),
         backgroundColor: Colors.white,
         body: Center(
           child: CircularProgressIndicator(color: Colors.blue),
@@ -177,7 +176,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
     return Scaffold(
       appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(

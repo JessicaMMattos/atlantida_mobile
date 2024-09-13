@@ -1,5 +1,4 @@
-import 'dart:convert';
-import 'dart:typed_data';
+import 'package:atlantida_mobile/models/midia_data.dart';
 
 class DivingSpotCreate {
   late String name;
@@ -61,7 +60,9 @@ class Location {
   factory Location.fromJson(Map<String, dynamic> json) {
     return Location(
       type: json['type'] ?? 'Point',
-      coordinates: List<double>.from(json['coordinates'] ?? []),
+      coordinates: (json['coordinates'] as List)
+              .map((coord) => coord is num ? coord.toDouble() : 0.0)
+              .toList(),
     );
   }
 
@@ -71,30 +72,4 @@ class Location {
       'coordinates': coordinates,
     };
   }
-}
-
-class ImageData {
-  final String data;
-  final String contentType;
-
-  ImageData({
-    required this.data,
-    required this.contentType,
-  });
-
-  factory ImageData.fromJson(Map<String, dynamic> json) {
-    return ImageData(
-      data: json['data'] ?? '',
-      contentType: json['contentType'] ?? '',
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'data': data,
-      'contentType': contentType,
-    };
-  }
-
-  Uint8List get decodedData => base64Decode(data);
 }

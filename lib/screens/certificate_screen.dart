@@ -62,7 +62,6 @@ class _CertificatesScreenState extends State<CertificatesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
       backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.all(16.0),

@@ -1,3 +1,5 @@
+import 'package:atlantida_mobile/screens/register_dive_log.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
 import 'package:atlantida_mobile/controllers/dive_log_controller.dart';
 import 'package:atlantida_mobile/controllers/user_controller.dart';
@@ -305,7 +307,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: const LateralMenu(),
-      drawer: const LateralMenuDrawer(),
       backgroundColor: Colors.white,
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.blue))
@@ -487,6 +488,52 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
 
+                    const SizedBox(height: 25),
+                    SizedBox(
+                      width: double
+                          .infinity,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF002B5B),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 20,
+                          ),
+                        ),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const DiveRegistrationScreen()),
+                          );
+                        },
+                        child: Wrap(
+                          alignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/diver-icon.svg',
+                              height: 30,
+                            ),
+                            const SizedBox(width: 10),
+                            const Text(
+                              'Registrar mergulho agora',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                     // Últimos mergulhos
                     const SizedBox(height: 25),
                     const SizedBox(
@@ -640,7 +687,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      DateFormat('dd/MM/yyyy').format(DateTime.parse(diveLog.date)),
+                                                      DateFormat('dd/MM/yyyy')
+                                                          .format(
+                                                              DateTime.parse(
+                                                                  diveLog
+                                                                      .date)),
                                                       style: const TextStyle(
                                                         fontFamily: 'Inter',
                                                         fontSize: 16,

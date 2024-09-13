@@ -95,7 +95,12 @@ class _MapScreenState extends State<MapScreen> {
       spot.location.coordinates[0],
       spot.location.coordinates[1],
     );
-    mapController.animateCamera(CameraUpdate.newLatLng(position));
+
+    const double zoomLevel = 12.0;
+
+    mapController.animateCamera(
+      CameraUpdate.newLatLngZoom(position, zoomLevel),
+    );
   }
 
   void _onSearchChanged() {
@@ -314,6 +319,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildDiveSpotList() {
+    final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Column(
       children: [
         GestureDetector(
@@ -350,11 +358,11 @@ class _MapScreenState extends State<MapScreen> {
         ),
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          height: isListVisible ? MediaQuery.of(context).size.height * 0.6 : 0,
+          height: isListVisible ? (screenHeight * 0.6) - bottomPadding : 0,
           color: Colors.white,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              maxHeight: MediaQuery.of(context).size.height * 0.5,
+              maxHeight: (screenHeight * 0.5) - bottomPadding,
             ),
             child: _buildDiveSpotListView(),
           ),
@@ -452,7 +460,13 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
             onTap: () {
-              _moveToSpot(spot);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => DiveSpotDetailsScreen(
+                      diveSpotId: spot.id),
+                ),
+              );
             },
           );
         },
@@ -475,7 +489,8 @@ class _MapScreenState extends State<MapScreen> {
           onPressed: () {
             Navigator.pushAndRemoveUntil(
               context,
-              MaterialPageRoute(builder: (context) => const MainNavigationScreen()),
+              MaterialPageRoute(
+                  builder: (context) => const MainNavigationScreen()),
               (Route<dynamic> route) => false,
             );
           },
@@ -553,6 +568,7 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ],
             ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }
