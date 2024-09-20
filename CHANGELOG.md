@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.1.0] - 2024-09-19
+
+### Added
+- Loading icon when the list of dive sites is loading in the dive log
+
+### Changed
+- Dive log button color
+
+### Fixed
+- Do not allow screen rotation, leave the screen vertical only
+- Allows you to remove the image from the certificate when editing it
+
 ## [1.1.0-beta] - 2024-09-13
 
 ### Added
