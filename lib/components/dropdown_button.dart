@@ -54,14 +54,19 @@ class CustomDropdownField extends StatelessWidget {
           fontSize: 16,
           fontWeight: FontWeight.w400,
         ),
+        overflow: TextOverflow.ellipsis,
       ),
       items: list.map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
-          child: Text(value),
+          child: Text(
+            value,
+            overflow: TextOverflow.ellipsis,
+          ),
         );
       }).toList(),
       dropdownColor: Colors.white,
+      isExpanded: true,
     );
   }
 }

@@ -1613,7 +1613,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               CustomDropdownField(
                 list: _weatherConditions,
                 selected: _selectedWeatherConditions,
-                hintString: "Selecione como estavam as condições climáticas.",
+                hintString: "Selecione as condições climáticas.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedWeatherConditions = newValue!;
@@ -1784,7 +1784,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               CustomDropdownField(
                 list: _waterBody,
                 selected: _selectedWaterBody,
-                hintString: "Selecione em que corpo de água você mergulhou.",
+                hintString: "Selecione o corpo de água.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedWaterBody = newValue!;
@@ -1852,7 +1852,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               CustomDropdownField(
                 list: _waves,
                 selected: _selectedWaves,
-                hintString: "Selecione como estavam as ondas.",
+                hintString: "Selecione as ondas.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedWaves = newValue!;
@@ -1869,7 +1869,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               CustomDropdownField(
                 list: _current,
                 selected: _selectedCurrent,
-                hintString: "Selecione como estava a correnteza.",
+                hintString: "Selecione a correnteza.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedCurrent = newValue!;
@@ -1886,7 +1886,7 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               CustomDropdownField(
                 list: _surge,
                 selected: _selectedSurge,
-                hintString: "Selecione como estava a ondulação.",
+                hintString: "Selecione a ondulação.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedSurge = newValue!;
@@ -2336,7 +2336,7 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
               CustomDropdownField(
                 list: _cylinderGasMixture,
                 selected: _selectedCylinderGasMixture,
-                hintString: "Selecione que tipo de gás você usou.",
+                hintString: "Selecione o tipo de gás.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedCylinderGasMixture = newValue!;
