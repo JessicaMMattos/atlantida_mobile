@@ -114,7 +114,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
-                  const Spacer(),
                   ListTile(
                     leading: const Icon(Icons.description_outlined,
                         color: Colors.black),
@@ -145,6 +144,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       );
                     },
                   ),
+                  const Spacer(),
                   ListTile(
                     leading: const Icon(Icons.exit_to_app, color: Colors.red),
                     title: const Text(

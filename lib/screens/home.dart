@@ -495,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           .infinity,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF002B5B),
+                          backgroundColor: const Color(0xFF007FFF),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

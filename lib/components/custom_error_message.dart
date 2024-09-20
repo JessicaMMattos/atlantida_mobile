@@ -13,7 +13,7 @@ class CustomErrorMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      bottom: 20,
+      bottom: MediaQuery.of(context).viewInsets.bottom + 20,
       left: 20,
       right: 20,
       child: Material(

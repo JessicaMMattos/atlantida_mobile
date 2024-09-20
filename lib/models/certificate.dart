@@ -48,6 +48,8 @@ class Certificate {
     }
     if (certificateImage != null) {
       data['certificateImage'] = certificateImage!.toJson();
+    } else {
+      data['certificateImage'] = null;
     }
     return data;
   }

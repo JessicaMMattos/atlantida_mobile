@@ -490,7 +490,7 @@ class _CommentRegistrationScreenState extends State<CommentRegistrationScreen> {
                                   AlwaysStoppedAnimation<Color>(Colors.blue),
                             )
                           : Text(
-                              widget.comment != null ? 'EDITAR' : 'AVALIAR',
+                              widget.comment != null ? 'SALVAR' : 'AVALIAR',
                               style: const TextStyle(
                                 color: Colors.white,
                               ),
