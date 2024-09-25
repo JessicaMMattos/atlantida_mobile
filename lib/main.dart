@@ -1,5 +1,6 @@
 import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/screens/control.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:atlantida_mobile/screens/first.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -11,7 +12,13 @@ void main() async {
   await initializeDateFormatting('pt_BR');
   await dotenv.load(fileName: ".env");
 
-  runApp(const AtlantidaApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]).then((_) {
+    runApp(const AtlantidaApp());
+  });
 }
 
 class AtlantidaApp extends StatelessWidget {

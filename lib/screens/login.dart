@@ -96,290 +96,307 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final topSpaceHeight = screenHeight * 0.20;
+    final topSpaceHeight1 = screenHeight * 0.05;
+
     return MaterialApp(
       home: Scaffold(
-        body: Stack(
-          children: [
-            Container(
-              color: Colors.white,
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
-            Positioned(
-              top: 125,
-              width: MediaQuery.of(context).size.width,
+            child: IntrinsicHeight(
               child: Column(
                 children: [
+                  SizedBox(height: topSpaceHeight),
                   SvgPicture.asset(
                     'assets/icons/logo.svg',
                     height: 40,
                     fit: BoxFit.contain,
                   ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 210,
-              child: Container(
-                width: MediaQuery.of(context).size.width,
-                height: 450,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFFCCCCCC),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Faça seu login',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Color(0xFF263238),
+                  SizedBox(height: topSpaceHeight1),
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFFCCCCCC),
+                            spreadRadius: 1,
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width - 40,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'E-mail',
+                              'Faça seu login',
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 24,
                                 color: Color(0xFF263238),
                               ),
                             ),
-                            const SizedBox(height: 10),
-                            TextField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty ||
-                                            _loginErrorMessage.isNotEmpty
-                                        ? Colors.red
-                                        : Colors.grey,
+                            const SizedBox(height: 20),
+
+                            // Campo de e-mail
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'E-mail',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Color(0xFF263238),
+                                    ),
                                   ),
-                                ),
-                                hintText: 'Digite seu e-mail',
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty ||
-                                            _loginErrorMessage.isNotEmpty
-                                        ? Colors.red
-                                        : Colors.grey,
+                                  const SizedBox(height: 10),
+                                  TextField(
+                                    controller: _emailController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: _emailErrorMessage
+                                                      .isNotEmpty ||
+                                                  _loginErrorMessage.isNotEmpty
+                                              ? Colors.red
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                      hintText: 'Digite seu e-mail',
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: _emailErrorMessage
+                                                      .isNotEmpty ||
+                                                  _loginErrorMessage.isNotEmpty
+                                              ? Colors.red
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: _emailErrorMessage
+                                                      .isNotEmpty ||
+                                                  _loginErrorMessage.isNotEmpty
+                                              ? Colors.red
+                                              : const Color(0xFF263238),
+                                        ),
+                                      ),
+                                    ),
                                   ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: _emailErrorMessage.isNotEmpty ||
-                                            _loginErrorMessage.isNotEmpty
-                                        ? Colors.red
-                                        : const Color(0xFF263238),
-                                  ),
-                                ),
+                                  if (_emailErrorMessage.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        _emailErrorMessage,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                            if (_emailErrorMessage.isNotEmpty)
+                            const SizedBox(height: 20),
+
+                            // Campo de senha
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const Text(
+                                        'Senha',
+                                        style: TextStyle(
+                                          fontFamily: 'Inter',
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Color(0xFF263238),
+                                        ),
+                                      ),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const RedefinePasswordScreen()),
+                                          );
+                                        },
+                                        child: const Text(
+                                          'esqueceu a senha?',
+                                          style: TextStyle(
+                                            fontFamily: 'Inter',
+                                            fontWeight: FontWeight.w400,
+                                            fontSize: 14,
+                                            color: Color(0xFF007FFF),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Stack(
+                                    alignment: Alignment.centerRight,
+                                    children: [
+                                      TextField(
+                                        controller: _passwordController,
+                                        obscureText: _isObscure,
+                                        decoration: InputDecoration(
+                                          border: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: _passwordErrorMessage
+                                                          .isNotEmpty ||
+                                                      _loginErrorMessage
+                                                          .isNotEmpty
+                                                  ? Colors.red
+                                                  : Colors.grey,
+                                            ),
+                                          ),
+                                          hintText: 'Digite sua senha',
+                                          enabledBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: _passwordErrorMessage
+                                                          .isNotEmpty ||
+                                                      _loginErrorMessage
+                                                          .isNotEmpty
+                                                  ? Colors.red
+                                                  : Colors.grey,
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: _passwordErrorMessage
+                                                          .isNotEmpty ||
+                                                      _loginErrorMessage
+                                                          .isNotEmpty
+                                                  ? Colors.red
+                                                  : const Color(0xFF263238),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _isObscure = !_isObscure;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          _isObscure
+                                              ? Icons.visibility_off
+                                              : Icons.visibility,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  if (_passwordErrorMessage.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 5),
+                                      child: Text(
+                                        _passwordErrorMessage,
+                                        style: const TextStyle(
+                                          color: Colors.red,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            if (_loginErrorMessage.isNotEmpty)
                               Padding(
-                                padding: const EdgeInsets.only(top: 5),
+                                padding: const EdgeInsets.only(bottom: 10),
                                 child: Text(
-                                  _emailErrorMessage,
+                                  _loginErrorMessage,
                                   style: const TextStyle(
                                     color: Colors.red,
-                                    fontSize: 12,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width - 40,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                            const SizedBox(height: 10),
+                            
+                            // Botão de login
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: Button(
+                                titleButton:
+                                    _isLoading ? 'CARREGANDO...' : 'LOGIN',
+                                onPressed: _isLoading ? () {} : _login,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            
+                            // Link para criar conta
                             Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 const Text(
-                                  'Senha',
+                                  'Não tem uma conta?',
                                   style: TextStyle(
                                     fontFamily: 'Inter',
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight: FontWeight.w400,
                                     fontSize: 14,
-                                    color: Color(0xFF263238),
+                                    color: Colors.black,
                                   ),
                                 ),
+                                const SizedBox(width: 8),
                                 GestureDetector(
                                   onTap: () {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const RedefinePasswordScreen()),
+                                              const SignupScreenStepOne()),
                                     );
                                   },
                                   child: const Text(
-                                    'esqueceu a senha?',
+                                    'Criar conta',
                                     style: TextStyle(
                                       fontFamily: 'Inter',
                                       fontWeight: FontWeight.w400,
                                       fontSize: 14,
                                       color: Color(0xFF007FFF),
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Color(0xFF007FFF),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 10),
-                            Stack(
-                              alignment: Alignment.centerRight,
-                              children: [
-                                TextField(
-                                  controller: _passwordController,
-                                  obscureText: _isObscure,
-                                  decoration: InputDecoration(
-                                    border: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: _passwordErrorMessage
-                                                    .isNotEmpty ||
-                                                _loginErrorMessage.isNotEmpty
-                                            ? Colors.red
-                                            : Colors.grey,
-                                      ),
-                                    ),
-                                    hintText: 'Digite sua senha',
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: _passwordErrorMessage
-                                                    .isNotEmpty ||
-                                                _loginErrorMessage.isNotEmpty
-                                            ? Colors.red
-                                            : Colors.grey,
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        color: _passwordErrorMessage
-                                                    .isNotEmpty ||
-                                                _loginErrorMessage.isNotEmpty
-                                            ? Colors.red
-                                            : const Color(0xFF263238),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _isObscure = !_isObscure;
-                                    });
-                                  },
-                                  icon: Icon(
-                                    _isObscure
-                                        ? Icons.visibility_off
-                                        : Icons.visibility,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            if (_passwordErrorMessage.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(top: 5),
-                                child: Text(
-                                  _passwordErrorMessage,
-                                  style: const TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      if (_loginErrorMessage.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Text(
-                            _loginErrorMessage,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      const SizedBox(height: 10),
-
-                      // Botão de login
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width - 40,
-                        child: Button(
-                          titleButton: _isLoading ? 'CARREGANDO...' : 'LOGIN',
-                          onPressed: _isLoading ? () {} : _login,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Não tem uma conta?',
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 14,
-                              color: Colors.black,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SignupScreenStepOne()),
-                              );
-                            },
-                            child: const Text(
-                              'Criar conta',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontWeight: FontWeight.w400,
-                                fontSize: 14,
-                                color: Color(0xFF007FFF),
-                                decoration: TextDecoration.underline,
-                                decorationColor: Color(0xFF007FFF),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

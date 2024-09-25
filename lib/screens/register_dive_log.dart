@@ -65,7 +65,6 @@ final TextEditingController _temperatureBottomController =
     TextEditingController();
 
 final List<String> _weatherConditions = [
-  '',
   'ENSOLARADO',
   'PARCIALMENTE NUBLADO',
   'NUBLADO',
@@ -74,18 +73,11 @@ final List<String> _weatherConditions = [
   'COM NEBLINA'
 ];
 final List<String> _waterType = ['SALGADA', 'DOCE'];
-final List<String> _waterBody = [
-  '',
-  'OCEANO',
-  'LAGO',
-  'PEDREIRA',
-  'RIO',
-  'OUTRO'
-];
+final List<String> _waterBody = ['OCEANO', 'LAGO', 'PEDREIRA', 'RIO', 'OUTRO'];
 final List<String> _visibility = ['BAIXA', 'MODERADA', 'ALTA'];
-final List<String> _waves = ['', 'NENHUMA', 'PEQUENA', 'MÉDIA', 'GRANDE'];
-final List<String> _current = ['', 'NENHUM', 'LEVE', 'MÉDIA', 'FORTE'];
-final List<String> _surge = ['', 'LEVE', 'MÉDIA', 'FORTE'];
+final List<String> _waves = ['NENHUMA', 'PEQUENA', 'MÉDIA', 'GRANDE'];
+final List<String> _current = ['NENHUM', 'LEVE', 'MÉDIA', 'FORTE'];
+final List<String> _surge = ['LEVE', 'MÉDIA', 'FORTE'];
 String _selectedWeatherConditions = '';
 String _selectedWaterType = '';
 String _selectedWaterBody = '';
@@ -103,7 +95,6 @@ final TextEditingController _cylinderFinalPressureController =
 final TextEditingController _usedAmountController = TextEditingController();
 
 final List<String> _suit = [
-  '',
   'NENHUM',
   'ROUPA LONGA 3MM',
   'ROUPA LONGA 5MM',
@@ -114,7 +105,6 @@ final List<String> _suit = [
 ];
 final List<String> _cylinderType = ['AÇO', 'ALUMÍNIO', 'OUTROS'];
 final List<String> _cylinderGasMixture = [
-  '',
   'AR',
   'EANX32',
   'EANX36',
@@ -143,6 +133,8 @@ var hasUpdate = false;
 // ignore: prefer_typing_uninitialized_variables
 var updateDiveLog;
 bool _isProcessing = false;
+bool _isToGoBack = false;
+bool _isLoadingLocations = false;
 
 class DecimalTextInputFormatter extends TextInputFormatter {
   @override
@@ -184,6 +176,14 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
   }
 
   void _initializeForm() {
+    if (!_isToGoBack) {
+      _resetForm();
+    }
+
+    setState(() {
+      _isToGoBack = false;
+    });
+
     if (widget.divingSpot != null) {
       setState(() {
         _locationErrorMessage = "";
@@ -292,6 +292,7 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
       _selectedCylinderGasMixture = '';
       _selectedAdditionalEquipment = [];
       hasUpdate = false;
+      _isLoadingLocations = false;
 
       _rating = null;
       _difficulty = null;
@@ -419,6 +420,9 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
   Future<void> _fetchLocationSuggestions(String query) async {
     if (query.isNotEmpty) {
       try {
+        setState(() {
+          _isLoadingLocations = true;
+        });
         List<DivingSpotReturn> suggestions =
             await DivingSpotController().getDivingSpotsByName(query);
 
@@ -436,12 +440,14 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
           _locationSuggestions = suggestions;
           _locationDetails = details;
           _isLocationNotFound = _locationSuggestions.isEmpty;
+          _isLoadingLocations = false;
         });
       } catch (e) {
         setState(() {
           _locationSuggestions = [];
           _locationDetails = {};
           _isLocationNotFound = false;
+          _isLoadingLocations = false;
         });
       }
     } else {
@@ -474,7 +480,28 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(isHome: true),
+      appBar: LateralMenu(
+        isReturn: true,
+        onPressed: () {
+          if (hasUpdate) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DiveLogDetailScreen(diveLog: updateDiveLog!),
+              ),
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+        },
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -525,7 +552,6 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                   ),
                 ],
               ),
-
               const SizedBox(height: 20),
               Row(
                 children: [
@@ -614,32 +640,44 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              // Campo de local
+// Campo de local
               TextField(
                 controller: _locationController,
                 decoration: InputDecoration(
                   hintText: 'Digite o nome do local',
-                  suffixIcon: _isLocationNotFound
-                      ? IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            final currentRoute =
-                                ModalRoute.of(context)?.settings.name;
-
-                            _locationController.clear();
-
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    DivingSpotRegistrationScreen(
-                                        previousRoute: currentRoute,
-                                        isRegisterDiving: true),
-                              ),
-                            );
-                          },
+                  suffixIcon: _isLoadingLocations
+                      ? const Padding(
+                          padding: EdgeInsets.all(10.0),
+                          child: SizedBox(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Color(0xFF263238)),
+                                strokeWidth: 2),
+                          ),
                         )
-                      : null,
+                      : _isLocationNotFound
+                          ? IconButton(
+                              icon: const Icon(Icons.add),
+                              onPressed: () {
+                                final currentRoute =
+                                    ModalRoute.of(context)?.settings.name;
+
+                                _locationController.clear();
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DivingSpotRegistrationScreen(
+                                            previousRoute: currentRoute,
+                                            isRegisterDiving: true),
+                                  ),
+                                );
+                              },
+                            )
+                          : null,
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
                       color:
@@ -926,6 +964,8 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
       context,
       MaterialPageRoute(builder: (context) => const DiveRegistrationScreen()),
     );
+
+    _isToGoBack = true;
   }
 
   void _nextStep() {
@@ -998,7 +1038,28 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(isHome: true),
+      appBar: LateralMenu(
+        isReturn: true,
+        onPressed: () {
+          if (hasUpdate) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DiveLogDetailScreen(diveLog: updateDiveLog!),
+              ),
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+        },
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -1413,7 +1474,28 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(isHome: true),
+      appBar: LateralMenu(
+        isReturn: true,
+        onPressed: () {
+          if (hasUpdate) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DiveLogDetailScreen(diveLog: updateDiveLog!),
+              ),
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+        },
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -1527,14 +1609,11 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               const Title1(
                 title: 'Condições Climáticas',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Como estavam as condições climáticas?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _weatherConditions,
                 selected: _selectedWeatherConditions,
+                hintString: "Selecione as condições climáticas.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedWeatherConditions = newValue!;
@@ -1701,14 +1780,11 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               const Title1(
                 title: 'Corpo de Água',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Em que corpo de água você mergulhou?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _waterBody,
                 selected: _selectedWaterBody,
+                hintString: "Selecione o corpo de água.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedWaterBody = newValue!;
@@ -1772,14 +1848,11 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               const Title1(
                 title: 'Ondas',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Como estavam as ondas?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _waves,
                 selected: _selectedWaves,
+                hintString: "Selecione as ondas.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedWaves = newValue!;
@@ -1792,14 +1865,11 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               const Title1(
                 title: 'Correnteza',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Como estava a correnteza?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _current,
                 selected: _selectedCurrent,
+                hintString: "Selecione a correnteza.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedCurrent = newValue!;
@@ -1812,14 +1882,11 @@ class _DiveRegistrationScreen3State extends State<DiveRegistrationScreen3> {
               const Title1(
                 title: 'Ondulação',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Como estava a ondulação?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _surge,
                 selected: _selectedSurge,
+                hintString: "Selecione a ondulação.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedSurge = newValue!;
@@ -1996,7 +2063,28 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(isHome: true),
+      appBar: LateralMenu(
+        isReturn: true,
+        onPressed: () {
+          if (hasUpdate) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DiveLogDetailScreen(diveLog: updateDiveLog!),
+              ),
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+        },
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -2109,14 +2197,11 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
               const Title1(
                 title: 'Roupa',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Que roupa você vestiu?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _suit,
                 selected: _selectedSuit,
+                hintString: "Selecione que roupa você vestiu.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedSuit = newValue!;
@@ -2247,14 +2332,11 @@ class _DiveRegistrationScreen4State extends State<DiveRegistrationScreen4> {
               const Title1(
                 title: 'Mistura Gasosa',
               ),
-              const SizedBox(height: 2),
-              const Title2(
-                title: 'Que tipo de gás você usou?',
-              ),
               const SizedBox(height: 10),
               CustomDropdownField(
                 list: _cylinderGasMixture,
                 selected: _selectedCylinderGasMixture,
+                hintString: "Selecione o tipo de gás.",
                 onChanged: (newValue) {
                   setState(() {
                     _selectedCylinderGasMixture = newValue!;
@@ -2630,6 +2712,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
       _selectedCylinderGasMixture = '';
       _selectedAdditionalEquipment = [];
       hasUpdate = false;
+      _isLoadingLocations = false;
 
       _rating = null;
       _difficulty = null;
@@ -2670,7 +2753,28 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: const LateralMenu(isHome: true),
+      appBar: LateralMenu(
+        isReturn: true,
+        onPressed: () {
+          if (hasUpdate) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    DiveLogDetailScreen(diveLog: updateDiveLog!),
+              ),
+            );
+          } else {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const MainNavigationScreen(),
+              ),
+              (Route<dynamic> route) => false,
+            );
+          }
+        },
+      ),
       backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Padding(
@@ -3032,7 +3136,7 @@ class _DiveRegistrationScreen5State extends State<DiveRegistrationScreen5> {
                                     AlwaysStoppedAnimation<Color>(Colors.blue),
                               )
                             : Text(
-                                hasUpdate ? 'EDITAR' : 'REGISTRAR',
+                                hasUpdate ? 'SALVAR' : 'REGISTRAR',
                                 style: const TextStyle(
                                   color: Colors.white,
                                 ),

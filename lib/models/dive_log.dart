@@ -108,6 +108,8 @@ class DiveLog {
     if (notes != null) data['notes'] = notes;
     if (photos != null && photos!.isNotEmpty) {
       data['photos'] = photos!.map((item) => item.toJson()).toList();
+    } else {
+      data['photos'] = null;
     }
     
     return data;

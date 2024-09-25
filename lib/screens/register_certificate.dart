@@ -310,6 +310,8 @@ class _CertificateRegistrationScreenState
             contentType: _imageContentType ?? 'image/jpeg',
           );
           newCertificate.certificateImage = image;
+        } else {
+          newCertificate.certificateImage = null;
         }
 
         if (hasUpdate) {
@@ -758,7 +760,7 @@ class _CertificateRegistrationScreenState
                                   AlwaysStoppedAnimation<Color>(Colors.blue),
                             )
                           : Text(
-                              hasUpdate ? 'EDITAR' : 'ADICIONAR',
+                              hasUpdate ? 'SALVAR' : 'ADICIONAR',
                               style: const TextStyle(
                                 color: Colors.white,
                               ),

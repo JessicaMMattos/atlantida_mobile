@@ -64,7 +64,6 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
         _showSuccessDialog();
       }
     } catch (error) {
-      // ignore: use_build_context_synchronously
       _showErrorMessage('Ocorreu um erro inesperado. Tente novamente.');
     } finally {
       setState(() {
@@ -97,8 +96,8 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final double screenHeight = MediaQuery.of(context).size.height;
-    final double screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final topSpaceHeight = screenHeight * 0.15;
 
     return MaterialApp(
       home: Scaffold(
@@ -111,116 +110,138 @@ class _RedefinePasswordScreenState extends State<RedefinePasswordScreen> {
             );
           },
         ),
-        body: Stack(
-          children: [
-            Container(
-              color: Colors.white,
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height,
             ),
-            Positioned(
-              top: screenHeight * 0.15,
-              child: Container(
-                width: screenWidth,
-                height: screenHeight * 0.75,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0xFFE4E4E4),
-                      spreadRadius: 1,
-                      blurRadius: 10,
-                      offset: Offset(0, 3),
-                    ),
-                  ],
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.05,
-                      vertical: screenHeight * 0.02),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Redefinição de senha',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.bold,
-                          fontSize: 24,
-                          color: Color(0xFF263238),
+            child: IntrinsicHeight(
+              child: Column(
+                children: [
+                  SizedBox(height: topSpaceHeight),
+                  Expanded(
+                    child: Container(
+                      width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFFCCCCCC),
+                            spreadRadius: 1,
+                            blurRadius: 10,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(25),
+                          topRight: Radius.circular(25),
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.02),
-                      const Text(
-                        'Digite seu e-mail para receber sua nova senha diretamente na sua caixa de entrada ou na pasta de spam.',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          color: Color(0xFF263238),
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                      SizedBox(
-                        width: screenWidth - 2 * (screenWidth * 0.05),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
-                              'E-mail',
+                              'Redefinição de senha',
                               style: TextStyle(
                                 fontFamily: 'Inter',
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
+                                fontSize: 24,
                                 color: Color(0xFF263238),
                               ),
                             ),
-                            SizedBox(height: screenHeight * 0.01),
-                            TextField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                border: const OutlineInputBorder(),
-                                hintText: 'Digite seu e-mail',
-                                focusedBorder: const OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.black,
+                            const SizedBox(height: 20),
+                            const Text(
+                              'Digite seu e-mail para receber sua nova senha diretamente na sua caixa de entrada ou na pasta de spam.',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontWeight: FontWeight.w400,
+                                fontSize: 16,
+                                color: Color(0xFF263238),
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+
+                            // Campo de e-mail
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'E-mail',
+                                    style: TextStyle(
+                                      fontFamily: 'Inter',
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 14,
+                                      color: Color(0xFF263238),
+                                    ),
                                   ),
-                                ),
-                                errorText:
-                                    _message == 'Usuário não encontrado.' ||
+                                  const SizedBox(height: 10),
+                                  TextField(
+                                    controller: _emailController,
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: _message == "Campo obrigatório." || _message == "Usuário não encontrado."
+                                              ? Colors.red
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                      hintText: 'Digite seu e-mail',
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: _message == "Campo obrigatório." || _message == "Usuário não encontrado."
+                                              ? Colors.red
+                                              : Colors.grey,
+                                        ),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: _message == "Campo obrigatório." || _message == "Usuário não encontrado."
+                                              ? Colors.red
+                                              : const Color(0xFF263238),
+                                        ),
+                                      ),
+                                      errorText:
+                                        _message == "Usuário não encontrado." ||
                                             _message == "Campo obrigatório."
                                         ? _message
                                         : null,
-                                errorBorder: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.red),
-                                  borderRadius: BorderRadius.circular(4.0),
-                                ),
-                                errorStyle: const TextStyle(color: Colors.red),
-                                errorMaxLines: 2,
+                                      errorBorder: OutlineInputBorder(
+                                        borderSide: const BorderSide(color: Colors.red),
+                                        borderRadius: BorderRadius.circular(4.0),
+                                      ),
+                                      errorStyle: const TextStyle(color: Colors.red),
+                                      errorMaxLines: 2,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                            const SizedBox(height: 20),
+
+                            // Botão de redefinir senha
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width - 40,
+                              child: Button(
+                                titleButton:
+                                    _isLoading ? 'CARREGANDO...' : 'REDEFINIR SENHA',
+                                onPressed: _isLoading ? () {} : _resetPassword,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
                           ],
                         ),
                       ),
-                      SizedBox(height: screenHeight * 0.02),
-                      SizedBox(
-                        width: screenWidth - 2 * (screenWidth * 0.05),
-                        child: Button(
-                          titleButton:
-                              _isLoading ? 'CARREGANDO...' : 'REDEFINIR SENHA',
-                          onPressed: _isLoading ? () {} : _resetPassword,
-                        ),
-                      ),
-                      SizedBox(height: screenHeight * 0.02),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
       ),
     );

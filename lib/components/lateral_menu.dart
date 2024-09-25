@@ -1,13 +1,12 @@
-import 'package:atlantida_mobile/controllers/user_controller.dart';
 import 'package:atlantida_mobile/screens/control.dart';
-import 'package:atlantida_mobile/screens/register_dive_log.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 
 class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
-  final bool isHome;
+  final bool isReturn;
+  final VoidCallback? onPressed;
 
-  const LateralMenu({super.key, this.isHome = false});
+  const LateralMenu({super.key, this.isReturn = false, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -30,21 +29,13 @@ class LateralMenu extends StatelessWidget implements PreferredSizeWidget {
           builder: (context) {
             return Row(
               children: [
-                if (isHome)
+                if (isReturn)
                   IconButton(
                     icon: const Icon(
-                      Icons.home,
+                      Icons.arrow_back,
                       color: Color(0xFF007FFF),
                     ),
-                    onPressed: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const MainNavigationScreen()),
-                        (Route<dynamic> route) => false,
-                      );
-                    },
+                    onPressed: onPressed ?? () => Navigator.of(context).pop(),
                   )
               ],
             );

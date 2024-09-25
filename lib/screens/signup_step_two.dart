@@ -527,7 +527,7 @@ class _SignupScreenStepTwoState extends State<SignupScreenStepTwo> {
               SizedBox(
                 width: MediaQuery.of(context).size.width - 40,
                 child: Button(
-                  titleButton: _isLoading ? 'CARREGANDO...' : 'CONTINUAR',
+                  titleButton: _isLoading ? 'CARREGANDO...' : 'CONCLUIR',
                   onPressed: _isLoading ? () {} : _completeSignup,
                 ),
               ),
