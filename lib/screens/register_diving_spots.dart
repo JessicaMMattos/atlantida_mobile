@@ -18,7 +18,8 @@ class DivingSpotRegistrationScreen extends StatefulWidget {
   final String? previousRoute;
   final bool? isRegisterDiving;
 
-  const DivingSpotRegistrationScreen({super.key, this.previousRoute, this.isRegisterDiving = false});
+  const DivingSpotRegistrationScreen(
+      {super.key, this.previousRoute, this.isRegisterDiving = false});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -115,9 +116,11 @@ class _DivingSpotRegistrationScreenState
           divingSpot.image = image;
         }
 
-        var response = await DivingSpotController().createDivingSpot(divingSpot);
+        var response =
+            await DivingSpotController().createDivingSpot(divingSpot);
 
-        DivingSpotReturn diveSpot = DivingSpotReturn.fromJson(jsonDecode(response.body));
+        DivingSpotReturn diveSpot =
+            DivingSpotReturn.fromJson(jsonDecode(response.body));
 
         showDialog(
           // ignore: use_build_context_synchronously
@@ -129,17 +132,19 @@ class _DivingSpotRegistrationScreenState
               description:
                   'Muito obrigado(a) por contribuir com a plataforma cadastrando um novo local.',
               onPressed: () {
-                if(widget.isRegisterDiving == true){
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => DiveRegistrationScreen(divingSpot: diveSpot)),
-                  );
-                }
-                else{
+                if (widget.isRegisterDiving == true) {
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DiveSpotDetailsScreen(diveSpotId: diveSpot.id),
+                        builder: (context) => DiveRegistrationScreen(
+                            divingSpot: diveSpot, isNewDiveLog: true)),
+                  );
+                } else {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          DiveSpotDetailsScreen(diveSpotId: diveSpot.id),
                     ),
                   );
                 }

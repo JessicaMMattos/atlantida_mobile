@@ -28,10 +28,9 @@ class _CertificateDetailsScreenStateState
     certificate = widget.certificate;
   }
 
-  String _formatDate(String dateUtc) {
-    final utcDate = DateTime.parse(dateUtc);
-    final localDate = utcDate.toLocal();
-    return DateFormat('dd/MM/yyyy').format(localDate);
+  String _formatDate(String date) {
+    final dateFormat = DateTime.parse(date);
+    return DateFormat('dd/MM/yyyy').format(dateFormat);
   }
 
   Widget _buildImage(CertificateImage photo) {
