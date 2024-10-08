@@ -25,8 +25,10 @@ import 'package:intl/intl.dart';
 class DiveRegistrationScreen extends StatefulWidget {
   final DiveLogReturn? diveLog;
   final DivingSpotReturn? divingSpot;
+  final bool isNewDiveLog;
 
-  const DiveRegistrationScreen({super.key, this.diveLog, this.divingSpot});
+  const DiveRegistrationScreen(
+      {super.key, this.diveLog, this.divingSpot, this.isNewDiveLog = false});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -169,14 +171,13 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
     _initializeForm();
   }
 
-  String _formatDate(String dateUtc) {
-    final utcDate = DateTime.parse(dateUtc);
-    final localDate = utcDate.toLocal();
-    return DateFormat('dd/MM/yyyy').format(localDate);
+  String _formatDate(String date) {
+    final dateFormat = DateTime.parse(date);
+    return DateFormat('dd/MM/yyyy').format(dateFormat);
   }
 
   void _initializeForm() {
-    if (!_isToGoBack) {
+    if (!_isToGoBack && !widget.isNewDiveLog) {
       _resetForm();
     }
 
@@ -510,7 +511,9 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UpdateOrRegisterHeader(hasUpdate: hasUpdate),
-              Row(
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 2,
                 children: [
                   Container(
                     width: 25,
@@ -531,7 +534,6 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
                   const Text(
                     'Informações Gerais',
                     style: TextStyle(
@@ -769,13 +771,9 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-              TextField(
+              TextFormField(
                 controller: _dateController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  dateMaskFormatter,
-                  LengthLimitingTextInputFormatter(10),
-                ],
+                readOnly: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
@@ -799,17 +797,69 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                           : const Color(0xFF263238),
                     ),
                   ),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
+                onTap: () async {
+                  DateTime initialDate;
+                  if (_dateController.text.isNotEmpty) {
+                    try {
+                      initialDate =
+                          DateFormat('dd/MM/yyyy').parse(_dateController.text);
+                    } catch (e) {
+                      initialDate = DateTime.now();
+                    }
+                  } else {
+                    initialDate = DateTime.now();
+                  }
+
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF263238),
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF263238),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  if (pickedDate != null) {
+                    String formattedDate =
+                        "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                    setState(() {
+                      _dateController.text = formattedDate;
+                    });
+                  }
+                },
               ),
-              if (_dateErrorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: Text(
-                    _dateErrorMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 12),
-                  ),
-                ),
-              const SizedBox(height: 20),
+
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_dateErrorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        _dateErrorMessage,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                ],
+              ),
 
               const Text(
                 'Tipo de Mergulho',
@@ -1068,7 +1118,9 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               UpdateOrRegisterHeader(hasUpdate: hasUpdate),
-              Row(
+              Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: 2,
                 children: [
                   Container(
                     width: 25,
@@ -1089,7 +1141,6 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 10),
                   const Text(
                     'Profundidade e Tempo',
                     style: TextStyle(

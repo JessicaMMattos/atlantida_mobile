@@ -92,6 +92,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       initialDate: _startDate,
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF263238),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF263238),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null && picked != _startDate) {
@@ -113,6 +130,23 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       initialDate: _endDate,
       firstDate: _startDate,
       lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: Color(0xFF263238),
+              onPrimary: Colors.white,
+              onSurface: Colors.black,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: const Color(0xFF263238),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
 
     if (picked != null && picked != _endDate) {
@@ -309,46 +343,75 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           );
         } else {
           var stats = snapshot.data!;
-          return SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                buildStatisticCard(
-                  context,
-                  title: 'Total de mergulhos',
-                  value: '${stats.totalDives}',
-                  icon: Icons.format_list_numbered,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    buildStatisticCard(
+                      context,
+                      title: 'Total de mergulhos',
+                      value: '${stats.totalDives}',
+                      icon: Icons.format_list_numbered,
+                    ),
+                    buildStatisticCard(
+                      context,
+                      title: 'Tempo total de Fundo',
+                      value: '${stats.totalBottomTime} minutos',
+                      icon: Icons.timer,
+                    ),
+                    buildStatisticCard(
+                      context,
+                      title: 'Profundidade Média',
+                      value: '${stats.averageDepth} metros',
+                      icon: Icons.height,
+                    ),
+                    buildStatisticCard(
+                      context,
+                      title: 'Tempo médio de Fundo',
+                      value: '${stats.averageBottomTime} minutos',
+                      icon: Icons.timer,
+                    ),
+                    if (stats.mostCommonWaterBody != null &&
+                        stats.mostCommonWaterBody!.isNotEmpty)
+                      buildStatisticCard(
+                        context,
+                        title: 'Corpo de Água Mais Comum',
+                        value: _capitalize(stats.mostCommonWaterBody!),
+                        icon: Icons.water,
+                      ),
+                    if (stats.mostCommonWeatherCondition != null &&
+                        stats.mostCommonWeatherCondition!.isNotEmpty)
+                      buildStatisticCard(
+                        context,
+                        title: 'Clima Mais Comum',
+                        value: _capitalize(stats.mostCommonWeatherCondition!),
+                        icon: Icons.cloud,
+                      ),
+                  ],
                 ),
-                buildStatisticCard(
-                  context,
-                  title: 'Profundidade Média',
-                  value: '${stats.averageDepth} metros',
-                  icon: Icons.height,
+              ),
+              const SizedBox(height: 8),
+              Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.swipe, size: 16, color: Colors.grey[600]),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Arraste para ver mais',
+                      style: TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
-                buildStatisticCard(
-                  context,
-                  title: 'Tempo médio de Fundo',
-                  value: '${stats.averageBottomTime} minutos',
-                  icon: Icons.timer,
-                ),
-                if (stats.mostCommonWaterBody != null &&
-                    stats.mostCommonWaterBody!.isNotEmpty)
-                  buildStatisticCard(
-                    context,
-                    title: 'Corpo de Água Mais Comum',
-                    value: _capitalize(stats.mostCommonWaterBody!),
-                    icon: Icons.water,
-                  ),
-                if (stats.mostCommonWeatherCondition != null &&
-                    stats.mostCommonWeatherCondition!.isNotEmpty)
-                  buildStatisticCard(
-                    context,
-                    title: 'Clima Mais Comum',
-                    value: _capitalize(stats.mostCommonWeatherCondition!),
-                    icon: Icons.cloud,
-                  ),
-              ],
-            ),
+              ),
+            ],
           );
         }
       },

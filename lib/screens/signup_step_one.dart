@@ -6,7 +6,6 @@ import 'package:atlantida_mobile/screens/login.dart';
 import 'package:atlantida_mobile/components/top_bar.dart';
 import 'package:atlantida_mobile/components/button.dart';
 import 'package:atlantida_mobile/models/user.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -41,6 +40,8 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
   bool _isLoading = false;
 
   OverlayEntry? _errorOverlay;
+
+  late DateTime lastDateTime;
 
   @override
   void initState() {
@@ -353,13 +354,9 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
               ),
               const SizedBox(height: 10),
 
-              TextField(
+              TextFormField(
                 controller: _birthdateController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  createDateMaskFormatter(),
-                  LengthLimitingTextInputFormatter(10),
-                ],
+                readOnly: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
@@ -383,28 +380,81 @@ class _SignupScreenStepOneState extends State<SignupScreenStepOne> {
                           : const Color(0xFF263238),
                     ),
                   ),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
+                onTap: () async {
+                  DateTime initialDate;
+                  if (_birthdateController.text.isNotEmpty) {
+                    try {
+                      initialDate = DateFormat('dd/MM/yyyy')
+                          .parse(_birthdateController.text);
+                    } catch (e) {
+                      initialDate = DateTime(DateTime.now().year - 10,
+                          DateTime.now().month, DateTime.now().day);
+                    }
+                  } else {
+                    initialDate = DateTime(DateTime.now().year - 10,
+                        DateTime.now().month, DateTime.now().day);
+                  }
+
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(DateTime.now().year - 10,
+                        DateTime.now().month, DateTime.now().day),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF263238),
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF263238),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  if (pickedDate != null) {
+                    String formattedDate =
+                        "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                    setState(() {
+                      _birthdateController.text = formattedDate;
+                    });
+                  }
+                },
               ),
 
-              if (_birthdateErrorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: Text(
-                    _birthdateErrorMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 12),
-                  ),
-                ),
-              const SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_birthdateErrorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        _birthdateErrorMessage,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                ],
+              ),
 
               // Campo de e-mail
               CustomTextField(
-                label: 'E-mail',
-                description: 'Digite seu e-mail',
-                controller: _emailController,
-                errorMessage: _emailErrorMessage,
-                isRequired: true,
-                haveCapitalization: false
-              ),
+                  label: 'E-mail',
+                  description: 'Digite seu e-mail',
+                  controller: _emailController,
+                  errorMessage: _emailErrorMessage,
+                  isRequired: true,
+                  haveCapitalization: false),
               const SizedBox(height: 20),
 
               // Campo de senha

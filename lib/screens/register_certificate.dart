@@ -40,6 +40,7 @@ class _CertificateRegistrationScreenState
   String _certificationNumberErrorMessage = '';
   String _issueDateErrorMessage = '';
   String _expirationDateErrorMessage = '';
+  bool _isCertificationExpired = false;
 
   bool _isProcessing = false;
 
@@ -49,11 +50,47 @@ class _CertificateRegistrationScreenState
   // ignore: prefer_typing_uninitialized_variables
   var updateCertificate;
 
+  void _validateExpirationDate() {
+    final currentDate = DateTime.now();
+    final text = _expirationDateController.text;
+    final parts = _expirationDateController.text.split('/');
+
+    if (text.length == 10) {
+      if (parts.length == 3) {
+        final day = int.tryParse(parts[0]);
+        final month = int.tryParse(parts[1]);
+        final year = int.tryParse(parts[2]);
+
+        if (day != null && month != null && year != null) {
+          final date = DateTime(year, month, day);
+
+          if (date.isBefore(currentDate)) {
+            setState(() {
+              _isCertificationExpired = true;
+            });
+          } else {
+            setState(() {
+              _isCertificationExpired = false;
+            });
+          }
+        }
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    _expirationDateController.addListener(_validateExpirationDate);
     _resetForm();
     _initializeForm();
+  }
+
+  @override
+  void dispose() {
+    _expirationDateController.removeListener(_validateExpirationDate);
+    _expirationDateController.dispose();
+    super.dispose();
   }
 
   void _initializeForm() {
@@ -88,10 +125,9 @@ class _CertificateRegistrationScreenState
     }
   }
 
-  String _formatDate(String dateUtc) {
-    final utcDate = DateTime.parse(dateUtc);
-    final localDate = utcDate.toLocal();
-    return DateFormat('dd/MM/yyyy').format(localDate);
+  String _formatDate(String date) {
+    final dateFormat = DateTime.parse(date);
+    return DateFormat('dd/MM/yyyy').format(dateFormat);
   }
 
   String _formatDateForSaving(String date) {
@@ -177,18 +213,12 @@ class _CertificateRegistrationScreenState
             final daysInMonth = _daysInMonth(month, year);
             if (day < 1 || day > daysInMonth) {
               errors['format'] = 'Data inválida (formato DD/MM/AAAA).';
-            } else {
-              final currentDate = DateTime.now();
-              final date = DateTime(year, month, day);
-              if (date.isBefore(currentDate)) {
-                errors['age'] = 'Certificação vencida.';
-              }
             }
           }
         }
       }
     } catch (e) {
-      errors['format'] = 'Data de nascimento inválida (formato DD/MM/AAAA).';
+      errors['format'] = 'Data inválida (formato DD/MM/AAAA).';
     }
 
     return errors;
@@ -223,6 +253,7 @@ class _CertificateRegistrationScreenState
       _issueDateErrorMessage = '';
       _expirationDateErrorMessage = '';
       newCertificate = null;
+      _isCertificationExpired = false;
 
       _imageData = null;
 
@@ -351,7 +382,8 @@ class _CertificateRegistrationScreenState
                   Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MainNavigationScreen(index: 3),
+                      builder: (context) =>
+                          const MainNavigationScreen(index: 3),
                     ),
                   );
                 },
@@ -504,13 +536,9 @@ class _CertificateRegistrationScreenState
               ),
               const SizedBox(height: 10),
 
-              TextField(
+              TextFormField(
                 controller: _issueDateController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  createDateMaskFormatter(),
-                  LengthLimitingTextInputFormatter(10),
-                ],
+                readOnly: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
@@ -534,7 +562,53 @@ class _CertificateRegistrationScreenState
                           : const Color(0xFF263238),
                     ),
                   ),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
+                onTap: () async {
+                  DateTime initialDate;
+                  if (_issueDateController.text.isNotEmpty) {
+                    try {
+                      initialDate = DateFormat('dd/MM/yyyy')
+                          .parse(_issueDateController.text);
+                    } catch (e) {
+                      initialDate = DateTime.now();
+                    }
+                  } else {
+                    initialDate = DateTime.now();
+                  }
+
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime.now(),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF263238),
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF263238),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  if (pickedDate != null) {
+                    String formattedDate =
+                        "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                    setState(() {
+                      _issueDateController.text = formattedDate;
+                    });
+                  }
+                },
               ),
 
               if (_issueDateErrorMessage.isNotEmpty)
@@ -572,17 +646,14 @@ class _CertificateRegistrationScreenState
               ),
               const SizedBox(height: 10),
 
-              TextField(
+              TextFormField(
                 controller: _expirationDateController,
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  createDateMaskFormatter(),
-                  LengthLimitingTextInputFormatter(10),
-                ],
+                readOnly: true,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _expirationDateErrorMessage.isNotEmpty
+                      color: _isCertificationExpired ||
+                              _expirationDateErrorMessage.isNotEmpty
                           ? Colors.red
                           : Colors.grey,
                     ),
@@ -590,30 +661,92 @@ class _CertificateRegistrationScreenState
                   hintText: 'dd/mm/aaaa',
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _expirationDateErrorMessage.isNotEmpty
+                      color: _isCertificationExpired ||
+                              _expirationDateErrorMessage.isNotEmpty
                           ? Colors.red
                           : Colors.grey,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                      color: _expirationDateErrorMessage.isNotEmpty
+                      color: _isCertificationExpired ||
+                              _expirationDateErrorMessage.isNotEmpty
                           ? Colors.red
                           : const Color(0xFF263238),
                     ),
                   ),
+                  suffixIcon: const Icon(Icons.calendar_today),
                 ),
+                onTap: () async {
+                  DateTime initialDate;
+                  if (_expirationDateController.text.isNotEmpty) {
+                    try {
+                      initialDate = DateFormat('dd/MM/yyyy')
+                          .parse(_expirationDateController.text);
+                    } catch (e) {
+                      initialDate = DateTime.now();
+                    }
+                  } else {
+                    initialDate = DateTime.now();
+                  }
+
+                  DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: initialDate,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: Color(0xFF263238),
+                            onPrimary: Colors.white,
+                            onSurface: Colors.black,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFF263238),
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+
+                  if (pickedDate != null) {
+                    String formattedDate =
+                        "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                    setState(() {
+                      _expirationDateController.text = formattedDate;
+                      _validateExpirationDate();
+                    });
+                  }
+                },
               ),
 
-              if (_expirationDateErrorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 5.0),
-                  child: Text(
-                    _expirationDateErrorMessage,
-                    style: const TextStyle(color: Colors.red, fontSize: 12),
-                  ),
-                ),
-              const SizedBox(height: 20),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (_expirationDateErrorMessage.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        _expirationDateErrorMessage,
+                        style: const TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    )
+                  else if (_isCertificationExpired)
+                    const Padding(
+                      padding: EdgeInsets.only(top: 5.0),
+                      child: Text(
+                        'Certificação Vencida',
+                        style: TextStyle(color: Colors.red, fontSize: 12),
+                      ),
+                    ),
+                  const SizedBox(height: 20),
+                ],
+              ),
 
               // Campo para adicionar imagem
               const Row(

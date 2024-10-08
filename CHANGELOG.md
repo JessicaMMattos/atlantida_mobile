@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] - 2024-10-06
+
+### Changed
+- Adjusting date type to display calendar
+- Allowing to add expired certificates
+
+### Added
+- totalBottomTime to statistics
+
 ## [1.1.0] - 2024-09-19
 
 ### Added

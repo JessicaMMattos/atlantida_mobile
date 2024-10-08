@@ -216,8 +216,7 @@ class _AccountScreenState extends State<AccountScreen> {
     super.initState();
     _nameController.text = widget.user.firstName;
     _surnameController.text = widget.user.lastName;
-    _birthdateController.text =
-        formatDate(widget.user.birthDate); // Formatar data
+    _birthdateController.text = formatDate(widget.user.birthDate);
     _emailController.text = widget.user.email;
 
     _loadAddress(widget.user.id);
@@ -485,14 +484,9 @@ class _AccountScreenState extends State<AccountScreen> {
               ),
             ),
             const SizedBox(height: 10),
-
-            TextField(
+            TextFormField(
               controller: _birthdateController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                createDateMaskFormatter(),
-                LengthLimitingTextInputFormatter(10),
-              ],
+              readOnly: true,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderSide: BorderSide(
@@ -516,18 +510,72 @@ class _AccountScreenState extends State<AccountScreen> {
                         : const Color(0xFF263238),
                   ),
                 ),
+                suffixIcon: const Icon(Icons.calendar_today),
               ),
+              onTap: () async {
+                DateTime initialDate;
+                if (_birthdateController.text.isNotEmpty) {
+                  try {
+                    initialDate = DateFormat('dd/MM/yyyy')
+                        .parse(_birthdateController.text);
+                  } catch (e) {
+                    initialDate = DateTime(DateTime.now().year - 10,
+                        DateTime.now().month, DateTime.now().day);
+                  }
+                } else {
+                  initialDate = DateTime(DateTime.now().year - 10,
+                      DateTime.now().month, DateTime.now().day);
+                }
+
+                DateTime? pickedDate = await showDatePicker(
+                  context: context,
+                  initialDate: initialDate,
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime(DateTime.now().year - 10,
+                      DateTime.now().month, DateTime.now().day),
+                  builder: (context, child) {
+                    return Theme(
+                      data: Theme.of(context).copyWith(
+                        colorScheme: const ColorScheme.light(
+                          primary: Color(0xFF263238),
+                          onPrimary: Colors.white,
+                          onSurface: Colors.black,
+                        ),
+                        textButtonTheme: TextButtonThemeData(
+                          style: TextButton.styleFrom(
+                            foregroundColor: const Color(0xFF263238),
+                          ),
+                        ),
+                      ),
+                      child: child!,
+                    );
+                  },
+                );
+
+                if (pickedDate != null) {
+                  String formattedDate =
+                      "${pickedDate.day.toString().padLeft(2, '0')}/${pickedDate.month.toString().padLeft(2, '0')}/${pickedDate.year}";
+                  setState(() {
+                    _birthdateController.text = formattedDate;
+                  });
+                }
+              },
             ),
 
-            if (_birthdateErrorMessage.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.only(top: 5.0),
-                child: Text(
-                  _birthdateErrorMessage,
-                  style: const TextStyle(color: Colors.red, fontSize: 12),
-                ),
-              ),
-            const SizedBox(height: 20),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (_birthdateErrorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 5.0),
+                    child: Text(
+                      _birthdateErrorMessage,
+                      style: const TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                const SizedBox(height: 20),
+              ],
+            ),
 
             // Campo de e-mail
             const Text(
@@ -858,8 +906,9 @@ class _SecurityScreenState extends State<SecurityScreen> {
         _isProcessing = true;
         _oldPasswordError =
             _oldPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
-        _newPasswordError =
-            _newPasswordController.text.isEmpty ? 'Campo obrigatório.' : _newPasswordError;
+        _newPasswordError = _newPasswordController.text.isEmpty
+            ? 'Campo obrigatório.'
+            : _newPasswordError;
         _confirmPasswordError =
             _confirmPasswordController.text.isEmpty ? 'Campo obrigatório.' : '';
 
