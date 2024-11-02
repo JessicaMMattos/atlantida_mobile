@@ -1,0 +1,3 @@
+API_KEY_WEATHER_MAP=your_api_key_here
+API_KEY_GOOGLE_MAPS=your_api_key_maps_here
+BASE_URL=https://api.example.com
