@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] - 2024-10-08
+
+### Changed
+- Dive Log Depth TextField
+
 ## [1.2.0] - 2024-10-06
 
 ### Changed

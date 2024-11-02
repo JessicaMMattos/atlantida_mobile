@@ -73,7 +73,7 @@ class AboutUsScreen extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                   ),
                   child: const Text(
-                    'Versão 1.2.0',
+                    'Versão 1.3.0',
                     style: TextStyle(
                       fontSize: 16.0,
                       fontWeight: FontWeight.w500,

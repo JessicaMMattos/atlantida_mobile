@@ -642,7 +642,8 @@ class _DiveRegistrationScreenState extends State<DiveRegistrationScreen> {
                 ),
               ),
               const SizedBox(height: 10),
-// Campo de local
+
+              // Campo de local
               TextField(
                 controller: _locationController,
                 decoration: InputDecoration(
@@ -1248,22 +1249,25 @@ class _DiveRegistrationScreen2State extends State<DiveRegistrationScreen2> {
                 ),
               ),
               const SizedBox(height: 10),
+
               TextField(
                 controller: _depthController,
-                keyboardType: TextInputType.number,
+                keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true, signed: true),
                 inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  TextInputFormatter.withFunction((oldValue, newValue) {
-                    if (newValue.text.isEmpty) {
-                      return newValue;
-                    }
-                    final formattedValue = formatDepth(newValue.text);
-                    return newValue.copyWith(
-                      text: formattedValue,
-                      selection: TextSelection.collapsed(
-                          offset: formattedValue.length),
-                    );
-                  }),
+                  FilteringTextInputFormatter.allow(
+                    RegExp(r'^-?\d*\.?\d{0,2}$'),
+                  ),
+                  LengthLimitingTextInputFormatter(6),
+                  TextInputFormatter.withFunction(
+                    (oldValue, newValue) {
+                      String newText = newValue.text.replaceAll(',', '.');
+                      return TextEditingValue(
+                        text: newText,
+                        selection: newValue.selection,
+                      );
+                    },
+                  ),
                 ],
                 decoration: InputDecoration(
                   border: OutlineInputBorder(
